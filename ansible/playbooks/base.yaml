@@ -1,0 +1,41 @@
+---
+- name: "Configure the os."
+  hosts: d0018e-group2
+
+  tasks:
+    - name: "Set hostname."
+      ansible.builtin.hostname:
+        name: "{{ inventory_hostname }}"
+
+    - name: "Install project packages"
+      ansible.builtin.package:
+        name: "{{ item }}"
+      loop: "{{ project_packages }}"
+
+    - name: "Add project users."
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        state: present
+        password: "{{ item.password_hash }}"
+        shell: /bin/bash
+        append: true
+        groups:
+          - wheel
+      loop: "{{ project_users }}"
+
+    - name: "Add ssh keys."
+      ansible.posix.authorized_key:
+        user: "{{ item.name }}"
+        key: "{{ item.ssh_key }}"
+        state: present
+      loop: "{{ project_users }}"
+
+    - name: Config sshd_config
+      ansible.builtin.copy:
+        content: |
+          # PermitRootLogin no
+          PasswordAuthentication no
+        dest: /etc/ssh/sshd_config.d/99-d0018e-group2.conf
+        owner: root
+        group: root
+        mode: '0600'
