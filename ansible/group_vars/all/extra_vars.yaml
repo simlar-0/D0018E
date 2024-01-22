@@ -3,3 +3,8 @@ project_hostname: d0018e-group2
 
 project_packages:
 - fish
+- docker-ce-cli
+- docker-ce
+- containerd.io
+- docker-buildx-plugin
+- docker-compose-plugin

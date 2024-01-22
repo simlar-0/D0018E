@@ -7,6 +7,14 @@
       ansible.builtin.hostname:
         name: "{{ inventory_hostname }}"
 
+    - name: "Add docker yum repository."
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/fedora/docker-ce.repo
+        dest: /etc/yum.repos.d/docker-ce.repo
+        owner: root
+        group: root
+        mode: "0644"
+
     - name: "Install project packages"
       ansible.builtin.package:
         name: "{{ item }}"
@@ -21,6 +29,7 @@
         append: true
         groups:
           - wheel
+          - docker
       loop: "{{ project_users }}"
 
     - name: "Add ssh keys."
@@ -39,3 +48,9 @@
         owner: root
         group: root
         mode: '0600'
+
+    - name: "Enable docker socket"
+      ansible.builtin.systemd_service:
+        name: docker.socket
+        state: started
+        enabled: true
