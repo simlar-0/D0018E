@@ -108,6 +108,10 @@ def login():
 
     return render_template("auth/login.html")
 
+@bp.route("/forgot-password")
+def forgot_password():
+    return render_template("auth/forgot_pass.html")
+
 
 @bp.route("/logout")
 def logout():

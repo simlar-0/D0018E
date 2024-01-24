@@ -1,7 +1,9 @@
 import os
 from flask_mysqldb import MySQL
-
+from flaskr import auth, store
+from flaskr import temp_db_test
 from flask import Flask
+from flask import g
 
 def create_app(test_config=None):
     """Create and configure an instance of the Flask application."""
@@ -10,13 +12,7 @@ def create_app(test_config=None):
     app.config['MYSQL_USER'] = os.environ.get('MYSQL_USER')
     app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQL_PASSWORD')
     app.config['MYSQL_DB'] = os.environ.get('MYSQL_DB')
-
-    if test_config is None:
-        # load the instance config, if it exists, when not testing
-        app.config.from_pyfile("config.py", silent=True)
-    else:
-        # load the test config if passed in
-        app.config.update(test_config)
+    app.config['MYSQL_PORT'] = int(os.environ.get('MYSQL_PORT'))
 
     # ensure the instance folder exists
     try:
@@ -24,15 +20,10 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    @app.route("/hello")
-    def hello():
-        return "Hello, World!"
-
     # apply the blueprints to the app
-    from flaskr import auth, blog
-
     app.register_blueprint(auth.bp)
-    app.register_blueprint(blog.bp)
+    app.register_blueprint(store.bp)
+    app.register_blueprint(temp_db_test.bp)
 
     # make url_for('index') == url_for('blog.index')
     # in another app, you might define a separate main index here with
