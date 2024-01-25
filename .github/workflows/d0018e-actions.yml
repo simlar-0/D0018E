@@ -1,0 +1,19 @@
+name: d0018e project actions
+on:
+  push:
+    branches:
+      - "main"
+jobs:
+  run-docker-compose-on-push:
+    name: Run docker-compose on push
+    runs-on: ubuntu-latest
+    steps:
+      - name: execute docker-compose on remote host script
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          user: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            pwd
+
