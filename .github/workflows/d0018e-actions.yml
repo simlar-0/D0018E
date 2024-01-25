@@ -19,4 +19,5 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             pwd
+            ls -al
 
