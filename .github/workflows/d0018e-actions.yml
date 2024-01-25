@@ -2,6 +2,8 @@ name: d0018e-actions
 on:
   push:
     branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 jobs:
   run-docker-compose-on-push:
     name: Run docker-compose on push
