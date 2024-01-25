@@ -19,6 +19,9 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script_stop: true
           script: |
-            rm -rf -- D0018E
+            REPO_NAME=$(basename ${{ github.repository }})
+            rm -rf -- $REPO_NAME
             git clone ${{ github.server_url }}/${{ github.repository }}
+            cd $REPO_NAME
+            touch test.txt
 
