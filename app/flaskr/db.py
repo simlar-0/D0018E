@@ -1,4 +1,6 @@
+from flask import Flask, g, current_app
 from flask_mysqldb import MySQL
+
 
 """ MYSQL EXAMPLE (executing queries):
 mysql = MySQL(app)
@@ -18,9 +20,50 @@ mysql.connection.commit()
 cursor.close()
 """
 
+def init_db():
+    """
+    """
+    if 'mysql' not in g:
+        app = Flask('flaskr')
+        g.mysql = MySQL(app)
+
 def get_db(): 
     """This function will probably not be needed, 
     leaving it here just because some other functions 
     (which will also be changed) call for it
     """
     return None
+
+def manipulate_db(queries):
+    init_db()
+    mysql = g.mysql
+    cursor = mysql.connection.cursor()
+
+    for query in queries:
+        cursor.execute(_sanitize(query))
+    
+    mysql.connection.commit()
+
+    cursor.close()
+
+    # TODO check if queries executed succesfully or not and return False
+    return True
+
+def query_db(queries):
+    init_db()
+    results = []
+
+    mysql = g.mysql
+    cursor = mysql.connection.cursor()
+
+    for query in queries:
+        cursor.execute(_sanitize(query))
+        results.append(cursor.fetchall())
+    
+    cursor.close()
+    
+    return results
+
+def _sanitize(query):
+    #TODO
+    return query
