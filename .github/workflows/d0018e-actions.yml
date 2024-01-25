@@ -23,5 +23,5 @@ jobs:
             rm -rf -- $REPO_NAME
             git clone ${{ github.server_url }}/${{ github.repository }}
             cd $REPO_NAME
-            touch test.txt
+            touch github-actions-test.txt
 
