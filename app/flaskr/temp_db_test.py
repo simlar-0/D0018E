@@ -27,7 +27,7 @@ def button_clicked():
         print('request.method == POST', file=sys.stderr)
         queries = [
             """INSERT INTO flask.Product (ProductID,Name,Description,Price,ImagePath,InStock)
-        VALUES (2,'dog','asd',1.0,'asd',1)"""
+        VALUES (3,'cat','asd',1.0,'asd',1)"""
         ]
         manipulate_db(queries)
         return redirect(url_for("store.index"))

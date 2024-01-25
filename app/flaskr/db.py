@@ -1,5 +1,6 @@
-from flask import Flask, g
+from flask import Flask, g, current_app
 from flask_mysqldb import MySQL
+
 
 """ MYSQL EXAMPLE (executing queries):
 mysql = MySQL(app)
@@ -23,7 +24,7 @@ def init_db():
     """
     """
     if 'mysql' not in g:
-        app = Flask('app')
+        app = Flask('flaskr')
         g.mysql = MySQL(app)
 
 def get_db(): 

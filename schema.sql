@@ -1,7 +1,3 @@
-CREATE DATABASE IF NOT EXISTS flask;
-
-USE flask;
-
 CREATE TABLE IF NOT EXISTS `Customer` (
     `CustomerID` int  NOT NULL ,
     `Name` nvarchar(255)  NOT NULL ,
