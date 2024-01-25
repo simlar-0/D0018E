@@ -1,4 +1,4 @@
-name: d0018e project actions
+name: d0018e-actions
 on:
   push:
     branches:
