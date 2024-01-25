@@ -31,3 +31,5 @@ services:
       - PYTHONPATH=/code
     expose:
       - "22"
+    volumes:
+      - ./app/flaskr/static:/static

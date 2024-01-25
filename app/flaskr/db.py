@@ -1,6 +1,6 @@
 from flask import Flask, g, current_app
 from flask_mysqldb import MySQL
-
+import sys
 
 """ MYSQL EXAMPLE (executing queries):
 mysql = MySQL(app)
@@ -57,13 +57,25 @@ def query_db(queries):
     cursor = mysql.connection.cursor()
 
     for query in queries:
-        cursor.execute(_sanitize(query))
+        #cursor.execute(_sanitize(query))
+        cursor.execute(query)
         results.append(cursor.fetchall())
     
     cursor.close()
-    
     return results
 
 def _sanitize(query):
     #TODO
     return query
+
+def get_all_products():
+    queries = ["""SELECT name, description, price, imagepath, instock FROM product"""]
+    return query_db(queries)[0]
+
+def get_some_products(limit, offset):
+    queries = [f"""SELECT name, description, price, imagepath, instock FROM product LIMIT {limit} OFFSET {offset}"""]
+    return query_db(queries)[0]
+
+def count_products():
+    queries = [f"""SELECT COUNT(*) FROM product"""]
+    return query_db(queries)[0][0]['COUNT(*)']

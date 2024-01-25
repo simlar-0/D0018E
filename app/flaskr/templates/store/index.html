@@ -11,18 +11,18 @@
         <!-- List group -->
         <ul class="list-group">
           <h1 class="mb-4">Products</h1>
-          <li class="list-group-item">
-
-            {% for product in products %}
-            <!-- Custom content -->
+          <!-- Only render frame if products exist -->
+          {% if products %}
+            {% for product in products %} 
+            <li class="list-group-item">
             <div class="flex-column flex-lg-row align-items-lg-center media p-3">
               <div class="order-2 order-lg-1 media-body">
-                <a class="nav-link" href="{{ url_for('store.product') }}"><h5 class="mt-0 font-weight-bold mb-2">{{ product.name }}</h5></a>
-                <p class="text-muted font-italic mb-0 small">{{ product.description }}</p>
+                <a class="nav-link" href="{{ url_for('store.product') }}"><h5 class="mt-0 font-weight-bold mb-2">{{ product['name'] }}</h5></a>
+                <p class="text-muted font-italic mb-0 small">{{ product['description'] }}</p>
               </div>
               <div class="row">
                 <div class="col">
-                  <img class="order-1 order-lg-2 ml-lg-5" src="{{ product.imagepath }}" alt="{{ product.name }}" width="200" />
+                  <img class="order-1 order-lg-2 ml-lg-5" src="{{ url_for('static', filename=product['imagepath']) }}" alt="{{ product['name'] }}" width="200" />
                 </div>
                 <div class="col">
                   <div class="row">
@@ -50,19 +50,22 @@
                   </div>
                   <div class="row">
                     <div class="col">
-                      <h6 class="float-end font-weight-bold my-2">{{ product.price }}</h6>
+                      <h6 class="float-end font-weight-bold my-2">{{ product.price }} kr</h6>
                     </div>
                   </div><button class="btn btn-dark rounded-pill float-end d-xxl-flex" type="button">Add to cart</button>
                 </div>
               </div>
             </div>
-          {% endfor %}
-          <!-- End -->
           </li>
-          <!-- End -->
+          {% endfor %}
+          {% endif %}
         </ul>
-        <!-- End -->
       </div>
     </div>
   </div>
 {% endblock %}
+
+{% block footer %}
+  </br>
+  {% include "footer.html" %} 
+{%- endblock footer %}
