@@ -1,0 +1,27 @@
+name: d0018e-actions
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  run-docker-compose-on-push:
+    name: Run docker-compose on push
+    runs-on: ubuntu-latest
+    steps:
+      - name: execute docker-compose on remote host script
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script_stop: true
+          script: |
+            REPO_NAME=$(basename ${{ github.repository }})
+            rm -rf -- $REPO_NAME
+            git clone ${{ github.server_url }}/${{ github.repository }}
+            cd $REPO_NAME
+            touch github-actions-test.txt
+
