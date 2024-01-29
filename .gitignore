@@ -168,3 +168,6 @@ my-db/
 
 # Ansible
 ansible-vault-pass.txt
+=======
+# Vagrant
+.vagrant/
