@@ -1,7 +1,7 @@
 INSERT INTO Product (ProductID, Name, Description, Price, ImagePath, InStock)
 VALUES
   (1, '38 Pound Bond', 'some description', 100, '/images/38_pound_bond.png',100),
-  (2, '40 Pound Letter Stock', 'some description', 200, '/assets/images/40_pound_letter_stock.jpg', 100),
+  (2, '40 Pound Letter Stock', 'some description', 200, '/images/40_pound_letter_stock.png', 100),
   (3, '65 Pound Cover Stock', 'The heaviest paper that will still feed smoothly through your desktop printer.', 300, '/images/65_pound_cover_stock.png',100),
   (4, 'Airstream Deluxe A4', 'The Cadillac of paper', 500, '/images/airstream_deluxe_a4.png', 100),
   (5, 'High Quality 28 Pound Bond', 'some description', 250, '/images/high_quality_28_pound_bond.png',100),
