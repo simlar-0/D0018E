@@ -127,6 +127,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.db
 
 # Spyder project settings
 .spyderproject
@@ -162,5 +163,11 @@ cython_debug/
 # VsCode
 .vscode/
 
+# Database volume
+my-db/
+
+# Ansible
+ansible-vault-pass.txt
+=======
 # Vagrant
 .vagrant/
