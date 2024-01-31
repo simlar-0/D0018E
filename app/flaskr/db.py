@@ -63,17 +63,17 @@ def _sanitize(query):
 def get_all_products():
     """
     Returns ALL products registered in the DB.
-    :returns: a list of tuples (name, description, price, imagepath, instock). 
+    :returns: a list of tuples (name, description, price, image_path, in_stock). 
     """
-    queries = ["""SELECT name, description, price, imagepath, instock FROM product"""]
+    queries = ["""SELECT name, description, price, image_path, in_stock FROM Product"""]
     return query_db(queries)[0]
 
 def get_some_products(limit, offset):
     """
     Returns <limit> products from the DB, offset by <offset>.
-    :returns: a list of tuples (name, description, price, imagepath, instock). 
+    :returns: a list of tuples (name, description, price, image_path, in_stock). 
     """
-    queries = [f"""SELECT name, description, price, imagepath, instock FROM product LIMIT {limit} OFFSET {offset}"""]
+    queries = [f"""SELECT name, description, price, image_path, in_stock FROM Product LIMIT {limit} OFFSET {offset}"""]
     return query_db(queries)[0]
 
 def count_products():
@@ -81,5 +81,5 @@ def count_products():
     Returns the number of products in db.
     :returns: an integer count of products.
     """
-    queries = [f"""SELECT COUNT(*) FROM product"""]
+    queries = [f"""SELECT COUNT(*) FROM Product"""]
     return query_db(queries)[0][0]['COUNT(*)']

@@ -1,125 +1,125 @@
 CREATE TABLE IF NOT EXISTS `Customer` (
-    `CustomerID` int  NOT NULL ,
-    `Name` nvarchar(255)  NOT NULL ,
-    `E-mail` nvarchar(255)  NOT NULL ,
-    `Address` nvarchar(255)  NOT NULL ,
-    `Postcode` varchar(10)  NOT NULL ,
-    `City` nvarchar(255)  NOT NULL ,
+    `customer_id` int  NOT NULL ,
+    `name` nvarchar(255)  NOT NULL ,
+    `email` nvarchar(255)  NOT NULL ,
+    `address` nvarchar(255)  NOT NULL ,
+    `postcode` varchar(10)  NOT NULL ,
+    `city` nvarchar(255)  NOT NULL ,
     PRIMARY KEY (
-        `CustomerID`
+        `customer_id`
     )
 );
 
 CREATE TABLE IF NOT EXISTS `Manager` (
-    `ManagerID` int  NOT NULL ,
-    `IsAdmin` bool  NOT NULL ,
-    `Name` nvarchar(255)  NOT NULL ,
-    `E-mail` nvarchar(255)  NOT NULL ,
+    `manager_id` int  NOT NULL ,
+    `is_admin` bool  NOT NULL ,
+    `name` nvarchar(255)  NOT NULL ,
+    `email` nvarchar(255)  NOT NULL ,
     PRIMARY KEY (
-        `ManagerID`
+        `manager_id`
     )
 );
 
 CREATE TABLE IF NOT EXISTS `Order` (
-    `OrderID` int  NOT NULL ,
-    `CustomerID` int  NOT NULL ,
-    `TotalAmount` decimal(6,2)  NOT NULL ,
-    `OrderStatusID` int  NOT NULL ,
+    `order_id` int  NOT NULL ,
+    `customer_id` int  NOT NULL ,
+    `total_amount` decimal(6,2)  NOT NULL ,
+    `order_status_id` int  NOT NULL ,
     PRIMARY KEY (
-        `OrderID`
+        `order_id`
     )
 );
 
 CREATE TABLE IF NOT EXISTS `OrderLine` (
-    `OrderLineID` int  NOT NULL ,
-    `OrderID` int  NOT NULL ,
-    `ProductID` int  NOT NULL ,
-    `Quantity` int  NOT NULL ,
+    `order_line_id` int  NOT NULL ,
+    `order_id` int  NOT NULL ,
+    `product_id` int  NOT NULL ,
+    `quantity` int  NOT NULL ,
     PRIMARY KEY (
-        `OrderLineID`
+        `order_line_id`
     )
 );
 
 CREATE TABLE IF NOT EXISTS `Product` (
-    `ProductID` int  NOT NULL ,
-    `Name` nvarchar(255)  NOT NULL ,
-    `Description` nvarchar(255)  NOT NULL ,
-    `Price` decimal(6,2)  NOT NULL ,
-    `ImagePath` varchar(255)  NOT NULL ,
-    `InStock` int  NOT NULL ,
+    `product_id` int  NOT NULL ,
+    `name` nvarchar(255)  NOT NULL ,
+    `description` nvarchar(255)  NOT NULL ,
+    `price` decimal(6,2)  NOT NULL ,
+    `image_path` varchar(255)  NOT NULL ,
+    `in_stock` int  NOT NULL ,
     PRIMARY KEY (
-        `ProductID`
+        `product_id`
     ),
-    CONSTRAINT `uc_Product_Name` UNIQUE (
-        `Name`
+    CONSTRAINT `uc_Product_name` UNIQUE (
+        `name`
     )
 );
 
 CREATE TABLE IF NOT EXISTS `OrderStatus` (
-    `OrderStatusID` int  NOT NULL ,
-    `Name` nvarchar(255)  NOT NULL ,
+    `order_status_id` int  NOT NULL ,
+    `name` nvarchar(255)  NOT NULL ,
     PRIMARY KEY (
-        `OrderStatusID`
+        `order_status_id`
     ),
-    CONSTRAINT `uc_OrderStatus_Name` UNIQUE (
-        `Name`
+    CONSTRAINT `uc_OrderStatus_name` UNIQUE (
+        `name`
     )
 );
 
 CREATE TABLE IF NOT EXISTS `Review` (
-    `CustomerID` int  NOT NULL ,
-    `ProductID` int  NOT NULL ,
-    `Rating` int  NULL ,
-    `ReviewText` nvarchar(255)  NULL ,
-    `ReviewDate` datetime  NULL ,
-    `ReviewHeader` nvarchar(255)  NULL ,
+    `customer_id` int  NOT NULL ,
+    `product_id` int  NOT NULL ,
+    `rating` int  NULL ,
+    `review_text` nvarchar(255)  NULL ,
+    `review_date` datetime  NULL ,
+    `review_header` nvarchar(255)  NULL ,
     PRIMARY KEY (
-        `CustomerID`,`ProductID`
+        `customer_id`,`product_id`
     )
 );
 
-CREATE TABLE IF NOT EXISTS `CustomerPasswords` (
-    `CustomerID` int  NOT NULL ,
-    `HashedPassword` binary(60)  NOT NULL ,
+CREATE TABLE IF NOT EXISTS `CustomerPassword` (
+    `customer_id` int  NOT NULL ,
+    `hashed_password` binary(60)  NOT NULL ,
     PRIMARY KEY (
-        `CustomerID`
+        `customer_id`
     )
 );
 
-CREATE TABLE IF NOT EXISTS `ManagerPasswords` (
-    `ManagerID` int  NOT NULL ,
-    `HashedPassword` binary(60)  NOT NULL ,
+CREATE TABLE IF NOT EXISTS `ManagerPassword` (
+    `manager_id` int  NOT NULL ,
+    `hashed_password` binary(60)  NOT NULL ,
     PRIMARY KEY (
-        `ManagerID`
+        `manager_id`
     )
 );
 
-ALTER TABLE `Order` ADD CONSTRAINT `fk_Order_CustomerID` FOREIGN KEY(`CustomerID`)
-REFERENCES `Customer` (`CustomerID`);
+ALTER TABLE `Order` ADD CONSTRAINT `fk_Order_customer_id` FOREIGN KEY(`customer_id`)
+REFERENCES `Customer` (`customer_id`);
 
-ALTER TABLE `Order` ADD CONSTRAINT `fk_Order_OrderStatusID` FOREIGN KEY(`OrderStatusID`)
-REFERENCES `OrderStatus` (`OrderStatusID`);
+ALTER TABLE `Order` ADD CONSTRAINT `fk_Order_order_status_id` FOREIGN KEY(`order_status_id`)
+REFERENCES `OrderStatus` (`order_status_id`);
 
-ALTER TABLE `OrderLine` ADD CONSTRAINT `fk_OrderLine_OrderID` FOREIGN KEY(`OrderID`)
-REFERENCES `Order` (`OrderID`);
+ALTER TABLE `OrderLine` ADD CONSTRAINT `fk_OrderLine_order_id` FOREIGN KEY(`order_id`)
+REFERENCES `Order` (`order_id`);
 
-ALTER TABLE `OrderLine` ADD CONSTRAINT `fk_OrderLine_ProductID` FOREIGN KEY(`ProductID`)
-REFERENCES `Product` (`ProductID`);
+ALTER TABLE `OrderLine` ADD CONSTRAINT `fk_OrderLine_product_id` FOREIGN KEY(`product_id`)
+REFERENCES `Product` (`product_id`);
 
-ALTER TABLE `Review` ADD CONSTRAINT `fk_Review_CustomerID` FOREIGN KEY(`CustomerID`)
-REFERENCES `Customer` (`CustomerID`);
+ALTER TABLE `Review` ADD CONSTRAINT `fk_Review_customer_id` FOREIGN KEY(`customer_id`)
+REFERENCES `Customer` (`customer_id`);
 
-ALTER TABLE `Review` ADD CONSTRAINT `fk_Review_ProductID` FOREIGN KEY(`ProductID`)
-REFERENCES `Product` (`ProductID`);
+ALTER TABLE `Review` ADD CONSTRAINT `fk_Review_product_id` FOREIGN KEY(`product_id`)
+REFERENCES `Product` (`product_id`);
 
-ALTER TABLE `CustomerPasswords` ADD CONSTRAINT `fk_CustomerPasswords_CustomerID` FOREIGN KEY(`CustomerID`)
-REFERENCES `Customer` (`CustomerID`);
+ALTER TABLE `CustomerPassword` ADD CONSTRAINT `fk_CustomerPassword_customer_id` FOREIGN KEY(`customer_id`)
+REFERENCES `Customer` (`customer_id`);
 
-ALTER TABLE `ManagerPasswords` ADD CONSTRAINT `fk_ManagerPasswords_ManagerID` FOREIGN KEY(`ManagerID`)
-REFERENCES `Manager` (`ManagerID`);
+ALTER TABLE `ManagerPassword` ADD CONSTRAINT `fk_ManagerPassword_manager_id` FOREIGN KEY(`manager_id`)
+REFERENCES `Manager` (`manager_id`);
 
-CREATE INDEX `idx_Customer_Name`
-ON `Customer` (`Name`);
+CREATE INDEX `idx_Customer_name`
+ON `Customer` (`name`);
 
-CREATE INDEX `idx_Manager_Name`
-ON `Manager` (`Name`);
+CREATE INDEX `idx_Manager_name`
+ON `Manager` (`name`);
