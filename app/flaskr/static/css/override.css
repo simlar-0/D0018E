@@ -1,0 +1,7 @@
+.active>.page-link,
+.page-link.active {
+    z-index: 3;
+    color: var(--bs-pagination-active-color);
+    background-color: #212529;;
+    border-color: #212529;
+}
