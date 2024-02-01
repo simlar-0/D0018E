@@ -19,13 +19,16 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script_stop: true
           script: |
+            # extract repo name
             REPO_NAME=$(basename ${{ github.repository }})
             cd $REPO_NAME
+            # clean up previous build
             docker compose down
             cd ..
             rm -rf -- $REPO_NAME
             git clone ${{ github.server_url }}/${{ github.repository }}
 
+            # set up.env and.db files
             cd $REPO_NAME
             cp .db-example .db
             cp .env-example .env
