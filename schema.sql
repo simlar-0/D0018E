@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS `Review` (
     )
 );
 
-CREATE TABLE IF NOT EXISTS `CustomerPasswords` (
+CREATE TABLE IF NOT EXISTS `CustomerPassword` (
     `customer_id` int  NOT NULL ,
     `hashed_password` binary(60)  NOT NULL ,
     PRIMARY KEY (
@@ -92,7 +92,7 @@ CREATE TABLE IF NOT EXISTS `CustomerPasswords` (
     )
 );
 
-CREATE TABLE IF NOT EXISTS `ManagerPasswords` (
+CREATE TABLE IF NOT EXISTS `ManagerPassword` (
     `manager_id` int  NOT NULL ,
     `hashed_password` binary(60)  NOT NULL ,
     PRIMARY KEY (
@@ -118,10 +118,10 @@ REFERENCES `Customer` (`customer_id`);
 ALTER TABLE `Review` ADD CONSTRAINT `fk_Review_product_id` FOREIGN KEY(`product_id`)
 REFERENCES `Product` (`product_id`);
 
-ALTER TABLE `CustomerPasswords` ADD CONSTRAINT `fk_CustomerPasswords_customer_id` FOREIGN KEY(`customer_id`)
+ALTER TABLE `CustomerPassword` ADD CONSTRAINT `fk_CustomerPassword_customer_id` FOREIGN KEY(`customer_id`)
 REFERENCES `Customer` (`customer_id`);
 
-ALTER TABLE `ManagerPasswords` ADD CONSTRAINT `fk_ManagerPasswords_manager_id` FOREIGN KEY(`manager_id`)
+ALTER TABLE `ManagerPassword` ADD CONSTRAINT `fk_ManagerPassword_manager_id` FOREIGN KEY(`manager_id`)
 REFERENCES `Manager` (`manager_id`);
 
 CREATE INDEX `idx_Customer_name`
