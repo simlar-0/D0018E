@@ -9,7 +9,7 @@ from flaskr.db import  get_some_products, count_products
 
 
 bp = Blueprint("store", __name__)
-LIMIT = 3 #TODO: move magic constants somewhere else
+LIMIT = 12 #TODO: move magic constants somewhere else
 
 @bp.route("/")
 def index():

@@ -1,0 +1,42 @@
+<nav>
+  <ul class="pagination justify-content-center dark">
+    <!-- Display previous page link -->
+    {% if page > 1 %}
+      <li class="page-item"><a class="page-link" href="{{ url_for('store.index') }}?page={{ page-1 }}" aria-label="Previous">
+    {% else %}
+      <li class="page-item disabled"><a class="page-link" aria-label="Previous">
+    {% endif %}
+      <span aria-hidden="true">&laquo;</span></a></li>
+
+    <!-- Display link for two pages back if there are enough products -->
+    {% if ((tot_prod - page*limit) < 0 and (page>2)) %}
+      <li class="page-item"><a class="page-link" href="{{ url_for('store.index') }}?page={{ page-2 }}">{{ page-2 }}</a></li>
+    {% endif %}
+
+    <!-- Display link for previous page if not on first page -->
+    {% if page > 1 %}
+     <li class="page-item"><a class="page-link" href="{{ url_for('store.index') }}?page={{ page-1 }}">{{ page-1 }}</a></li>
+    {% endif %}
+
+    <!-- Always display link for current page -->
+    <li class="page-item active"><a class="page-link" href="{{ url_for('store.index') }}?page={{ page }}">{{ page }}</a></li>
+
+    <!-- Display link for next page if there are more products -->
+    {% if (tot_prod - page*limit) > 0 %}
+      <li class="page-item"><a class="page-link" href="{{ url_for('store.index') }}?page={{ page+1 }}">{{ page+1 }}</a></li>
+    {% endif %}
+
+    <!-- Display link for two pages ahead if on first page -->
+    {% if (page <= 1 and (tot_prod - (page+1)*limit) > 0)%}
+      <li class="page-item"><a class="page-link" href="{{ url_for('store.index') }}?page={{ page+2 }}">{{ page+2 }}</a></li>
+    {% endif %}
+
+    <!-- Display next page link -->
+    {% if (tot_prod - page*limit) > 0 %}
+      <li class="page-item"><a class="page-link" href="{{ url_for('store.index') }}?page={{ page+1 }}" aria-label="Next">
+    {% else %}
+      <li class="page-item disabled"><a class="page-link" aria-label="Next">
+    {% endif %}
+        <span aria-hidden="true">&raquo;</span></a></li>
+  </ul>
+</nav>

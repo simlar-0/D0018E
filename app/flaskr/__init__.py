@@ -1,5 +1,5 @@
 import os
-from flaskr import store
+from flaskr import store, auth
 from flask import Flask
 from dotenv import load_dotenv
 
@@ -32,6 +32,7 @@ def create_app(test_config=None):
     # apply the blueprints to the app
     #app.register_blueprint(auth.bp)
     app.register_blueprint(store.bp)
+    app.register_blueprint(auth.bp)
 
     # make url_for('index') == url_for('blog.index')
     # in another app, you might define a separate main index here with
