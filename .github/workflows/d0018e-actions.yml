@@ -20,8 +20,21 @@ jobs:
           script_stop: true
           script: |
             REPO_NAME=$(basename ${{ github.repository }})
+            cd $REPO_NAME
+            docker compose down
+            cd ..
             rm -rf -- $REPO_NAME
             git clone ${{ github.server_url }}/${{ github.repository }}
+
             cd $REPO_NAME
-            touch github-actions-test.txt
+            cp .db-example .db
+            cp .env-example .env
+
+            sed -i 's/MYSQL_PASSWORD=root/MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}/g' .db
+            sed -i 's/MYSQL_ROOT_PASSWORD=root/MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}/g' .db
+
+            sed -i 's/MYSQL_PASSWORD=root/MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}/g' .env
+            sed -i 's/MYSQL_ROOT_PASSWORD=root/MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}/g' .env
+
+            docker compose up --build -d
 
