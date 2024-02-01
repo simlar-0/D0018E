@@ -2,8 +2,18 @@ name: d0018e-actions
 on:
   push:
     branches: [ "main" ]
+    paths-ignore:
+      - 'docs/**'
+      - 'ansible/**'
+      - 'README.md'
+      - '.gitignore'
   pull_request:
     branches: [ "main" ]
+    paths-ignore:
+      - 'docs/**'
+      - 'ansible/**'
+      - 'README.md'
+      - '.gitignore'
   workflow_dispatch:
 
 jobs:
