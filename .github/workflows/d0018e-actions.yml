@@ -2,13 +2,23 @@ name: d0018e-actions
 on:
   push:
     branches: [ "main" ]
+    paths-ignore:
+      - 'docs/**'
+      - 'ansible/**'
+      - 'README.md'
+      - '.gitignore'
   pull_request:
     branches: [ "main" ]
+    paths-ignore:
+      - 'docs/**'
+      - 'ansible/**'
+      - 'README.md'
+      - '.gitignore'
   workflow_dispatch:
 
 jobs:
-  run-docker-compose-on-push:
-    name: Run docker-compose on push
+  deploy:
+    name: Deploy
     runs-on: ubuntu-latest
     steps:
       - name: execute docker-compose on remote host script
@@ -19,9 +29,26 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script_stop: true
           script: |
+            # extract repo name
             REPO_NAME=$(basename ${{ github.repository }})
+            cd $REPO_NAME
+
+            # clean up previous build
+            docker compose down
+            cd ..
             rm -rf -- $REPO_NAME
             git clone ${{ github.server_url }}/${{ github.repository }}
+
+            # set up.env and.db files
             cd $REPO_NAME
-            touch github-actions-test.txt
+            cp .db-example .db
+            cp .env-example .env
+
+            sed -i 's/MYSQL_PASSWORD=""/MYSQL_PASSWORD="${{ secrets.MYSQL_PASSWORD }}"/g' .db
+            sed -i 's/MYSQL_ROOT_PASSWORD=""/MYSQL_ROOT_PASSWORD="${{ secrets.MYSQL_ROOT_PASSWORD }}"/g' .db
+
+            sed -i 's/MYSQL_PASSWORD=""/MYSQL_PASSWORD="${{ secrets.MYSQL_PASSWORD }}"/g' .env
+            sed -i 's/MYSQL_ROOT_PASSWORD=""/MYSQL_ROOT_PASSWORD="${{ secrets.MYSQL_ROOT_PASSWORD }}"/g' .env
+
+            docker compose up --build -d
 
