@@ -1,7 +1,7 @@
 """
 Functions for abstracting communication with the database.
 """
-from flask import Flask, g
+from flask import g, current_app
 from flask_mysqldb import MySQL
 
 def init_db():
@@ -9,8 +9,33 @@ def init_db():
     Singelton for the flask_mysqldb MySQL instance.
     """
     if 'mysql' not in g:
-        app = Flask('flaskr')
+        app = current_app
         g.mysql = MySQL(app)
+
+def execute_script(script_path):
+    """
+    Executes .sql script.
+    """
+    init_db()
+    mysql = g.mysql
+    cursor = mysql.connection.cursor()
+    with open(script_path, 'r', encoding='utf-8') as f:
+        with cursor() as cursor:
+            cursor.execute(f.read(), multi=True)
+        mysql.connection.commit()
+    cursor.close()
+
+
+def destroy_db(database_name):
+    """
+    WARNING, DESTRUCTIVE ACTION!
+    Remove all tables and data from the database.
+
+    :param database_name: the name of the database to be dropped.
+    """
+    init_db()
+    query = f"DROP DATABASE {database_name};"
+    manipulate_db([query])
 
 def manipulate_db(queries):
     """
