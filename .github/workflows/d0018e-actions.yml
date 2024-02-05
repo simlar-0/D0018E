@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
+      - name: Run docker-compose file
+        run: docker compose up -d
   deploy:
     name: Deploy
     needs: test
