@@ -17,8 +17,15 @@ on:
   workflow_dispatch:
 
 jobs:
+  test:
+    name: Test docker-compose file and containers
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
   deploy:
     name: Deploy
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: execute docker-compose on remote host script
