@@ -28,6 +28,7 @@ def create_app(test_config=None):
     app.config['MYSQL_CURSORCLASS']         = _conf('MYSQL_CURSORCLASS',test_config, 'DictCursor')
     app.config['MYSQL_AUTOCOMMIT']          = bool(_conf('MYSQL_AUTOCOMMIT', test_config, True))
     app.config['MYSQL_CUSTOM_OPTIONS']      = _conf('MYSQL_CUSTOM_OPTIONS', test_config, None)
+    app.config['TESTING']                   = True if test_config is not None else False
     
     # ensure the instance folder exists
     try:

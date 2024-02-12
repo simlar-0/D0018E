@@ -19,16 +19,14 @@ def execute_script(script_path):
     """
     Executes .sql script.
     """
-    # TODO: fix encoding
     init_mysql()
     mysql = g.mysql
     cursor = mysql.connection.cursor()
     with open(script_path, "rb") as f:
         lines = f.read().decode("utf-8-sig").split(';')
-    with open('log.log','w', encoding='utf-8-sig') as l:
-        for line in lines:
-            l.write(f'executing:\n====================\n{line}\n====================\n')
-            cursor.execute(line)
+    for line in lines:
+        if line.strip() != '':
+            cursor.execute(line +';')
     cursor.commit()
     cursor.close()
 
@@ -48,8 +46,12 @@ def destroy_db(database_name):
 
     :param database_name: the name of the database to be dropped.
     """
-    query = f"DROP DATABASE IF EXISTS {database_name};"
-    _sudo(manipulate_db, [query])
+    # TODO: remove dangling constraints from the DB called 'mysql'
+    # not sure why it doesn't happen automatically
+    # when the DB they are referencing is removed
+    queries = []
+    queries.append(f"DROP DATABASE IF EXISTS {database_name};")
+    _sudo(manipulate_db, queries)
 
 
 def grant_privileges(database_name, username, privilege="ALL PRIVILEGES"):

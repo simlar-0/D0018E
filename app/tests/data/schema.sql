@@ -100,36 +100,36 @@ CREATE TABLE IF NOT EXISTS `ManagerPassword` (
     )
 );
 
-ALTER TABLE `Order` ADD CONSTRAINT `fk_Order_customer_id` FOREIGN KEY(`customer_id`)
+ALTER TABLE `Order` ADD CONSTRAINT `test_fk_Order_customer_id` FOREIGN KEY(`customer_id`)
 REFERENCES `Customer` (`customer_id`);
 
-ALTER TABLE `Order` ADD CONSTRAINT `fk_Order_order_status_id` FOREIGN KEY(`order_status_id`)
+ALTER TABLE `Order` ADD CONSTRAINT `test_fk_Order_order_status_id` FOREIGN KEY(`order_status_id`)
 REFERENCES `OrderStatus` (`order_status_id`);
 
-ALTER TABLE `OrderLine` ADD CONSTRAINT `fk_OrderLine_order_id` FOREIGN KEY(`order_id`)
+ALTER TABLE `OrderLine` ADD CONSTRAINT `test_fk_OrderLine_order_id` FOREIGN KEY(`order_id`)
 REFERENCES `Order` (`order_id`);
 
-ALTER TABLE `OrderLine` ADD CONSTRAINT `fk_OrderLine_product_id` FOREIGN KEY(`product_id`)
+ALTER TABLE `OrderLine` ADD CONSTRAINT `test_fk_OrderLine_product_id` FOREIGN KEY(`product_id`)
 REFERENCES `Product` (`product_id`);
 
-ALTER TABLE `Review` ADD CONSTRAINT `fk_Review_customer_id` FOREIGN KEY(`customer_id`)
+ALTER TABLE `Review` ADD CONSTRAINT `test_fk_Review_customer_id` FOREIGN KEY(`customer_id`)
 REFERENCES `Customer` (`customer_id`);
 
-ALTER TABLE `Review` ADD CONSTRAINT `fk_Review_product_id` FOREIGN KEY(`product_id`)
+ALTER TABLE `Review` ADD CONSTRAINT `test_fk_Review_product_id` FOREIGN KEY(`product_id`)
 REFERENCES `Product` (`product_id`);
 
-ALTER TABLE `CustomerPassword` ADD CONSTRAINT `fk_CustomerPassword_customer_id` FOREIGN KEY(`customer_id`)
+ALTER TABLE `CustomerPassword` ADD CONSTRAINT `test_fk_CustomerPassword_customer_id` FOREIGN KEY(`customer_id`)
 REFERENCES `Customer` (`customer_id`);
 
-ALTER TABLE `ManagerPassword` ADD CONSTRAINT `fk_ManagerPassword_manager_id` FOREIGN KEY(`manager_id`)
+ALTER TABLE `ManagerPassword` ADD CONSTRAINT `test_fk_ManagerPassword_manager_id` FOREIGN KEY(`manager_id`)
 REFERENCES `Manager` (`manager_id`);
 
-CREATE INDEX `idx_Customer_name`
+CREATE INDEX `test_idx_Customer_name`
 ON `Customer` (`name`);
 
-CREATE INDEX `idx_Manager_name`
+CREATE INDEX `test_idx_Manager_name`
 ON `Manager` (`name`);
 
-CREATE INDEX `idx_Order_customer_id`
+CREATE INDEX `test_idx_Order_customer_id`
 ON `Order` (`customer_id`);
 
