@@ -1,10 +1,13 @@
 """
 Functions for abstracting communication with the database.
 """
+import os
 from flask import g, current_app
 from flask_mysqldb import MySQL
+from dotenv import load_dotenv
+load_dotenv() # Load environment variables from .env file
 
-def init_db():
+def init_mysql():
     """
     Singelton for the flask_mysqldb MySQL instance.
     """
@@ -16,15 +19,27 @@ def execute_script(script_path):
     """
     Executes .sql script.
     """
-    init_db()
+    # TODO: fix encoding
+    init_mysql()
     mysql = g.mysql
     cursor = mysql.connection.cursor()
-    with open(script_path, 'r', encoding='utf-8') as f:
-        with cursor() as cursor:
-            cursor.execute(f.read(), multi=True)
-        mysql.connection.commit()
+    with open(script_path, "rb") as f:
+        lines = f.read().decode("utf-8-sig").split(';')
+    with open('log.log','w', encoding='utf-8-sig') as l:
+        for line in lines:
+            l.write(f'executing:\n====================\n{line}\n====================\n')
+            cursor.execute(line)
+    cursor.commit()
     cursor.close()
 
+def create_db(database_name):
+    """
+    Creates a database.
+
+    :param database_name: the name of the database to be created.
+    """
+    query = f"CREATE DATABASE IF NOT EXISTS {database_name};"
+    _sudo(manipulate_db,[query])
 
 def destroy_db(database_name):
     """
@@ -33,9 +48,24 @@ def destroy_db(database_name):
 
     :param database_name: the name of the database to be dropped.
     """
-    init_db()
-    query = f"DROP DATABASE {database_name};"
-    manipulate_db([query])
+    query = f"DROP DATABASE IF EXISTS {database_name};"
+    _sudo(manipulate_db, [query])
+
+
+def grant_privileges(database_name, username, privilege="ALL PRIVILEGES"):
+    """
+    Grants username a privilege on database_name through @%
+    
+    :param database_name: string
+    :param username: string
+    :param privilege: string 
+    """
+
+    queries = []
+    queries.append(f"GRANT {privilege} ON {database_name} TO '{username}'@'%';")
+    queries.append("FLUSH PRIVILEGES;")
+    _sudo(manipulate_db, queries)
+
 
 def manipulate_db(queries):
     """
@@ -43,7 +73,7 @@ def manipulate_db(queries):
     :param queries: a list of strings.
     :returns: True if all queries were executed successfully.
     """
-    init_db()
+    init_mysql()
     mysql = g.mysql
     cursor = mysql.connection.cursor()
 
@@ -63,7 +93,7 @@ def query_db(queries):
     :param queries: a list of strings.
     :returns: a list of lists (one per query) of strings.
     """
-    init_db()
+    init_mysql()
     results = []
 
     mysql = g.mysql
@@ -108,3 +138,26 @@ def count_products():
     """
     queries = [f"""SELECT COUNT(*) FROM Product"""]
     return query_db(queries)[0][0]['COUNT(*)']
+
+def _sudo(callback, *args, **kwargs):
+    if 'mysql' in g:
+        del g.mysql
+    app = current_app
+    old_user = app.config['MYSQL_USER']
+    old_pass = app.config['MYSQL_PASSWORD']
+    old_host = app.config['MYSQL_HOST']
+    old_db   = app.config['MYSQL_DB']
+    app.config['MYSQL_USER']        = 'root'
+    app.config['MYSQL_PASSWORD']    = os.getenv('MYSQL_ROOT_PASSWORD')
+    app.config['MYSQL_ROOT_HOST']   = '%'
+    app.config['MYSQL_DB']          = 'mysql'
+    init_mysql()
+    callback(*args, **kwargs)
+
+    if 'mysql' in g:
+        del g.mysql
+    app.config['MYSQL_USER']      = old_user
+    app.config['MYSQL_PASSWORD']  = old_pass
+    app.config['MYSQL_HOST']      = old_host
+    app.config['MYSQL_DB']        = old_db
+    init_mysql()

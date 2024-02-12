@@ -12,6 +12,7 @@ services:
       - ./my-db:/var/lib/mysql
       - ./schema.sql:/docker-entrypoint-initdb.d/init_a.sql
       - ./data.sql:/docker-entrypoint-initdb.d/init_b.sql
+      - ./permissions.sql:/docker-entrypoint-initdb.d/init_c.sql
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-uroot", "-ppass"]
       interval: 5s

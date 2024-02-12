@@ -5,23 +5,29 @@ from dotenv import load_dotenv
 
 load_dotenv() # Load environment variables from .env file
 
+def _conf(conf, test_config=None, default=None):
+    if test_config is not None:
+        if conf in test_config.keys():
+            return test_config[conf]
+    return os.getenv(conf, default)
+
 def create_app(test_config=None):
     """Create and configure an instance of the Flask application."""
     app = Flask(__name__, instance_relative_config=True)
-    app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST', 'localhost')  # MySQL server host
-    app.config['MYSQL_USER'] = os.getenv('MYSQL_USER')  # MySQL username
-    app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD')  # MySQL password
-    app.config['MYSQL_DB'] = os.getenv('MYSQL_DB') if test_config is None else test_config['MYSQL_DB']  # MySQL database name
-    app.config['MYSQL_PORT'] = int(os.getenv('MYSQL_PORT', 3306))  # MySQL server port
-    app.config['MYSQL_UNIX_SOCKET'] = os.getenv('MYSQL_UNIX_SOCKET', '/var/run/mysqld/mysqld.sock')  # MySQL Unix socket file path
-    app.config['MYSQL_CONNECT_TIMEOUT'] = int(os.getenv('MYSQL_CONNECT_TIMEOUT', 30))  # MySQL connection timeout   
-    app.config['MYSQL_READ_DEFAULT_FILE'] = '/etc/mysql/my.cnf'
-    app.config['MYSQL_USE_UNICODE'] = bool(os.getenv('MYSQL_USE_UNICODE', True))
-    app.config['MYSQL_CHARSET'] = os.getenv('MYSQL_CHARSET', 'utf8mb4')
-    app.config['MYSQL_SQL_MODE'] = os.getenv('MYSQL_SQL_MODE', '')
-    app.config['MYSQL_CURSORCLASS'] = os.getenv('MYSQL_CURSORCLASS', 'DictCursor')
-    app.config['MYSQL_AUTOCOMMIT'] = bool(os.getenv('MYSQL_AUTOCOMMIT', True))
-    app.config['MYSQL_CUSTOM_OPTIONS'] = os.getenv('MYSQL_CUSTOM_OPTIONS', None)
+    app.config['MYSQL_HOST']                = _conf('MYSQL_HOST', test_config, 'localhost')
+    app.config['MYSQL_USER']                = _conf('MYSQL_USER', test_config)
+    app.config['MYSQL_PASSWORD']            = _conf('MYSQL_PASSWORD', test_config)
+    app.config['MYSQL_DB']                  = _conf('MYSQL_DB', test_config)
+    app.config['MYSQL_PORT']                = int(_conf('MYSQL_PORT',test_config, 3306))
+    app.config['MYSQL_UNIX_SOCKET']         = _conf('MYSQL_UNIX_SOCKET', test_config, '/var/run/mysqld/mysqld.sock')
+    app.config['MYSQL_CONNECT_TIMEOUT']     = int(_conf('MYSQL_CONNECT_TIMEOUT',test_config, 30)) 
+    app.config['MYSQL_READ_DEFAULT_FILE']   = '/etc/mysql/my.cnf'
+    app.config['MYSQL_USE_UNICODE']         = bool(_conf('MYSQL_USE_UNICODE', test_config, True))
+    app.config['MYSQL_CHARSET']             = _conf('MYSQL_CHARSET', test_config, 'utf8mb4')
+    app.config['MYSQL_SQL_MODE']            = _conf('MYSQL_SQL_MODE',test_config, '')
+    app.config['MYSQL_CURSORCLASS']         = _conf('MYSQL_CURSORCLASS',test_config, 'DictCursor')
+    app.config['MYSQL_AUTOCOMMIT']          = bool(_conf('MYSQL_AUTOCOMMIT', test_config, True))
+    app.config['MYSQL_CUSTOM_OPTIONS']      = _conf('MYSQL_CUSTOM_OPTIONS', test_config, None)
     
     # ensure the instance folder exists
     try:

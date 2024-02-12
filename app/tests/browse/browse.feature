@@ -2,7 +2,7 @@
 Feature: Product Browsing
     Browsing items
 
-    Scenario: Render Procucts
+    Scenario: Render Products
         When I enter the catalog
 
         Then I should see the available products

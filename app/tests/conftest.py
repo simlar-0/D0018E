@@ -7,32 +7,31 @@ import tempfile
 import pytest
 
 from flaskr import create_app
-from flaskr.db import get_db
-from flaskr.db import init_db
+from flaskr.db import create_db, destroy_db, execute_script, grant_privileges
+from definitions import APP_DIR
 
 # read in SQL for populating test data
-with open(os.path.join(os.path.dirname(__file__), "data.sql"), "rb") as f:
-    _data_sql = f.read().decode("utf8")
-
+#with open(os.path.join(os.path.dirname(__file__), "data.sql"), "rb") as f:
+#    _data_sql = f.read().decode("utf8")
 
 @pytest.fixture
 def app():
     """Create and configure a new app instance for each test."""
-    # create a temporary file to isolate the database for each test
-    db_fd, db_path = tempfile.mkstemp()
     # create the app with common test config
-    app = create_app({'MYSQL_DB':'TEST_DB'})
+    app = create_app({'MYSQL_DB':'test_db', 'MYSQL_HOST':'localhost'})
 
+    
     # create the database and load test data
-    #with app.app_context():
-        #init_db()
-        #get_db().executescript(_data_sql)
+    with app.app_context():
+        destroy_db(app.config['MYSQL_DB'])
+        create_db(app.config['MYSQL_DB'])
+        grant_privileges(app.config['MYSQL_DB'],app.config['MYSQL_USER'])
+        execute_script(os.path.join(APP_DIR,'tests','data','schema.sql'))
 
     yield app
 
-    # close and remove the temporary database
-    os.close(db_fd)
-    os.unlink(db_path)
+    with app.app_context():
+        destroy_db(app.config['MYSQL_DB'])
 
 
 @pytest.fixture

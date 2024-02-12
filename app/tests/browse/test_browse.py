@@ -1,23 +1,28 @@
 """
 Step definitions for browse.feature
 """
-from pytest_bdd import scenario, given, when, then
+import os
 import pytest
-
-@scenario('browse.feature', 'Render Products')
-def render_products():
-    pass
+from pytest_bdd import scenarios, given, when, then, scenario
+from flaskr.db import execute_script
 
 @pytest.fixture
 def catalog():
     return ""
 
+@scenario('browse.feature', 'Render Products')
+def test_render_products(app):
+    with app.app_context():
+        execute_script(os.path.join('..','data','catalog.sql'))
+
 @when('I enter the catalog', target_fixture='catalog')
-def step_enter_catalog():
-    pass
+def step_enter_catalog(client):
+    response = client.get("/")
+    print(response)
 
 @then('I should see the available products')
-def step_see_available_products():
+def step_see_available_products(catalog):
+    # compare loaded catalog with test data ... assert 
     pass
 
 @scenario('browse.feature', 'Visiting the product information page')

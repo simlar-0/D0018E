@@ -1,0 +1,1 @@
+GRANT SUPER ON *.* TO 'root'@'%';
