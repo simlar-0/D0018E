@@ -17,8 +17,25 @@ on:
   workflow_dispatch:
 
 jobs:
+  test:
+    name: Test docker-compose file and containers
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+      - name: Set up environment files
+        run: |
+          cp .db-example .db
+          cp .env-example .env
+          sed -i 's/MYSQL_PASSWORD=""/MYSQL_PASSWORD="${{ secrets.MYSQL_PASSWORD }}"/g' .db
+          sed -i 's/MYSQL_ROOT_PASSWORD=""/MYSQL_ROOT_PASSWORD="${{ secrets.MYSQL_ROOT_PASSWORD }}"/g' .db
+          sed -i 's/MYSQL_PASSWORD=""/MYSQL_PASSWORD="${{ secrets.MYSQL_PASSWORD }}"/g' .env
+          sed -i 's/MYSQL_ROOT_PASSWORD=""/MYSQL_ROOT_PASSWORD="${{ secrets.MYSQL_ROOT_PASSWORD }}"/g' .env
+      - name: Run docker-compose file
+        run: docker compose up -d
   deploy:
     name: Deploy
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: execute docker-compose on remote host script
