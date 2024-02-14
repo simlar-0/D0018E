@@ -3,6 +3,8 @@ Feature: Product Browsing
     Browsing items
 
     Scenario: Render Products
+        Given I have a catalog
+
         When I enter the catalog
 
         Then I should see the available products

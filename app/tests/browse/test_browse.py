@@ -5,20 +5,26 @@ import os
 import pytest
 from pytest_bdd import scenarios, given, when, then, scenario
 from flaskr.db import execute_script
+from definitions import APP_DIR
 
 @pytest.fixture
 def catalog():
     return ""
 
 @scenario('browse.feature', 'Render Products')
-def test_render_products(app):
+def test_render_products():
+    pass
+
+@given('I have a catalog')
+def step_have_catalog(app):
     with app.app_context():
-        execute_script(os.path.join('..','data','catalog.sql'))
+        execute_script(os.path.join(APP_DIR,'tests','data','catalog.sql'))
 
 @when('I enter the catalog', target_fixture='catalog')
 def step_enter_catalog(client):
     response = client.get("/")
     print(response)
+    input()
 
 @then('I should see the available products')
 def step_see_available_products(catalog):

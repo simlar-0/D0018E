@@ -8,7 +8,7 @@
     PRIMARY KEY (
         `customer_id`
     ),
-    CONSTRAINT `uc_Customer_email` UNIQUE (
+    CONSTRAINT `test_uc_Customer_email` UNIQUE (
         `email`
     )
 );
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `Manager` (
     PRIMARY KEY (
         `manager_id`
     ),
-    CONSTRAINT `uc_Manager_email` UNIQUE (
+    CONSTRAINT `test_uc_Manager_email` UNIQUE (
         `email`
     )
 );
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS `Product` (
     PRIMARY KEY (
         `product_id`
     ),
-    CONSTRAINT `uc_Product_name` UNIQUE (
+    CONSTRAINT `test_uc_Product_name` UNIQUE (
         `name`
     )
 );
@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS `OrderStatus` (
     PRIMARY KEY (
         `order_status_id`
     ),
-    CONSTRAINT `uc_OrderStatus_name` UNIQUE (
+    CONSTRAINT `test_uc_OrderStatus_name` UNIQUE (
         `name`
     )
 );

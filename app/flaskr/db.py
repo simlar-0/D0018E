@@ -9,65 +9,46 @@ load_dotenv() # Load environment variables from .env file
 
 def init_mysql():
     """
-    Singelton for the flask_mysqldb MySQL instance.
+    Get a DB
+
+    :returns a flaskMySQL object:
     """
-    if 'mysql' not in g:
-        app = current_app
-        g.mysql = MySQL(app)
+    app = current_app
+    mysql = MySQL(app)
+    return mysql
 
 def execute_script(script_path):
     """
     Executes .sql script.
     """
-    init_mysql()
-    mysql = g.mysql
+    mysql = init_mysql()
     cursor = mysql.connection.cursor()
-    with open(script_path, "rb") as f:
-        lines = f.read().decode("utf-8-sig").split(';')
-    for line in lines:
-        if line.strip() != '':
-            cursor.execute(line +';')
-    cursor.commit()
-    cursor.close()
+    try:
+        with open(script_path, "rb") as f:
+            lines = f.read().decode("utf-8-sig").split(';')
+        for line in lines:
+            if line.strip() != '':
+                cursor.execute(line +';')
+            mysql.connection.commit()
+    finally:
+        cursor.close()
 
-def create_db(database_name):
+def clear_db():
     """
-    Creates a database.
-
-    :param database_name: the name of the database to be created.
+    !!!WARNING!!!
+    Removes all data from the currently used database schema.
     """
-    query = f"CREATE DATABASE IF NOT EXISTS {database_name};"
-    _sudo(manipulate_db,[query])
-
-def destroy_db(database_name):
-    """
-    WARNING, DESTRUCTIVE ACTION!
-    Remove all tables and data from the database.
-
-    :param database_name: the name of the database to be dropped.
-    """
-    # TODO: remove dangling constraints from the DB called 'mysql'
-    # not sure why it doesn't happen automatically
-    # when the DB they are referencing is removed
+    app = current_app
+    long_query = "SELECT concat('DROP TABLE IF EXISTS `', TABLE_NAME, '`;'\n)"
+    long_query += "FROM information_schema.tables\n"
+    long_query += f"WHERE table_schema = '{app.config['MYSQL_DB']}';"
+    tables = query_db([long_query])
     queries = []
-    queries.append(f"DROP DATABASE IF EXISTS {database_name};")
-    _sudo(manipulate_db, queries)
-
-
-def grant_privileges(database_name, username, privilege="ALL PRIVILEGES"):
-    """
-    Grants username a privilege on database_name through @%
-    
-    :param database_name: string
-    :param username: string
-    :param privilege: string 
-    """
-
-    queries = []
-    queries.append(f"GRANT {privilege} ON {database_name} TO '{username}'@'%';")
-    queries.append("FLUSH PRIVILEGES;")
-    _sudo(manipulate_db, queries)
-
+    queries.append("SET FOREIGN_KEY_CHECKS = 0;")
+    for table in tables[0]:
+        queries.append(list(table.values())[0])
+    queries.append("SET FOREIGN_KEY_CHECKS = 1;")
+    manipulate_db(queries)
 
 def manipulate_db(queries):
     """
@@ -75,16 +56,14 @@ def manipulate_db(queries):
     :param queries: a list of strings.
     :returns: True if all queries were executed successfully.
     """
-    init_mysql()
-    mysql = g.mysql
+    mysql = init_mysql()
     cursor = mysql.connection.cursor()
-
-    for query in queries:
-        cursor.execute(_sanitize(query))
-    
-    mysql.connection.commit()
-
-    cursor.close()
+    try:
+        for query in queries:
+            cursor.execute(_sanitize(query))
+        mysql.connection.commit()
+    finally:
+        cursor.close()
 
     # TODO check if queries executed succesfully or not and return False
     return True
@@ -95,17 +74,16 @@ def query_db(queries):
     :param queries: a list of strings.
     :returns: a list of lists (one per query) of strings.
     """
-    init_mysql()
     results = []
 
-    mysql = g.mysql
+    mysql = init_mysql()
     cursor = mysql.connection.cursor()
-
-    for query in queries:
-        cursor.execute(_sanitize(query))
-        results.append(cursor.fetchall())
-    
-    cursor.close()
+    try:
+        for query in queries:
+            cursor.execute(_sanitize(query))
+            results.append(cursor.fetchall())
+    finally:
+        cursor.close()
     return results
 
 def _sanitize(query):
@@ -140,26 +118,3 @@ def count_products():
     """
     queries = [f"""SELECT COUNT(*) FROM Product"""]
     return query_db(queries)[0][0]['COUNT(*)']
-
-def _sudo(callback, *args, **kwargs):
-    if 'mysql' in g:
-        del g.mysql
-    app = current_app
-    old_user = app.config['MYSQL_USER']
-    old_pass = app.config['MYSQL_PASSWORD']
-    old_host = app.config['MYSQL_HOST']
-    old_db   = app.config['MYSQL_DB']
-    app.config['MYSQL_USER']        = 'root'
-    app.config['MYSQL_PASSWORD']    = os.getenv('MYSQL_ROOT_PASSWORD')
-    app.config['MYSQL_ROOT_HOST']   = '%'
-    app.config['MYSQL_DB']          = 'mysql'
-    init_mysql()
-    callback(*args, **kwargs)
-
-    if 'mysql' in g:
-        del g.mysql
-    app.config['MYSQL_USER']      = old_user
-    app.config['MYSQL_PASSWORD']  = old_pass
-    app.config['MYSQL_HOST']      = old_host
-    app.config['MYSQL_DB']        = old_db
-    init_mysql()
