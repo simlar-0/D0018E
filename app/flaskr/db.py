@@ -2,8 +2,8 @@
 Functions for abstracting communication with the database.
 """
 import os
+import mysql.connector
 from flask import g, current_app
-from flask_mysqldb import MySQL
 from dotenv import load_dotenv
 load_dotenv() # Load environment variables from .env file
 
@@ -13,23 +13,30 @@ def init_mysql():
 
     :returns a flaskMySQL object:
     """
-    app = current_app
-    mysql = MySQL(app)
-    return mysql
+
+    if 'mysql_conn' not in g:
+        app = current_app
+        g.mysql_conn = mysql.connector.connect(
+        host=app.config['MYSQL_HOST'],
+        user=app.config['MYSQL_USER'],
+        password=app.config['MYSQL_PASSWORD'],
+        database=app.config['MYSQL_DB']
+        )
+    return g.mysql_conn
 
 def execute_script(script_path):
     """
     Executes .sql script.
     """
     mysql = init_mysql()
-    cursor = mysql.connection.cursor()
+    cursor = mysql.cursor()
     try:
         with open(script_path, "rb") as f:
             lines = f.read().decode("utf-8-sig").split(';')
         for line in lines:
             if line.strip() != '':
                 cursor.execute(line +';')
-            mysql.connection.commit()
+            mysql.commit()
     finally:
         cursor.close()
 
@@ -46,7 +53,7 @@ def clear_db():
     queries = []
     queries.append("SET FOREIGN_KEY_CHECKS = 0;")
     for table in tables[0]:
-        queries.append(list(table.values())[0])
+        queries.append(table[0])
     queries.append("SET FOREIGN_KEY_CHECKS = 1;")
     manipulate_db(queries)
 
@@ -57,11 +64,11 @@ def manipulate_db(queries):
     :returns: True if all queries were executed successfully.
     """
     mysql = init_mysql()
-    cursor = mysql.connection.cursor()
+    cursor = mysql.cursor()
     try:
         for query in queries:
             cursor.execute(_sanitize(query))
-        mysql.connection.commit()
+        mysql.commit()
     finally:
         cursor.close()
 
@@ -77,7 +84,7 @@ def query_db(queries):
     results = []
 
     mysql = init_mysql()
-    cursor = mysql.connection.cursor()
+    cursor = mysql.cursor()
     try:
         for query in queries:
             cursor.execute(_sanitize(query))
@@ -117,4 +124,5 @@ def count_products():
     :returns: an integer count of products.
     """
     queries = [f"""SELECT COUNT(*) FROM Product"""]
-    return query_db(queries)[0][0]['COUNT(*)']
+    r = query_db(queries)
+    return query_db(queries)[0][0][0]

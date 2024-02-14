@@ -3,7 +3,7 @@ Step definitions for browse.feature
 """
 import os
 import pytest
-from pytest_bdd import scenarios, given, when, then, scenario
+from pytest_bdd import given, when, then, scenario
 from flaskr.db import execute_script
 from definitions import APP_DIR
 

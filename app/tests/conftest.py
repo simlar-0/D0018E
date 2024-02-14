@@ -27,6 +27,7 @@ def app():
 
     try:
         with app.app_context():
+            clear_db()
             execute_script(os.path.join(APP_DIR,'tests','data','schema.sql'))
 
         yield app
