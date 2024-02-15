@@ -35,6 +35,7 @@ jobs:
         run: docker compose up -d
       - name: Run tests
         run: |
+          sleep 10
           docker compose exec --workdir /code app pytest -c pytest.ini
   deploy:
     name: Deploy
