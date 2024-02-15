@@ -110,6 +110,30 @@ def _sanitize(query):
     #TODO implement / replace
     return query
 
+def get_user_by_email(user_type, email):
+    """
+    Gets customer by email address.
+    :param user_type: the name of the table that contains the user.
+    :param email: the email address.
+    :returns a dictionary of the results:
+    """
+    query = "SELECT id\n"
+    query += f"FROM {user_type}Password\n"
+    query += f"WHERE email = '{email};"
+    return query_db([query], dict_cursor=True)[0]
+
+def get_user_password(user_type, user_id):
+    """
+    Gets user by email address.
+    :param user_type: the name of the table that contains the user.
+    :param user_id: the email address.
+    :returns a dictionary of the results:
+    """
+    query = "SELECT hashed_password\n"
+    query += f"FROM {user_type}Password\n"
+    query += f"WHERE id = {user_id};"
+    return query_db([query], dict_cursor=True)[0]
+
 def get_all_products():
     """
     Returns ALL products registered in the DB.
