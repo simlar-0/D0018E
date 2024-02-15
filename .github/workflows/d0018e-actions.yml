@@ -35,6 +35,8 @@ jobs:
         run: docker compose up -d
       - name: Run tests
         run: |
+          # database container is not reachable immediately after conpose up command finishes
+          # need to wait for a few seconds before running tests 
           sleep 5
           docker compose exec --workdir /code app pytest -c pytest.ini
   deploy:
