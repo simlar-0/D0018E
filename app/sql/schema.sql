@@ -1,5 +1,5 @@
 ﻿CREATE TABLE IF NOT EXISTS `Customer` (
-    `id` int  NOT NULL ,
+    `id` int  NOT NULL AUTO_INCREMENT,
     `name` nvarchar(255)  NOT NULL ,
     `email` nvarchar(255)  NOT NULL ,
     `address` nvarchar(255)  NOT NULL ,
@@ -14,7 +14,7 @@
 );
 
 CREATE TABLE IF NOT EXISTS `Manager` (
-    `id` int  NOT NULL ,
+    `id` int  NOT NULL AUTO_INCREMENT,
     `is_admin` bool  NOT NULL ,
     `name` nvarchar(255)  NOT NULL ,
     `email` nvarchar(255)  NOT NULL ,
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `Manager` (
 );
 
 CREATE TABLE IF NOT EXISTS `Order` (
-    `id` int  NOT NULL ,
+    `id` int  NOT NULL AUTO_INCREMENT,
     `customer_id` int  NOT NULL ,
     `total_amount` decimal(10,2)  NOT NULL ,
     `order_status_id` int  NOT NULL ,
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS `Order` (
 );
 
 CREATE TABLE IF NOT EXISTS `OrderLine` (
-    `id` int  NOT NULL ,
+    `id` int  NOT NULL AUTO_INCREMENT,
     `order_id` int  NOT NULL ,
     `product_id` int  NOT NULL ,
     `quantity` int  NOT NULL ,
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS `Product` (
 );
 
 CREATE TABLE IF NOT EXISTS `OrderStatus` (
-    `id` int  NOT NULL ,
+    `id` int  NOT NULL AUTO_INCREMENT,
     `name` nvarchar(255)  NOT NULL ,
     PRIMARY KEY (
         `id`

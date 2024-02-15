@@ -10,10 +10,6 @@ from flaskr import create_app
 from flaskr.db import execute_script, clear_db
 from definitions import APP_DIR
 
-# read in SQL for populating test data
-#with open(os.path.join(os.path.dirname(__file__), "data.sql"), "rb") as f:
-#    _data_sql = f.read().decode("utf8")
-
 @pytest.fixture
 def app():
     """Create and configure a new app instance for each test."""

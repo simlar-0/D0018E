@@ -62,25 +62,7 @@ def clear_db():
     for table in tables[0]:
         queries.append(table[0], set())
     queries.append("SET FOREIGN_KEY_CHECKS = 1;")
-    manipulate_db(queries)
-
-def manipulate_db(queries):
-    """
-    Perform queries that manipulate DB data.
-    :param queries: a list of tuples: (query_string, (binding_variables)).
-    :returns: True if all queries were executed successfully.
-    """
-    mysql = init_mysql()
-    cursor = mysql.cursor()
-    try:
-        for query in queries:
-            cursor.execute(query[0], query[1])
-        mysql.commit()
-    finally:
-        cursor.close()
-
-    # TODO check if queries executed succesfully or not and return False
-    return True
+    return query_db(queries)
 
 def query_db(queries, dict_cursor = False):
     """
@@ -97,9 +79,34 @@ def query_db(queries, dict_cursor = False):
         for query in queries:
             cursor.execute(query[0], query[1])
             results.append(cursor.fetchall())
+        mysql.commit()
     finally:
         cursor.close()
     return results
+
+def create_user(user_type, user):
+    """
+    """
+    query_reg_user = (
+        f"""INSERT INTO {user_type} (name,email,address,postcode,city)
+        VALUES (%s,%s,%s,%s,%s);""",
+        (
+            user['name'],
+            user['email'],
+            user['address'],
+            user['postcode'],
+            user['city']))
+    query_db([query_reg_user])
+    query_user_id = ("SELECT LAST_INSERT_ID();",set())
+    user_id = query_db([query_user_id])[0][0][0]
+    query_reg_pass = (
+        f"""
+        INSERT INTO {user_type}Password (id, hashed_password)
+        VALUES (%s, %s);
+        """,
+        (user_id, user['hashed_password'])
+    )
+    return query_db([query_reg_pass])
 
 def get_user_by_email(user_type, email):
     """
@@ -126,7 +133,7 @@ def get_user_password(user_type, user_id):
              + f"FROM {user_type}Password\n"
              + "WHERE id = %s;",
              (user_id,))
-    return query_db([query], dict_cursor=True)[0]
+    return query_db([query])[0][0][0]
 
 def get_all_products():
     """

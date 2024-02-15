@@ -77,8 +77,6 @@ def step_see_available_products(catalog):
             break
         assert k in catalog.keys()
         assert from_sql[k]['desc'] == catalog[k]['desc']
-        #assert from_sql[k]['price'] == catalog[k]['price']
-        #assert from_sql[k]['image'] == catalog[k]['image']
 
 @scenario('browse.feature', 'Visiting the product information page')
 def test_visiting_the_product_information_page():

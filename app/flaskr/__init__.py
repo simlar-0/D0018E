@@ -14,7 +14,6 @@ def _conf(conf, test_config=None, default=None):
 def create_app(test_config=None):
     """Create and configure an instance of the Flask application."""
     app = Flask(__name__, instance_relative_config=True)
-    print("app created")
     app.config['MYSQL_HOST']                = _conf('MYSQL_HOST', test_config, 'localhost')
     app.config['MYSQL_USER']                = _conf('MYSQL_USER', test_config)
     app.config['MYSQL_PASSWORD']            = _conf('MYSQL_PASSWORD', test_config)
