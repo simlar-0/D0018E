@@ -3,7 +3,7 @@ from flaskr import store, auth
 from flask import Flask
 from dotenv import load_dotenv
 
-load_dotenv() # Load environment variables from .env file
+load_dotenv(verbose=True,override=True)
 
 def _conf(conf, test_config=None, default=None):
     if test_config is not None:
@@ -14,6 +14,7 @@ def _conf(conf, test_config=None, default=None):
 def create_app(test_config=None):
     """Create and configure an instance of the Flask application."""
     app = Flask(__name__, instance_relative_config=True)
+    print("app created")
     app.config['MYSQL_HOST']                = _conf('MYSQL_HOST', test_config, 'localhost')
     app.config['MYSQL_USER']                = _conf('MYSQL_USER', test_config)
     app.config['MYSQL_PASSWORD']            = _conf('MYSQL_PASSWORD', test_config)
@@ -29,7 +30,7 @@ def create_app(test_config=None):
     app.config['MYSQL_CUSTOM_OPTIONS']      = _conf('MYSQL_CUSTOM_OPTIONS', test_config, None)
     app.config['TESTING']                   = True if test_config is not None else False
     app.config['DEBUG']                     = _conf('DEBUG',test_config, False)
-    
+
     # ensure the instance folder exists
     try:
         os.makedirs(app.instance_path)
