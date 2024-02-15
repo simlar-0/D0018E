@@ -9,8 +9,8 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./schema.sql:/docker-entrypoint-initdb.d/init_a.sql
-      - ./test.sql:/docker-entrypoint-initdb.d/init_b.sql
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/init_a.sql
+      - ./sql/test.sql:/docker-entrypoint-initdb.d/init_b.sql
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-uroot", "-ppass"]
       interval: 5s

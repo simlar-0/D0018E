@@ -1,27 +1,34 @@
 """
 Functions for abstracting communication with the database.
 """
-import os
 import mysql.connector
 from flask import g, current_app
-from dotenv import load_dotenv
-load_dotenv() # Load environment variables from .env file
+
+def mysql_settings():
+    """
+    Get the MySQL settings of the current app context.
+    :returns a dictionary:
+    """
+    app = current_app
+    return {
+    'user':app.config['MYSQL_USER'],
+    'password':app.config['MYSQL_PASSWORD'],
+    'database':app.config['MYSQL_DB'],
+    'host':app.config['MYSQL_HOST'],
+    'unix_socket':app.config['MYSQL_UNIX_SOCKET'],
+    'port':app.config['MYSQL_PORT'],
+    'autocommit':app.config['MYSQL_AUTOCOMMIT'],
+    'sql_mode':app.config['MYSQL_SQL_MODE'],
+    'connection_timeout':app.config['MYSQL_CONNECT_TIMEOUT']}
 
 def init_mysql():
     """
-    Get a DB
-
-    :returns a flaskMySQL object:
+    Singelton for MySQL connector.
+    :returns a MySQL connector object:
     """
 
     if 'mysql_conn' not in g:
-        app = current_app
-        g.mysql_conn = mysql.connector.connect(
-        host=app.config['MYSQL_HOST'],
-        user=app.config['MYSQL_USER'],
-        password=app.config['MYSQL_PASSWORD'],
-        database=app.config['MYSQL_DB']
-        )
+        g.mysql_conn = mysql.connector.connect(**mysql_settings())
     return g.mysql_conn
 
 def execute_script(script_path):
@@ -75,16 +82,17 @@ def manipulate_db(queries):
     # TODO check if queries executed succesfully or not and return False
     return True
 
-def query_db(queries):
+def query_db(queries, dict_cursor = False):
     """
     Perform queries that select data from the DB.
     :param queries: a list of strings.
+    :param dict_cursor: if True then query results will be a dictionary instead of a list.
     :returns: a list of lists (one per query) of strings.
     """
     results = []
 
     mysql = init_mysql()
-    cursor = mysql.cursor()
+    cursor = mysql.cursor(dictionary=dict_cursor)
     try:
         for query in queries:
             cursor.execute(_sanitize(query))
@@ -108,7 +116,7 @@ def get_all_products():
     :returns: a list of tuples (name, description, price, image_path, in_stock). 
     """
     queries = ["""SELECT name, description, price, image_path, in_stock FROM Product"""]
-    return query_db(queries)[0]
+    return query_db(queries, dict_cursor=True)[0]
 
 def get_some_products(limit, offset):
     """
@@ -116,7 +124,7 @@ def get_some_products(limit, offset):
     :returns: a list of tuples (name, description, price, image_path, in_stock). 
     """
     queries = [f"""SELECT name, description, price, image_path, in_stock FROM Product LIMIT {limit} OFFSET {offset}"""]
-    return query_db(queries)[0]
+    return query_db(queries, dict_cursor=True)[0]
 
 def count_products():
     """
