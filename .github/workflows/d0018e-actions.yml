@@ -33,6 +33,9 @@ jobs:
           sed -i 's/MYSQL_ROOT_PASSWORD=""/MYSQL_ROOT_PASSWORD="${{ secrets.MYSQL_ROOT_PASSWORD }}"/g' .env
       - name: Run docker-compose file
         run: docker compose up -d
+      - name: Run tests
+        run: |
+          docker compose exec --workdir /code app pytest -c pytest.ini
   deploy:
     name: Deploy
     needs: test
