@@ -8,7 +8,7 @@
     PRIMARY KEY (
         `customer_id`
     ),
-    CONSTRAINT `test_uc_Customer_email` UNIQUE (
+    CONSTRAINT `uc_Customer_email` UNIQUE (
         `email`
     )
 );
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `Manager` (
     PRIMARY KEY (
         `manager_id`
     ),
-    CONSTRAINT `test_uc_Manager_email` UNIQUE (
+    CONSTRAINT `uc_Manager_email` UNIQUE (
         `email`
     )
 );
@@ -41,6 +41,8 @@ CREATE TABLE IF NOT EXISTS `OrderLine` (
     `order_id` int  NOT NULL ,
     `product_id` int  NOT NULL ,
     `quantity` int  NOT NULL ,
+    `sub_total_amount` decimal(8,2)  NOT NULL ,
+    `unit_price` decimal(8,2)  NOT NULL ,
     PRIMARY KEY (
         `order_line_id`
     )
@@ -56,7 +58,7 @@ CREATE TABLE IF NOT EXISTS `Product` (
     PRIMARY KEY (
         `product_id`
     ),
-    CONSTRAINT `test_uc_Product_name` UNIQUE (
+    CONSTRAINT `uc_Product_name` UNIQUE (
         `name`
     )
 );
@@ -67,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `OrderStatus` (
     PRIMARY KEY (
         `order_status_id`
     ),
-    CONSTRAINT `test_uc_OrderStatus_name` UNIQUE (
+    CONSTRAINT `uc_OrderStatus_name` UNIQUE (
         `name`
     )
 );
@@ -100,36 +102,36 @@ CREATE TABLE IF NOT EXISTS `ManagerPassword` (
     )
 );
 
-ALTER TABLE `Order` ADD CONSTRAINT `test_fk_Order_customer_id` FOREIGN KEY(`customer_id`)
+ALTER TABLE `Order` ADD CONSTRAINT `fk_Order_customer_id` FOREIGN KEY(`customer_id`)
 REFERENCES `Customer` (`customer_id`);
 
-ALTER TABLE `Order` ADD CONSTRAINT `test_fk_Order_order_status_id` FOREIGN KEY(`order_status_id`)
+ALTER TABLE `Order` ADD CONSTRAINT `fk_Order_order_status_id` FOREIGN KEY(`order_status_id`)
 REFERENCES `OrderStatus` (`order_status_id`);
 
-ALTER TABLE `OrderLine` ADD CONSTRAINT `test_fk_OrderLine_order_id` FOREIGN KEY(`order_id`)
+ALTER TABLE `OrderLine` ADD CONSTRAINT `fk_OrderLine_order_id` FOREIGN KEY(`order_id`)
 REFERENCES `Order` (`order_id`);
 
-ALTER TABLE `OrderLine` ADD CONSTRAINT `test_fk_OrderLine_product_id` FOREIGN KEY(`product_id`)
+ALTER TABLE `OrderLine` ADD CONSTRAINT `fk_OrderLine_product_id` FOREIGN KEY(`product_id`)
 REFERENCES `Product` (`product_id`);
 
-ALTER TABLE `Review` ADD CONSTRAINT `test_fk_Review_customer_id` FOREIGN KEY(`customer_id`)
+ALTER TABLE `Review` ADD CONSTRAINT `fk_Review_customer_id` FOREIGN KEY(`customer_id`)
 REFERENCES `Customer` (`customer_id`);
 
-ALTER TABLE `Review` ADD CONSTRAINT `test_fk_Review_product_id` FOREIGN KEY(`product_id`)
+ALTER TABLE `Review` ADD CONSTRAINT `fk_Review_product_id` FOREIGN KEY(`product_id`)
 REFERENCES `Product` (`product_id`);
 
-ALTER TABLE `CustomerPassword` ADD CONSTRAINT `test_fk_CustomerPassword_customer_id` FOREIGN KEY(`customer_id`)
+ALTER TABLE `CustomerPassword` ADD CONSTRAINT `fk_CustomerPassword_customer_id` FOREIGN KEY(`customer_id`)
 REFERENCES `Customer` (`customer_id`);
 
-ALTER TABLE `ManagerPassword` ADD CONSTRAINT `test_fk_ManagerPassword_manager_id` FOREIGN KEY(`manager_id`)
+ALTER TABLE `ManagerPassword` ADD CONSTRAINT `fk_ManagerPassword_manager_id` FOREIGN KEY(`manager_id`)
 REFERENCES `Manager` (`manager_id`);
 
-CREATE INDEX `test_idx_Customer_name`
+CREATE INDEX `idx_Customer_name`
 ON `Customer` (`name`);
 
-CREATE INDEX `test_idx_Manager_name`
+CREATE INDEX `idx_Manager_name`
 ON `Manager` (`name`);
 
-CREATE INDEX `test_idx_Order_customer_id`
+CREATE INDEX `idx_Order_customer_id`
 ON `Order` (`customer_id`);
 

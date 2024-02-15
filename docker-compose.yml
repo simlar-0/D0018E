@@ -10,9 +10,9 @@ services:
       - "3306:3306"
     volumes:
       - ./my-db:/var/lib/mysql
-      - ./sql/schema.sql:/docker-entrypoint-initdb.d/init_a.sql
-      - ./sql/data.sql:/docker-entrypoint-initdb.d/init_b.sql
-      - ./sql/test.sql:/docker-entrypoint-initdb.d/init_c.sql
+      - ./app/sql/schema.sql:/docker-entrypoint-initdb.d/init_a.sql
+      - ./app/sql/catalog.sql:/docker-entrypoint-initdb.d/init_b.sql
+      - ./app/sql/test.sql:/docker-entrypoint-initdb.d/init_c.sql
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-uroot", "-ppass"]
       interval: 5s
