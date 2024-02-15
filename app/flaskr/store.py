@@ -1,9 +1,7 @@
 """
 Flask blueprint for browsing items.
 """
-from flask import Blueprint
-from flask import render_template
-from flask import request
+from flask import Blueprint, render_template, request, session
 
 from flaskr.db import  get_some_products, count_products
 

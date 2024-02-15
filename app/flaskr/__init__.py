@@ -28,10 +28,11 @@ def create_app(test_config=None):
     app.config['MYSQL_SQL_MODE']            = _conf('MYSQL_SQL_MODE',test_config, '')
     app.config['MYSQL_AUTOCOMMIT']          = bool(_conf('MYSQL_AUTOCOMMIT', test_config, True))
     app.config['MYSQL_CUSTOM_OPTIONS']      = _conf('MYSQL_CUSTOM_OPTIONS', test_config, None)
-    
+
     app.config['TESTING']                   = True if test_config is not None else False
     app.config['DEBUG']                     = _conf('DEBUG',test_config, False)
-    app.config['AUTH_KEY']                  = bytes(_conf('AUTH_KEY',test_config, ''), 'utf-8')
+    
+    app.secret_key                          = bytes(_conf('AUTH_KEY',test_config, ''), 'utf-8')
 
     # ensure the instance folder exists
     try:
