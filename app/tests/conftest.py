@@ -22,7 +22,7 @@ def app():
         {'MYSQL_USER':'test_user',
         'MYSQL_PASSWORD':'',
         'MYSQL_DB':'test_db',
-        'MYSQL_HOST':'localhost',
+        'MYSQL_HOST':'db',
         'DEBUG':True})
 
     try:
