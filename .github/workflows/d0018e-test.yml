@@ -24,6 +24,7 @@ jobs:
           sed -i 's/MYSQL_ROOT_PASSWORD=""/MYSQL_ROOT_PASSWORD="${{ secrets.MYSQL_ROOT_PASSWORD }}"/g' .db
           sed -i 's/MYSQL_PASSWORD=""/MYSQL_PASSWORD="${{ secrets.MYSQL_PASSWORD }}"/g' .env
           sed -i 's/MYSQL_ROOT_PASSWORD=""/MYSQL_ROOT_PASSWORD="${{ secrets.MYSQL_ROOT_PASSWORD }}"/g' .env
+          echo "AUTH_KEY=${{ secrets.AUTH_KEY }}" >> .env
       - name: Run docker-compose file
         run: docker compose up -d
       - name: Run tests
