@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content -%}
+  <div class="container">
+    <div class="row">
+      {% block profile_sidebar %}
+        {% include 'customer/profile_sidebar.html' %}
+      {% endblock %}
+      {% block profile_content %}
+
+      {% endblock %}
+    </div>
+  </div>
+{% endblock %}

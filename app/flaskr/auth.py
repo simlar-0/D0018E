@@ -32,7 +32,7 @@ def register_user():
     }
 
     create_user('Customer',user)
-    return redirect(url_for('auth.user_profile'))
+    return redirect(url_for('customer.user_profile'))
 
 @bp.route("/customer_login")
 def login():
@@ -49,7 +49,7 @@ def login_user():
         if bcrypt.checkpw(bytes(password, 'utf-8'),bytes(pass_from_db.decode(), 'utf-8')):
             session['user_id'] = user
             session.modified     = True
-            return redirect(url_for('auth.user_profile'))
+            return redirect(url_for('customer.profile'))
 
     flash('Please check your login details and try again.')
     return redirect(url_for('auth.login_user'))
@@ -58,10 +58,6 @@ def login_user():
 @bp.route("/forgot-password")
 def forgot_password():
     return render_template("auth/forgot_pass.html")
-
-@bp.route("/user-profile")
-def user_profile():
-    return render_template("auth/user_profile.html")
 
 @bp.route("/logout")
 def logout():

@@ -1,0 +1,16 @@
+<div class="col col-2">
+    <div id="sidebar-main" class="sidebar sidebar-default sidebar-separate"
+        style="padding-top: 20px;">
+        <div class="sidebar-category sidebar-default">
+            <div class="category-title"><span>My profile</span></div>
+            <div class="category-content">
+                <ul id="fruits-nav" class="nav flex-column">
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('customer.edit_profile') }}"><i class="bi bi-pencil"></i></i> Edit profile </a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('customer.view_orders') }}"><i class="bi bi-cart"></i> Orders </a></li>
+                    <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-heart-half"></i> Reviews </a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}"><i class="bi bi-door-closed"></i> Log out </a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

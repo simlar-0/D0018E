@@ -1,0 +1,46 @@
+{% extends 'customer/profile.html' %}
+
+{% block profile_content %}
+  <div class="col-sm-6">
+    <div>
+      <h4 class="text-dark py-4">Edit profile</h4>
+      <p class="w-lg-50"></p>
+    </div>
+    <form class="text-center" method="POST" action="{{ url_for('auth.register') }}">
+      <div class="row mb-3">
+        <div class="col mb-3 mb-sm-0">
+          <input class="form-control form-control form-control-user" type="text" name="name" placeholder="Name" required="" />
+        </div>
+      </div>
+      <div class="mb-3">
+        <input class="form-control form-control form-control-user" type="email" name="email" placeholder="Email Address" required="" />
+      </div>
+      <div class="mb-3">
+        <input class="form-control form-control-user" type="adress" name="address" placeholder="Adress" required="" />
+      </div>
+      <div class="row mb-3">
+        <div class="col-6">
+          <input class="form-control form-control-user" type="address" name="city" placeholder="City" required />
+        </div>
+        <div class="col-sm-6">
+          <input class="form-control form-control-user" type="address" name="postcode" placeholder="Postcode" required />
+        </div>
+      </div>
+      <div class="mb-3">
+        <input class="form-control form-control-user" type="adress" name="postcode" placeholder="Old password" required="" />
+      </div>
+      <div class="row mb-3">
+        <div class="col-6">
+          <input class="form-control form-control form-control-user" type="password" name="password" placeholder="New password" required />
+        </div>
+        <div class="col-sm-6">
+          <input class="form-control form-control form-control-user" type="password" name="verifyPassword" placeholder="Repeat new password" required />
+        </div>
+      </div>
+      <div class="row mb-3">
+        <p id="emailErrorMsg" class="text-danger" style="display:none;">Paragraph</p>
+        <p id="passwordErrorMsg" class="text-danger" style="display:none;">Paragraph</p>
+      </div><button id="submitBtn" class="btn btn-dark d-block w-20" type="submit">Apply changes!</button>
+</form>
+  </div>
+{% endblock %}
