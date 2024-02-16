@@ -52,16 +52,19 @@ def clear_db():
     Removes all data from the currently used database schema.
     """
     app = current_app
-    query = ("SELECT concat('DROP TABLE IF EXISTS `', TABLE_NAME, '`;'\n)"
-        + "FROM information_schema.tables\n"
-        + "WHERE table_schema = '%s';",
+    query = (
+        """
+        SELECT concat('DROP TABLE IF EXISTS `', TABLE_NAME, '`;')
+        FROM information_schema.tables
+        WHERE table_schema = %s;
+        """,
         (app.config['MYSQL_DB'],))
     tables = query_db([query])
     queries = []
-    queries.append("SET FOREIGN_KEY_CHECKS = 0;")
+    queries.append(("SET FOREIGN_KEY_CHECKS = 0;", set()))
     for table in tables[0]:
-        queries.append(table[0], set())
-    queries.append("SET FOREIGN_KEY_CHECKS = 1;")
+        queries.append((table[0], set()))
+    queries.append(("SET FOREIGN_KEY_CHECKS = 1;", set()))
     return query_db(queries)
 
 def query_db(queries, dict_cursor = False):
@@ -77,6 +80,11 @@ def query_db(queries, dict_cursor = False):
     cursor = mysql.cursor(dictionary=dict_cursor)
     try:
         for query in queries:
+            #print("\n==============\n")
+            #print(query[0])
+            #print("\n==============\n")
+            #print(query[1])
+            #print("\n==============\n")
             cursor.execute(query[0], query[1])
             results.append(cursor.fetchall())
         mysql.commit()
