@@ -1,5 +1,12 @@
 name: d0018e-deploy
 on:
+  push:
+    branches: [ "main" ]
+    paths-ignore:
+      - 'docs/**'
+      - 'ansible/**'
+      - 'README.md'
+      - '.gitignore'
   pull_request:
     branches: [ "main" ]
     types: [ "closed" ]
@@ -12,7 +19,7 @@ on:
 
 jobs:
   test:
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true || github.ref == 'refs/heads/main'
     name: Test docker-compose file and containers
     runs-on: ubuntu-latest
     steps:
@@ -36,7 +43,7 @@ jobs:
           sleep 5
           docker compose exec --workdir /code app pytest -c pytest.ini
   deploy:
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true || github.ref == 'refs/heads/main'
     name: Deploy
     needs: test
     runs-on: ubuntu-latest
