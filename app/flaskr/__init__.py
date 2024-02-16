@@ -14,7 +14,6 @@ def _conf(conf, test_config=None, default=None):
 def create_app(test_config=None):
     """Create and configure an instance of the Flask application."""
     app = Flask(__name__, instance_relative_config=True)
-    print("app created")
     app.config['MYSQL_HOST']                = _conf('MYSQL_HOST', test_config, 'localhost')
     app.config['MYSQL_USER']                = _conf('MYSQL_USER', test_config)
     app.config['MYSQL_PASSWORD']            = _conf('MYSQL_PASSWORD', test_config)
@@ -28,8 +27,11 @@ def create_app(test_config=None):
     app.config['MYSQL_SQL_MODE']            = _conf('MYSQL_SQL_MODE',test_config, '')
     app.config['MYSQL_AUTOCOMMIT']          = bool(_conf('MYSQL_AUTOCOMMIT', test_config, True))
     app.config['MYSQL_CUSTOM_OPTIONS']      = _conf('MYSQL_CUSTOM_OPTIONS', test_config, None)
+
     app.config['TESTING']                   = True if test_config is not None else False
     app.config['DEBUG']                     = _conf('DEBUG',test_config, False)
+    
+    app.secret_key                          = bytes(_conf('AUTH_KEY',test_config, ''), 'utf-8')
 
     # ensure the instance folder exists
     try:

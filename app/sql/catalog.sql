@@ -1,4 +1,4 @@
-INSERT INTO Product (product_id, name, description, price, image_path, in_stock)
+INSERT INTO Product (id, name, description, price, image_path, in_stock)
 VALUES
   (1, '38 Pound Bond', 'some description', 100, '/images/38_pound_bond.png',100),
   (2, '40 Pound Letter Stock', 'some description', 200, '/images/40_pound_letter_stock.png', 50),
