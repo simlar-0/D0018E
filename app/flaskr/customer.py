@@ -7,6 +7,8 @@ from flask import Blueprint, render_template
 
 bp = Blueprint("customer", __name__, url_prefix="/user")
 
+# TODO: Require logged in as customer for all routes in this blueprint
+
 @bp.route("/")
 def profile():
     return render_template("customer/profile.html")

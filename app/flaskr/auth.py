@@ -32,7 +32,7 @@ def register_user():
     }
 
     create_user('Customer',user)
-    return redirect(url_for('customer.user_profile'))
+    return redirect(url_for('customer.profile'))
 
 @bp.route("/customer_login")
 def login():
