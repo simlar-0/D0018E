@@ -1,5 +1,5 @@
 """
-Flask blueprint for browsing items.
+Flask blueprint for logged in Customer views.
 """
 from flask import Blueprint, render_template
 
