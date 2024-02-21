@@ -221,6 +221,7 @@ def get_cart_orderlines(customer_id):
         """
         SELECT *
         FROM OrderLine
+        INNER JOIN Product ON OrderLine.product_id = Product.id
         WHERE OrderLine.order_id = 
         (
             SELECT CustomerOrder.id
