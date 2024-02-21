@@ -1,11 +1,6 @@
-{% extends 'base.html' %}
-
-
-{% block title %}
+{% extends 'base.html' %} {% block title %}
   40 pound letter stock
 {% endblock %}
-
-
 {% block content %}
   <div class="container py-5">
     <div class="row justify-content-center">
@@ -41,29 +36,30 @@
                     <p>In stock: {{ product.in_stock }}</p>
                     <div class="row">
                       <form class="text-center" method="POST" action="{{ url_for('store.add_to_cart') }}?id={{ id }}">
-                      {% if g.user %}
-                      <div class="hstack gap-1">
-                        <input id="add_to_cart" min="1" name="quantity" value="1" type="number" class="form-control form-control-sm" style="width: 60px;" />
-                        <button class="btn btn-dark btn-lsm" style="min-width: 110px; max-height: 40px;" type="submit">Add to cart</button>
-                      </div>
-                      {% else %}
-                      <div class="hstack gap-1">
-                        <input id="add_to_cart" min="1" name="quantity" value="1" type="number" class="form-control form-control-sm" style="width: 60px;" />
-                        <button class="btn btn-dark btn-lsm" style="min-width: 110px; max-height: 40px;" type="button" disabled>Add to cart</button>
-                      </div>
-                      {% endif %}
+                        {% if g.user %}
+                          <div class="hstack gap-1">
+                            <input min="1" id="quantity" name="quantity" value="1" type="number" class="form-control form-control-sm" style="width: 60px" />
+                            <button id="submitBtn" class="btn btn-dark btn-lsm" style="min-width: 110px; max-height: 40px" type="submit">Add to cart</button>
+                          </div>
+                          <p id="errorMsg" class="text-danger" style="display:none;">Paragraph</p>
+                        {% else %}
+                          <div class="hstack gap-1">
+                            <input min="1" name="quantity" value="1" type="number" class="form-control form-control-sm" style="width: 60px" disabled/>
+                            <button id="submitBtn" class="btn btn-dark btn-lsm" style="min-width: 110px; max-height: 40px" type="button" disabled>Add to cart</button>
+                          </div>
+                        {% endif %}
                       </form>
                     </div>
                   </div>
                 </div>
                 <div class="row">
                   {% with messages = get_flashed_messages() %}
-                  {% if messages %}
+                    {% if messages %}
                       <div class="notification is-danger">
-                          <p class="small">{{ messages[0] }}</p>
+                        <p class="small">{{ messages[0] }}</p>
                       </div>
-                  {% endif %}
-                {% endwith %}
+                    {% endif %}
+                  {% endwith %}
                 </div>
               </div>
             </div>
@@ -90,6 +86,27 @@
   </div>
 {% endblock %}
 
-{% block scripts %}
-  
+{% block inline_scripts %}
+  <script>
+    let quantity = document.getElementById('quantity')
+    let submitBtn = document.getElementById('submitBtn')
+    let errorMsg = document.getElementById('errorMsg')
+    
+    function displayErrorMsg(msg) {
+      errorMsg.style.display = 'block'
+      errorMsg.innerHTML = msg
+      submitBtn.disabled = true
+    }
+    
+    function hideErrorMsg() {
+      errorMsg.style.display = 'none'
+      errorMsg.innerHTML = ''
+      submitBtn.disabled = false
+    }
+    
+    quantity.addEventListener('change', function () {
+      if (Number.isInteger(parseInt(quantity.value))) hideErrorMsg()
+      else displayErrorMsg('Quantity must be an integer.')
+    })
+  </script>
 {% endblock %}

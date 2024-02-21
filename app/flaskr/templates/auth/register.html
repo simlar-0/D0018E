@@ -30,7 +30,7 @@
               </div>
             </div>
             <div class="mb-3">
-              <input class="form-control form-control-user" type="email" name="email" placeholder="Email Address" required="" />
+              <input class="form-control form-control-user" type="email" name="email" id="email" placeholder="Email Address" required="" />
             </div>
             <div class="mb-3">
               <input class="form-control form-control-user" type="adress" name="address" placeholder="Adress" required="" />
@@ -45,16 +45,17 @@
             </div>
             <div class="row mb-3">
               <div class="col-6 mb-3 mb-sm-0">
-                <input class="form-control form-control-user" type="password" name="password" placeholder="Password" required="" />
+                <input class="form-control form-control-user" type="password" name="password" id="password" placeholder="Password" required="" />
               </div>
               <div class="col-6">
-                <input class="form-control form-control-user" type="password" name="verifyPassword" placeholder="Repeat Password" required="" />
+                <input class="form-control form-control-user" type="password" name="verifyPassword" id="verifyPassword" placeholder="Repeat Password" required="" />
               </div>
             </div>
             <div class="row mb-3">
               <p id="emailErrorMsg" class="text-danger" style="display:none;">Paragraph</p>
               <p id="passwordErrorMsg" class="text-danger" style="display:none;">Paragraph</p>
-            </div><button class="btn btn-dark d-block btn-user w-100" id="submitBtn" type="submit">Register Account</button>
+            </div>
+            <button class="btn btn-dark d-block btn-user w-100" id="submitBtn" type="submit">Register Account</button>
             <hr />
           </form>
           <div class="text-center">
@@ -70,7 +71,7 @@
 {% endblock %}
 
 
-{% block scripts %}
+{% block inline_scripts %}
   <script>
     let email = document.getElementById('email')
     let password = document.getElementById('password')
