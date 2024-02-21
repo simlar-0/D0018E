@@ -1,8 +1,17 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, g
+from functools import wraps
 from flaskr.db import get_user_by_email, get_user_password, create_user
 import bcrypt
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if g.user is None:
+            return redirect(url_for('auth.login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 @bp.route("/register")
 def register():
