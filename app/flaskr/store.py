@@ -1,9 +1,9 @@
 """
 Flask blueprint for browsing items.
 """
-from flask import Blueprint, render_template, request, session
+from flask import Blueprint, render_template, request, session, g, flash
 
-from flaskr.db import  get_some_products, count_products
+from flaskr.db import  get_some_products, count_products, get_one_product, update_cart
 
 
 bp = Blueprint("store", __name__)
@@ -26,6 +26,33 @@ def index():
 def cart():
     return render_template("store/cart.html")
 
-@bp.route("/product")
-def product():
-    return render_template("store/product.html")
+@bp.route("/product", methods=["GET"])
+def product_info():
+    try:
+        product_id = int(request.args.get('id', 1))
+    except TypeError:
+        product_id = 1
+    except ValueError:
+        product_id = 1
+
+    if g.user is None: # This updates the text below the greyed out "add to cart" button
+        flash("You must be logged in to add to cart.")
+    product = get_one_product(product_id)
+    return render_template("store/product.html", product=product)
+
+@bp.route("/product", methods=["POST"])
+def add_to_cart():
+    try:
+        product_id = int(request.args.get('id', 1))
+    except TypeError:
+        product_id = 1
+    except ValueError:
+        product_id = 1
+
+    product = get_one_product(product_id)
+    quantity = int(request.form.get('quantity'))
+
+    if g.user is not None:
+        update_cart(g.user['id'], product, quantity)
+
+    return render_template("store/product.html", product=product)

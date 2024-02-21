@@ -14,13 +14,13 @@
           <div class="card-body m-2">
             <div class="row">
               <div class="col-sm-8">
-                <h3 class="font-weight-bold">40 pound letter stock</h3>
-                <img class="img-fluid rounded" src="\static\images\40_pound_letter_stock.png" alt="" width="200" data-type="product image" />
+                <h3 class="font-weight-bold">{{ product.name }}</h3>
+                <img class="img-fluid rounded" src="{{ url_for('static', filename=product['image_path']) }}" alt="" width="200" data-type="product image" />
               </div>
               <div class="col-sm-4">
                 <div class="card border-0 col-md-auto">
                   <div class="card-body col-md-auto">
-                    <h4 class="card-title">199 kr</h4>
+                    <h4 class="card-title">{{ product.price }} kr</h4>
                     <ul class="list-inline d-xl-flex justify-content-xl-start align-items-xl-start small">
                       <li class="list-inline-item list-inline-item m-0">
                         <i class="bi bi-star-fill"></i>
@@ -38,21 +38,39 @@
                         <i class="bi bi-star"></i>
                       </li>
                     </ul>
-                    <p>In stock: 9999</p>
+                    <p>In stock: {{ product.in_stock }}</p>
                     <div class="row">
+                      <form class="text-center" method="POST" action="{{ url_for('store.add_to_cart') }}">
+                      {% if g.user %}
                       <div class="hstack gap-1">
-                        <input id="form2" min="1" name="quantity" value="1" type="number" class="form-control form-control-sm" style="width: 60px;" />
-                        <button class="btn btn-dark btn-lsm" style="min-width: 110px; max-height: 40px;" type="button">Add to cart</button>
+                        <input id="add_to_cart" min="1" name="quantity" value="1" type="number" class="form-control form-control-sm" style="width: 60px;" />
+                        <button class="btn btn-dark btn-lsm" style="min-width: 110px; max-height: 40px;" type="submit">Add to cart</button>
                       </div>
+                      {% else %}
+                      <div class="hstack gap-1">
+                        <input id="add_to_cart" min="1" name="quantity" value="1" type="number" class="form-control form-control-sm" style="width: 60px;" />
+                        <button class="btn btn-dark btn-lsm" style="min-width: 110px; max-height: 40px;" type="button" disabled>Add to cart</button>
+                      </div>
+                      {% endif %}
+                      </form>
                     </div>
                   </div>
+                </div>
+                <div class="row">
+                  {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                      <div class="notification is-danger">
+                          <p class="small">{{ messages[0] }}</p>
+                      </div>
+                  {% endif %}
+                {% endwith %}
                 </div>
               </div>
             </div>
           </div>
           <div class="row d-flex">
             <div class="col mx-4 mb-2">
-              <p class="small">"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."</p>
+              <p class="small">{{ product.description }}</p>
             </div>
           </div>
         </div>
@@ -70,4 +88,8 @@
       </div>
     </div>
   </div>
+{% endblock %}
+
+{% block scripts %}
+  
 {% endblock %}

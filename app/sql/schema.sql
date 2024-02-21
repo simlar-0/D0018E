@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `Manager` (
     )
 );
 
-CREATE TABLE IF NOT EXISTS `Order` (
+CREATE TABLE IF NOT EXISTS `CustomerOrder` (
     `id` int  NOT NULL AUTO_INCREMENT,
     `customer_id` int  NOT NULL ,
     `total_amount` decimal(10,2)  NOT NULL ,
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS `OrderLine` (
 );
 
 CREATE TABLE IF NOT EXISTS `Product` (
-    `id` int  NOT NULL ,
+    `id` int  NOT NULL AUTO_INCREMENT,
     `name` nvarchar(255)  NOT NULL ,
     `description` nvarchar(255)  NOT NULL ,
     `price` decimal(8,2)  NOT NULL ,
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS `Product` (
 );
 
 CREATE TABLE IF NOT EXISTS `OrderStatus` (
-    `id` int  NOT NULL AUTO_INCREMENT,
+    `id` int  NOT NULL,
     `name` nvarchar(255)  NOT NULL ,
     PRIMARY KEY (
         `id`
@@ -102,14 +102,14 @@ CREATE TABLE IF NOT EXISTS `ManagerPassword` (
     )
 );
 
-ALTER TABLE `Order` ADD CONSTRAINT `fk_Order_customer_id` FOREIGN KEY(`customer_id`)
+ALTER TABLE `CustomerOrder` ADD CONSTRAINT `fk_CustomerOrder_customer_id` FOREIGN KEY(`customer_id`)
 REFERENCES `Customer` (`id`);
 
-ALTER TABLE `Order` ADD CONSTRAINT `fk_Order_order_status_id` FOREIGN KEY(`order_status_id`)
+ALTER TABLE `CustomerOrder` ADD CONSTRAINT `fk_CustomerOrder_order_status_id` FOREIGN KEY(`order_status_id`)
 REFERENCES `OrderStatus` (`id`);
 
 ALTER TABLE `OrderLine` ADD CONSTRAINT `fk_OrderLine_order_id` FOREIGN KEY(`order_id`)
-REFERENCES `Order` (`id`);
+REFERENCES `CustomerOrder` (`id`);
 
 ALTER TABLE `OrderLine` ADD CONSTRAINT `fk_OrderLine_product_id` FOREIGN KEY(`product_id`)
 REFERENCES `Product` (`id`);
@@ -132,6 +132,6 @@ ON `Customer` (`name`);
 CREATE INDEX `idx_Manager_name`
 ON `Manager` (`name`);
 
-CREATE INDEX `idx_Order_customer_id`
-ON `Order` (`id`);
+CREATE INDEX `idx_CustomerOrder_customer_id`
+ON `CustomerOrder` (`id`);
 
