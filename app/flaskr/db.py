@@ -219,7 +219,16 @@ def get_cart_orderlines(customer_id):
     """
     in_cart_query = (
         """
-        SELECT *
+        SELECT
+            OrderLine.id, 
+            OrderLine.order_id, 
+            OrderLine.product_id,
+            OrderLine.quantity,
+            OrderLine.sub_total_amount,
+            OrderLine.unit_price,
+            Product.name AS product_name,
+            Product.description AS product_description,
+            Product.image_path AS product_image_path
         FROM OrderLine
         INNER JOIN Product ON OrderLine.product_id = Product.id
         WHERE OrderLine.order_id = 
