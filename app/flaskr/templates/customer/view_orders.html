@@ -1,0 +1,132 @@
+{% extends 'customer/profile.html' %}
+
+
+{% block title %}
+  View orders
+{% endblock %}
+
+
+{% block profile_content %}
+  <div class="col">
+    <div>
+        <h4 class="text-dark pt-4">Orders</h4>
+        <p class="w-lg-50"></p>
+    </div>
+    <div class="table-responsive rounded-1">
+      <table id="order" class="table border">
+        <thead class="table-light">
+          <tr>
+            <th class="col-3 ">Order id</th>
+            <th>1234</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Order date:</td>
+            <td>20220101</td>
+          </tr>
+          <tr>
+            <td>Delivery address:</td>
+            <td>Gågatan 123, 123 45 Gamla staden</td>
+          </tr>
+          <tr>
+            <td>Order items:</td>
+            <td>
+              <table id="order_items" class="table">
+                <thead class="table-light">
+                  <tr>
+                    <th class="col-8" scope="col">Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Product 1</td>
+                    <td>1</td>
+                    <td>100 kr</td>
+                  </tr>
+                  <tr>
+                    <td>Product 2</td>
+                    <td>2</td>
+                    <td>100 kr</td>
+                  </tr>
+                  <tr>
+                    <td>Product 3</td>
+                    <td>3</td>
+                    <td>100 kr</td>
+                  </tr>
+                </tbody>
+                <tfoot class="border-bottom">
+                  <tr>
+                    <td>Total amount:</td>
+                    <td></td>
+                    <td>300 kr</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-responsive rounded-1">
+      <table id="order" class="table border">
+        <thead class="table-light">
+          <tr>
+            <th class="col-3">Order id</th>
+            <th>1234</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Order date:</td>
+            <td>20220101</td>
+          </tr>
+          <tr>
+            <td>Delivery address:</td>
+            <td>Gågatan 123, 123 45 Gamla staden</td>
+          </tr>
+          <tr>
+            <td>Order items:</td>
+            <td>
+              <table id="order_items" class="table">
+                <thead class="table-light">
+                  <tr>
+                    <th class="col-8" scope="col">Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Product 1</td>
+                    <td>1</td>
+                    <td>100 kr</td>
+                  </tr>
+                  <tr>
+                    <td>Product 2</td>
+                    <td>2</td>
+                    <td>100 kr</td>
+                  </tr>
+                  <tr>
+                    <td>Product 3</td>
+                    <td>3</td>
+                    <td>100 kr</td>
+                  </tr>
+                </tbody>
+                <tfoot class="border-bottom">
+                  <tr>
+                    <td>Total amount:</td>
+                    <td></td>
+                    <td>300 kr</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
