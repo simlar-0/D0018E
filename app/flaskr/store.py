@@ -1,13 +1,22 @@
 """
 Flask blueprint for browsing items.
 """
-from flask import Blueprint, render_template, request, session, g, flash
+from flask import (
+    Blueprint, 
+    render_template, 
+    request, 
+    session, 
+    g, 
+    flash, 
+    redirect, 
+    url_for
+)
 
 from flaskr.db import (
     get_some_products, 
     count_products, 
     get_one_product, 
-    update_cart,
+    update_cart as update_cart_in_db,
     get_amount_in_cart,
     get_cart
 )
@@ -28,9 +37,22 @@ def index():
     total_product_count = count_products()
     return render_template("store/index.html", products=products, page=page, limit=LIMIT, tot_prod=total_product_count)
 
-@bp.route("/cart")
+@bp.route("/cart", methods=['GET'])
 def cart():
-    return render_template("store/cart.html")
+    if g.user is not None:
+        cart, cart_id = get_cart(g.user['id'])
+        return render_template("store/cart.html", cart=cart, cart_id=cart_id)
+    return redirect(url_for('store.index'))
+
+@bp.route("/cart", methods=['POST'])
+def update_cart():
+    if g.user is not None:
+        cart, cart_id = get_cart(g.user['id'])
+        for form in request.form:
+            # TODO
+            pass
+        return render_template("store/cart.html", cart=cart, cart_id=cart_id)
+    return redirect(url_for('store.index'))
 
 @bp.route("/product", methods=["GET"])
 def product_info():
@@ -60,6 +82,6 @@ def add_to_cart():
 
     if g.user is not None:
         in_cart_amount = get_amount_in_cart(g.user['id'], product_id)
-        update_cart(g.user['id'], product, quantity+in_cart_amount)
+        update_cart_in_db(g.user['id'], product, quantity+in_cart_amount)
 
     return render_template("store/product.html", id=product_id, product=product)

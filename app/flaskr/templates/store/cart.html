@@ -13,6 +13,7 @@
         <div class="card rounded border">
           <div class="card-body p-4">
             <div class="table-responsive">
+            <form class="text-center" method="POST" action="{{ url_for('store.update_cart') }}">
               <table class="table">
                 <thead>
                   <tr>
@@ -22,49 +23,32 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
+                    {% for orderline in cart %}
+                    <tr>
                     <th scope="row">
-                      <a href="{{ url_for('store.product') }}" class="text-dark text-decoration-none">
-                      <div class="d-flex align-items-center">
-                        <img src="\static\images\38_pound_bond.png" alt="" width="70" class="img-fluid rounded" />
-                        <div class="flex-column ms-4">
-                          <p class="mb-2">38 Pound Bond</p>
+                        <a href="{{ url_for('store.product_info') }}?id={{ orderline.product_id }}" class="text-dark text-decoration-none">
+                        <div class="d-flex align-items-center">
+                          <img src={{ url_for('static', filename=orderline.product_image_path) }} alt="" width="70" class="img-fluid rounded" />
+                          <div class="flex-column ms-4">
+                            <p class="mb-2">{{orderline.product_name}}</p>
+                          </div>
                         </div>
-                      </div>
-                      </a>
-                    </th>
-                    <td class="align-middle">
-                      <div class="d-flex flex-row">
-                        <input id="form1" min="0" name="quantity" value="2" type="number" class="form-control form-control-sm" style="width: 50px;" />
-                      </div>
-                    </td>
-                    <td class="align-middle">
-                      <p class="mb-0" style="font-weight: 500;">99 kr</p>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <a href="{{ url_for('store.product') }}" class="text-dark text-decoration-none">
-                      <div class="d-flex align-items-center">
-                        <img src="\static\images\40_pound_letter_stock.png" alt="" width="70" class="img-fluid rounded" />
-                        <div class="flex-column ms-4">
-                          <p class="mb-2">40 Pound Letter Stock</p>
+                        </a>
+                      </th>
+                      <td class="align-middle">
+                        <div class="d-flex flex-row">
+                          <input id="form_{{ orderline.id }}" min="0" name="quantity" value={{ orderline.quantity }} type="number" class="form-control form-control-sm" style="width: 50px;" />
                         </div>
-                      </div>
-                      </a>
-                    </th>
-                    <td class="align-middle">
-                      <div class="d-flex flex-row">
-                        <input id="form2" min="0" name="quantity" value="1" type="number" class="form-control form-control-sm" style="width: 50px;" />
-                      </div>
-                    </td>
-                    <td class="align-middle">
-                      <p class="mb-0" style="font-weight: 500;">139 kr</p>
-                    </td>
-                  </tr>
+                      </td>
+                      <td class="align-middle">
+                        <p class="mb-0" style="font-weight: 500;">99 kr</p>
+                      </td>
+                    </tr>
+                    {% endfor %}
                 </tbody>
               </table>
-              <button type="button" class="btn btn-dark float-end">Update cart</button>
+                <button type="submit" class="btn btn-dark float-end">Update cart</button>
+            </form>
             </div>
           </div>
         </div>

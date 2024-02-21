@@ -215,7 +215,8 @@ def get_cart_orderlines(customer_id):
     Get the contents of a customer's cart.
     
     :param customer_id:
-    :returns: a list of dictionaries, where each dictionary represents an OrderLine.
+    :returns: a list of dictionaries, where each dictionary represents an OrderLine
+        (with added relevant product information).
     """
     in_cart_query = (
         """
