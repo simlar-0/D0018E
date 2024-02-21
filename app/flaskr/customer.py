@@ -8,7 +8,6 @@ from flaskr.auth import login_required
 
 bp = Blueprint("customer", __name__, url_prefix="/user")
 
-# TODO: Require logged in as customer for all routes in this blueprint
 
 @bp.route("/")
 @login_required

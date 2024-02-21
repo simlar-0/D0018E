@@ -1,6 +1,7 @@
 """
 Flask blueprint for browsing items.
 """
+from flaskr.auth import login_required
 from flask import (
     Blueprint, 
     render_template, 
@@ -38,21 +39,19 @@ def index():
     return render_template("store/index.html", products=products, page=page, limit=LIMIT, tot_prod=total_product_count)
 
 @bp.route("/cart", methods=['GET'])
+@login_required
 def cart():
-    if g.user is not None:
-        cart, cart_id = get_cart(g.user['id'])
-        return render_template("store/cart.html", cart=cart, cart_id=cart_id)
-    return redirect(url_for('store.index'))
+    cart, cart_id = get_cart(g.user['id'])
+    return render_template("store/cart.html", cart=cart, cart_id=cart_id)
 
 @bp.route("/cart", methods=['POST'])
+@login_required
 def update_cart():
-    if g.user is not None:
-        cart, cart_id = get_cart(g.user['id'])
-        for form in request.form:
-            # TODO
-            pass
-        return render_template("store/cart.html", cart=cart, cart_id=cart_id)
-    return redirect(url_for('store.index'))
+    cart, cart_id = get_cart(g.user['id'])
+    for form in request.form:
+        # TODO
+        pass
+    return render_template("store/cart.html", cart=cart, cart_id=cart_id)
 
 @bp.route("/product", methods=["GET"])
 def product_info():
@@ -69,6 +68,7 @@ def product_info():
     return render_template("store/product.html", id=product_id, product=product)
 
 @bp.route("/product", methods=["POST"])
+@login_required
 def add_to_cart():
     try:
         product_id = int(request.args.get('id', 1))
@@ -80,8 +80,7 @@ def add_to_cart():
     product = get_one_product(product_id)
     quantity = int(request.form.get('quantity'))
 
-    if g.user is not None:
-        in_cart_amount = get_amount_in_cart(g.user['id'], product_id)
-        update_cart_in_db(g.user['id'], product, quantity+in_cart_amount)
+    in_cart_amount = get_amount_in_cart(g.user['id'], product_id)
+    update_cart_in_db(g.user['id'], product, quantity+in_cart_amount)
 
     return render_template("store/product.html", id=product_id, product=product)
