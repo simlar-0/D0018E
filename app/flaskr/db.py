@@ -221,7 +221,7 @@ def get_cart_orderlines(customer_id):
         """
         SELECT *
         FROM OrderLine
-        WHERE OrderLine.id = 
+        WHERE OrderLine.order_id = 
         (
             SELECT CustomerOrder.id
             FROM CustomerOrder
