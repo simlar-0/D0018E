@@ -313,3 +313,17 @@ def update_cart(customer_id, product, total_quantity):
             transaction([update_query(orderline['id'])])
             return
     transaction([insert_query])
+
+def get_amount_in_cart(customer_id, product_id):
+    """
+    Returns the amount of copies of the given product in the cart of a given customer.
+
+    :param customer_id:
+    :param product_id:
+    :returns: an integer
+    """
+    orderlines, _ = get_cart(customer_id)
+    for orderline in orderlines:
+        if orderline['product_id'] == product_id:
+            return orderline['quantity']
+    return 0

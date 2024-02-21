@@ -3,8 +3,13 @@ Flask blueprint for browsing items.
 """
 from flask import Blueprint, render_template, request, session, g, flash
 
-from flaskr.db import  get_some_products, count_products, get_one_product, update_cart
-
+from flaskr.db import (
+    get_some_products, 
+    count_products, 
+    get_one_product, 
+    update_cart,
+    get_amount_in_cart
+)
 
 bp = Blueprint("store", __name__)
 LIMIT = 12 #TODO: move magic constants somewhere else
@@ -53,6 +58,7 @@ def add_to_cart():
     quantity = int(request.form.get('quantity'))
 
     if g.user is not None:
-        update_cart(g.user['id'], product, quantity)
+        in_cart_amount = get_amount_in_cart(g.user['id'], product_id)
+        update_cart(g.user['id'], product, quantity+in_cart_amount)
 
     return render_template("store/product.html", product=product)
