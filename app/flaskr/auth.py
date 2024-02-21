@@ -41,8 +41,10 @@ def register_user():
     }
 
     create_user('Customer',user)
+    
+    user = get_user_by_email('Customer', email) 
     session['user_id'] = user
-    session.modified     = True
+    session.modified = True
     return redirect(url_for('customer.profile'))
 
 @bp.route("/customer_login")
