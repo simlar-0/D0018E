@@ -8,7 +8,8 @@ from flaskr.db import (
     count_products, 
     get_one_product, 
     update_cart,
-    get_amount_in_cart
+    get_amount_in_cart,
+    get_cart
 )
 
 bp = Blueprint("store", __name__)
@@ -43,7 +44,7 @@ def product_info():
     if g.user is None: # This updates the text below the greyed out "add to cart" button
         flash("You must be logged in to add to cart.")
     product = get_one_product(product_id)
-    return render_template("store/product.html", product=product)
+    return render_template("store/product.html", id=product_id, product=product)
 
 @bp.route("/product", methods=["POST"])
 def add_to_cart():
@@ -61,4 +62,4 @@ def add_to_cart():
         in_cart_amount = get_amount_in_cart(g.user['id'], product_id)
         update_cart(g.user['id'], product, quantity+in_cart_amount)
 
-    return render_template("store/product.html", product=product)
+    return render_template("store/product.html", id=product_id, product=product)

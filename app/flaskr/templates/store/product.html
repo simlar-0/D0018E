@@ -40,7 +40,7 @@
                     </ul>
                     <p>In stock: {{ product.in_stock }}</p>
                     <div class="row">
-                      <form class="text-center" method="POST" action="{{ url_for('store.add_to_cart') }}">
+                      <form class="text-center" method="POST" action="{{ url_for('store.add_to_cart') }}?id={{ id }}">
                       {% if g.user %}
                       <div class="hstack gap-1">
                         <input id="add_to_cart" min="1" name="quantity" value="1" type="number" class="form-control form-control-sm" style="width: 60px;" />
