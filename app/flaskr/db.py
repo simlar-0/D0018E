@@ -59,15 +59,15 @@ def clear_db():
         WHERE table_schema = %s;
         """,
         (app.config['MYSQL_DB'],))
-    tables = query_db([query])
+    tables = transaction([query])
     queries = []
     queries.append(("SET FOREIGN_KEY_CHECKS = 0;", set()))
     for table in tables[0]:
         queries.append((table[0], set()))
     queries.append(("SET FOREIGN_KEY_CHECKS = 1;", set()))
-    return query_db(queries)
+    return transaction(queries)
 
-def query_db(queries, dict_cursor = False):
+def transaction(queries, dict_cursor = False):
     """
     Perform queries that select data from the DB.
     :param queries: a list of tuples: (query_string, (binding_variables)).
@@ -104,17 +104,15 @@ def create_user(user_type, user):
             user['address'],
             user['postcode'],
             user['city']))
-    query_db([query_reg_user])
-    query_user_id = ("SELECT LAST_INSERT_ID();",set())
-    user_id = query_db([query_user_id])[0][0][0]
+
     query_reg_pass = (
         f"""
         INSERT INTO {user_type}Password (id, hashed_password)
-        VALUES (%s, %s);
+        VALUES (LAST_INSERT_ID(), %s);
         """,
-        (user_id, user['hashed_password'])
+        (user['hashed_password'], )
     )
-    return query_db([query_reg_pass])
+    return transaction([query_reg_user, query_reg_pass])
 
 def get_user_by_email(user_type, email):
     """
@@ -127,7 +125,7 @@ def get_user_by_email(user_type, email):
         + f"FROM {user_type}\n"
         + "WHERE email = %s;",
         (email,))
-    results = query_db([query], dict_cursor=True)[0]
+    results = transaction([query], dict_cursor=True)[0]
     return results[0] if len(results) > 0 else None
 
 def get_user_password(user_type, user_id):
@@ -141,7 +139,7 @@ def get_user_password(user_type, user_id):
              + f"FROM {user_type}Password\n"
              + "WHERE id = %s;",
              (user_id,))
-    return query_db([query])[0][0][0]
+    return transaction([query])[0][0][0]
 
 def get_all_products():
     """
@@ -149,7 +147,7 @@ def get_all_products():
     :returns: a list of tuples (name, description, price, image_path, in_stock). 
     """
     query = ("""SELECT name, description, price, image_path, in_stock FROM Product""", set())
-    return query_db([query], dict_cursor=True)[0]
+    return transaction([query], dict_cursor=True)[0]
 
 def get_some_products(limit, offset):
     """
@@ -158,7 +156,7 @@ def get_some_products(limit, offset):
     """
     query = ("""SELECT name, description, price, image_path, in_stock FROM Product LIMIT %s OFFSET %s""",
               (limit, offset))
-    return query_db([query], dict_cursor=True)[0]
+    return transaction([query], dict_cursor=True)[0]
 
 def count_products():
     """
@@ -166,4 +164,4 @@ def count_products():
     :returns: an integer count of products.
     """
     query = ("""SELECT COUNT(*) FROM Product""", set())
-    return query_db([query])[0][0][0]
+    return transaction([query])[0][0][0]
