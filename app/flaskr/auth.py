@@ -32,6 +32,8 @@ def register_user():
     }
 
     create_user('Customer',user)
+    session['user_id'] = user
+    session.modified     = True
     return redirect(url_for('customer.profile'))
 
 @bp.route("/customer_login")
