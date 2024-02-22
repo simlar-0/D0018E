@@ -13,7 +13,7 @@
         <div class="card rounded border">
           <div class="card-body p-4">
             <div class="table-responsive">
-            <form class="text-center" method="POST" action="{{ url_for('store.update_cart') }}">
+            <form method="POST" action="{{ url_for('store.update_cart') }}">
               <table class="table">
                 <thead>
                   <tr>
@@ -35,8 +35,8 @@
                         </div>
                         </a>
                       </th>
-                      <td class="align-middle">
-                        <div class="d-flex flex-row align-items-center">
+                      <td scope="col" class="align-middle">
+                        <div class="d-flex flex-row">
                           <input id="{{ orderline.product_id }}" min="0" name="quantity" value={{ orderline.quantity }} type="number" class="form-control form-control-sm" style="width: 60px" />
                           <input type="hidden" id="product_id" name="product_id" value="{{ orderline.product_id }}">
                         </div>
