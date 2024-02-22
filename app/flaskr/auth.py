@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, g
 from functools import wraps
-from flaskr.db import get_user_by_email, get_user_password, create_user
+from flaskr.db.user import get_user_by_email, get_user_password, create_user
 import bcrypt
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")

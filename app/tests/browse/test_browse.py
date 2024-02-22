@@ -6,7 +6,7 @@ import pytest
 import random
 from pytest_bdd import given, when, then, scenario
 from bs4 import BeautifulSoup
-from flaskr.db import execute_script
+from flaskr.db.db import execute_script
 from flaskr.store import LIMIT as MAX_PRODUCTS_PER_PAGE
 from definitions import APP_DIR
 

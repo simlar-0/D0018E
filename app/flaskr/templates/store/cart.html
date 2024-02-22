@@ -36,18 +36,19 @@
                         </a>
                       </th>
                       <td class="align-middle">
-                        <div class="d-flex flex-row">
-                          <input id="form_{{ orderline.id }}" min="0" name="quantity" value={{ orderline.quantity }} type="number" class="form-control form-control-sm" style="width: 50px;" />
+                        <div class="d-flex flex-row align-items-center">
+                          <input id="{{ orderline.product_id }}" min="0" name="quantity" value={{ orderline.quantity }} type="number" class="form-control form-control-sm" style="width: 60px" />
+                          <input type="hidden" id="product_id" name="product_id" value="{{ orderline.product_id }}">
                         </div>
                       </td>
                       <td class="align-middle">
-                        <p class="mb-0" style="font-weight: 500;">99 kr</p>
+                        <p class="mb-0" style="font-weight: 500;">{{ orderline.sub_total_amount }} kr</p>
                       </td>
                     </tr>
                     {% endfor %}
                 </tbody>
               </table>
-                <button type="submit" class="btn btn-dark float-end">Update cart</button>
+                <button type="submit" id="submitBtn" class="btn btn-dark float-end">Update cart</button>
             </form>
             </div>
           </div>
@@ -114,4 +115,7 @@
       </div>
     </div>
   </div>
+{% endblock %}
+
+{% block inline_scripts %}
 {% endblock %}

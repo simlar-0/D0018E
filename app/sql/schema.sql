@@ -29,7 +29,6 @@ CREATE TABLE IF NOT EXISTS `Manager` (
 CREATE TABLE IF NOT EXISTS `CustomerOrder` (
     `id` int  NOT NULL AUTO_INCREMENT,
     `customer_id` int  NOT NULL ,
-    `total_amount` decimal(10,2)  NOT NULL ,
     `order_status_id` int  NOT NULL ,
     PRIMARY KEY (
         `id`

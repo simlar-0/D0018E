@@ -1,7 +1,6 @@
 """
 Flask blueprint for browsing items.
 """
-from flaskr.auth import login_required
 from flask import (
     Blueprint, 
     render_template, 
@@ -12,15 +11,19 @@ from flask import (
     redirect, 
     url_for
 )
+from flaskr.auth import login_required
 
-from flaskr.db import (
+from flaskr.db.store import(
     get_some_products, 
     count_products, 
     get_one_product, 
     update_cart as update_cart_in_db,
     get_amount_in_cart,
-    get_cart
+    get_cart_id,
+    create_cart,
+    get_cart_orderlines
 )
+
 
 bp = Blueprint("store", __name__)
 LIMIT = 12 #TODO: move magic constants somewhere else
@@ -41,17 +44,26 @@ def index():
 @bp.route("/cart", methods=['GET'])
 @login_required
 def cart():
-    cart, cart_id = get_cart(g.user['id'])
+    cart_id = get_cart_id(g.user['id'])
+    cart    = get_cart_orderlines(g.user['id'])
     return render_template("store/cart.html", cart=cart, cart_id=cart_id)
 
 @bp.route("/cart", methods=['POST'])
 @login_required
 def update_cart():
-    cart, cart_id = get_cart(g.user['id'])
-    for form in request.form:
-        # TODO
-        pass
-    return render_template("store/cart.html", cart=cart, cart_id=cart_id)
+    cart_id = get_cart_id(g.user['id'])
+    cart    = get_cart_orderlines(g.user['id'])
+
+    product_ids = request.form.getlist('product_id')
+    products = []
+    quantities = request.form.getlist('quantity')
+    
+    for product_id in product_ids:
+        products.append(get_one_product(product_id))
+
+    update_cart_in_db(g.user['id'], products, quantities)
+    
+    return redirect(url_for('store.cart'))
 
 @bp.route("/product", methods=["GET"])
 def product_info():
@@ -80,7 +92,10 @@ def add_to_cart():
     product = get_one_product(product_id)
     quantity = int(request.form.get('quantity'))
 
+    if get_cart_id(g.user['id']) is None:
+        create_cart(g.user['id'])
+
     in_cart_amount = get_amount_in_cart(g.user['id'], product_id)
-    update_cart_in_db(g.user['id'], product, quantity+in_cart_amount)
+    update_cart_in_db(g.user['id'], [product], [quantity+in_cart_amount])
 
     return render_template("store/product.html", id=product_id, product=product)
