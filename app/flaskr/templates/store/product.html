@@ -2,6 +2,7 @@
   40 pound letter stock
 {% endblock %}
 {% block content %}
+  {% if product %}
   <div class="container py-5">
     <div class="row justify-content-center">
       <div class="col-sm-7">
@@ -10,7 +11,7 @@
             <div class="row">
               <div class="col-sm-8">
                 <h3 class="font-weight-bold">{{ product.name }}</h3>
-                <img class="img-fluid rounded" src="{{ url_for('static', filename=product['image_path']) }}" alt="" width="200" data-type="product image" />
+                <img class="img-fluid rounded" src="{{ url_for('static', filename = product['image_path']) }}" alt="" width="200" data-type="product image" />
               </div>
               <div class="col-sm-4">
                 <div class="card border-0 col-md-auto">
@@ -44,7 +45,7 @@
                           <p id="errorMsg" class="text-danger" style="display:none;">Paragraph</p>
                         {% else %}
                           <div class="hstack gap-1">
-                            <input min="1" name="quantity" value="1" type="number" class="form-control form-control-sm" style="width: 60px" disabled/>
+                            <input min="1" name="quantity" value="1" type="number" class="form-control form-control-sm" style="width: 60px" disabled />
                             <button id="submitBtn" class="btn btn-dark btn-lsm" style="min-width: 110px; max-height: 40px" type="button" disabled>Add to cart</button>
                           </div>
                         {% endif %}
@@ -84,6 +85,22 @@
       </div>
     </div>
   </div>
+  {% else %}
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-sm-7">
+        <div class="card rounded border-0">
+          <div class="card-body m-2">
+            <div class="row">
+              <div class="col-sm-8">
+                <h3 class="font-weight-bold">Product not found</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
 {% endblock %}
 
 {% block inline_scripts %}

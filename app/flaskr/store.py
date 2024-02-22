@@ -30,6 +30,7 @@ LIMIT = 12 #TODO: move magic constants somewhere else
 
 @bp.route("/")
 def index():
+    total_product_count = count_products()  
     try:
         page = int(request.args.get('page', 1))
         page = page if page > 0 else 1
@@ -37,8 +38,14 @@ def index():
         page = 1
     except ValueError:
         page = 1
+    except IndexError:
+        page = 1
+    finally:
+        if page > total_product_count//LIMIT + 1:
+            page = 1
+
+        
     products = get_some_products(LIMIT, (page-1)*LIMIT)
-    total_product_count = count_products()
     return render_template("store/index.html", products=products, page=page, limit=LIMIT, tot_prod=total_product_count)
 
 @bp.route("/cart", methods=['GET'])
@@ -76,7 +83,10 @@ def product_info():
 
     if g.user is None: # This updates the text below the greyed out "add to cart" button
         flash("You must be logged in to add to cart.")
-    product = get_one_product(product_id)
+    try:
+        product = get_one_product(product_id)
+    except IndexError:
+        return render_template("store/product.html", id=product_id, product=None)
     return render_template("store/product.html", id=product_id, product=product)
 
 @bp.route("/product", methods=["POST"])
