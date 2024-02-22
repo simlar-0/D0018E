@@ -57,7 +57,7 @@ def login_user():
     password    = request.form.get('password')
     user        = get_user_by_email('Customer', email)
 
-    if 'id' in user.keys():
+    if user and 'id' in user.keys():
         pass_from_db = get_user_password('Customer', user['id'])
         if bcrypt.checkpw(bytes(password, 'utf-8'),bytes(pass_from_db.decode(), 'utf-8')):
             session['user_id'] = user
