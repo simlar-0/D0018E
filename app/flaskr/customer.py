@@ -25,7 +25,11 @@ def edit_profile():
 @bp.route("/orders")
 @login_required
 def view_orders():
+    user = g.user
     order_ids    = get_customer_order_ids(g.user['id'])
     order_items = [get_order_orderlines(order_id) for order_id in order_ids]
-    total_amount = [get_order_total_amount(order_item) for order_item in order_items]
-    return render_template("customer/view_orders.html", order_items=order_items, total_amount=total_amount)
+    total_amounts = [get_order_total_amount(order_item) for order_item in order_items]
+    orders = [dict(zip(['order', 'total_amount'], order)) for order in zip(order_items, total_amounts)]
+    #[{'order': [{'id': 1, 'order_id': 1, 'product_id': 7, 'quantity': 34, 'sub_total_amount': Decimal('15300.00'), 'unit_price': Decimal('450.00'), 'product_name': 'Ultra-White Cardstock'}, {'id': 2, 'order_id': 1, 
+    #'product_id': 2, 'quantity': 18, 'sub_total_amount': Decimal('3600.00'), 'unit_price': Decimal('200.00'), 'product_name': '40 Pound Letter Stock'}], 'total_amount': Decimal('18900.00')}]
+    return render_template("customer/view_orders.html", orders=orders, total_amounts=total_amounts, user=user)
