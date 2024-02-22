@@ -21,7 +21,8 @@ from flaskr.db.store import(
     get_amount_in_cart,
     get_cart_id,
     create_cart,
-    get_cart_orderlines
+    get_cart_orderlines,
+    checkout as checkout_db
 )
 
 
@@ -48,19 +49,17 @@ def index():
     products = get_some_products(LIMIT, (page-1)*LIMIT)
     return render_template("store/index.html", products=products, page=page, limit=LIMIT, tot_prod=total_product_count)
 
-@bp.route("/cart", methods=['GET'])
+@bp.route("/cart")
 @login_required
 def cart():
     cart_id = get_cart_id(g.user['id'])
     cart    = get_cart_orderlines(g.user['id'])
-    return render_template("store/cart.html", cart=cart, cart_id=cart_id)
+    total_amount = get_order_total_amount(cart)
+    return render_template("store/cart.html", cart=cart, cart_id=cart_id, total_amount=total_amount)
 
 @bp.route("/cart", methods=['POST'])
 @login_required
 def update_cart():
-    cart_id = get_cart_id(g.user['id'])
-    cart    = get_cart_orderlines(g.user['id'])
-
     product_ids = request.form.getlist('product_id')
     products = []
     quantities = request.form.getlist('quantity')
@@ -109,3 +108,15 @@ def add_to_cart():
     update_cart_in_db(g.user['id'], [product], [quantity+in_cart_amount])
 
     return render_template("store/product.html", id=product_id, product=product)
+
+def get_order_total_amount(cart):
+    total = 0
+    for orderline in cart:
+        total += orderline['sub_total_amount']
+    return total
+
+@bp.route("/order-confirmation")
+@login_required
+def checkout():
+    checkout_db(g.user['id'])
+    return render_template("store/checkout.html")
