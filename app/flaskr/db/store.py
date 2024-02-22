@@ -228,7 +228,7 @@ def checkout(customer_id):
     """
     Moves the cart of the customer to previous orders.
 
-    :param customer_id: 
+    :param customer_id: Customer id
     """
     cart_id = get_cart_id(customer_id)
     query = (
@@ -243,3 +243,29 @@ def checkout(customer_id):
         (cart_id,)
     )
     transaction([query])
+    
+def get_order_orderlines(order_id):
+    """
+    Get the contents of an order.
+    
+    :param order_id: the id of the order.
+    :returns: a list of dictionaries, where each dictionary represents an OrderLine
+        (with added relevant product information).
+    """
+    query = (
+        """
+        SELECT
+            OrderLine.id, 
+            OrderLine.order_id, 
+            OrderLine.product_id,
+            OrderLine.quantity,
+            OrderLine.sub_total_amount,
+            OrderLine.unit_price,
+            Product.name AS product_name
+        FROM OrderLine
+        INNER JOIN Product ON OrderLine.product_id = Product.id
+        WHERE OrderLine.order_id = %s;
+        """,
+        (order_id,)
+    )
+    return transaction([query], dict_cursor = True)[0]

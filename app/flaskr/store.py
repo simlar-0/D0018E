@@ -109,9 +109,9 @@ def add_to_cart():
 
     return render_template("store/product.html", id=product_id, product=product)
 
-def get_order_total_amount(cart):
+def get_order_total_amount(order):
     total = 0
-    for orderline in cart:
+    for orderline in order:
         total += orderline['sub_total_amount']
     return total
 

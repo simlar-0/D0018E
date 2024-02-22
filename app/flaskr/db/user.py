@@ -69,3 +69,24 @@ def get_user_by_id(user_id, user_type):
     :returns TBD:
     """
     pass
+
+def get_customer_order_ids(customer_id):
+    """
+    Get all ids of orders belonging to the specified customer.
+
+    :param customer_id: Customer id
+    :returns: a list of integers or None 
+    """
+    query = (
+        """
+        SELECT CustomerOrder.id
+        FROM CustomerOrder
+        WHERE
+            CustomerOrder.customer_id = %s;
+        """,
+        (customer_id,)
+    )
+    order_ids = transaction([query])
+    if order_ids:
+        return [order_id[0][0] for order_id in order_ids]
+    return None
