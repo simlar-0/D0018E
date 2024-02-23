@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Customer list
+{% endblock %}
+
+{% block content %}
+  <div class="container py-5">
+    <div class="row d-flex
+    justify-content-center align-items-center">
+      <div class="col-9">
+        <div class="card rounded border">
+          <div class="card-body p-4">
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Address</th>
+                    <th scope="col">postcode</th>
+                    <th scope="col">City</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for customer in customers %}
+                  <tr>
+                    <td>{{ customer.id }}</td>
+                    <td>{{ customer.name }}</td>
+                    <td>{{ customer.email }}</td>
+                    <td>{{ customer.address }}</td>
+                    <td>{{ customer.postcode }}</td>
+                    <td>{{ customer.city }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

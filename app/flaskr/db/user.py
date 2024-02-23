@@ -149,3 +149,16 @@ def edit_user_password(user_type, user):
     )
     return transaction([query_reg_user, query_reg_pass])
 
+def get_all_users(user_type):
+    """
+    Get all users of a certain type.
+    :param user_type: the type of user to get.
+    :returns a list of dictionaries of the results:
+    """
+    query = (
+        f"""
+        SELECT id, name, email, address, postcode, city
+        FROM {user_type};
+        """,
+        ())
+    return transaction([query], dict_cursor=True)[0]
