@@ -116,36 +116,4 @@ def get_user_by_id(user_id, user_type):
     """
     pass
 
-def edit_user_password(user_type, user):
-    """
-    Change the password of a user in the database.
-    :param user_type: a string matching the exact name of a table in the DB:
-        "Customer" / "Admin" / "StoreManager"
-    :param user: a dictionary containing
-            {'name':string,
-            'email':string,
-            'address':string,
-            'postcode':string,
-            'city':string}
-    """
-    query_reg_user = (
-        f"""
-        INSERT INTO {user_type} (name,email,address,postcode,city)
-        VALUES (%s,%s,%s,%s,%s);
-        """,
-        (
-            user['name'],
-            user['email'],
-            user['address'],
-            user['postcode'],
-            user['city']))
-
-    query_reg_pass = (
-        f"""
-        INSERT INTO {user_type}Password (id, hashed_password)
-        VALUES (LAST_INSERT_ID(), %s);
-        """,
-        (user['hashed_password'], )
-    )
-    return transaction([query_reg_user, query_reg_pass])
 

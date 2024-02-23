@@ -331,3 +331,19 @@ def get_product_reviews(product_id):
         (product_id,)
     )
     return transaction([query], dict_cursor = True)[0]
+
+def add_product_review(produt_id, customer_id, review, rating):
+    """
+    Add a review to a product.
+    
+    :param product_id: the id of the product.
+    :param customer_id: the id of the customer.
+    """
+    query = (
+        """
+        INSERT INTO Review (product_id, customer_id, review, rating, date)
+        VALUES (%s, %s, %s, %s, NOW());
+        """,
+        (produt_id, customer_id, review, rating)
+    )
+    transaction([query])
