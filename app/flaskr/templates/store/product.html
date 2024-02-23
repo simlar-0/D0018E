@@ -39,7 +39,7 @@
                       <form class="text-center" method="POST" action="{{ url_for('store.add_to_cart') }}?id={{ id }}">
                         {% if g.user %}
                           <div class="hstack gap-1">
-                            <input min="1" id="quantity" name="quantity" value="1" type="number" class="form-control form-control-sm" style="width: 60px" />
+                            <input min="1" max="999" id="quantity" name="quantity" value="1" type="number" class="form-control form-control-sm" style="width: 60px" />
                             <button id="submitBtn" class="btn btn-dark btn-lsm" style="min-width: 110px; max-height: 40px" type="submit">Add to cart</button>
                           </div>
                           <p id="errorMsg" class="text-danger" style="display:none;">Paragraph</p>

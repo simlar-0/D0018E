@@ -13,7 +13,8 @@ services:
       - ./app/sql/schema.sql:/docker-entrypoint-initdb.d/init_a.sql
       - ./app/sql/catalog.sql:/docker-entrypoint-initdb.d/init_b.sql
       - ./app/sql/order_statuses.sql:/docker-entrypoint-initdb.d/init_c.sql
-      - ./app/sql/test.sql:/docker-entrypoint-initdb.d/init_d.sql
+      - ./app/sql/users.sql:/docker-entrypoint-initdb.d/init_d.sql
+      - ./app/sql/test.sql:/docker-entrypoint-initdb.d/init_e.sql
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-uroot", "-ppass"]
       interval: 5s

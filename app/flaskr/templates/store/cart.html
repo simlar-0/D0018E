@@ -38,7 +38,7 @@
                       </th>
                       <td scope="col" class="align-middle">
                         <div class="d-flex flex-row">
-                          <input id="{{ orderline.product_id }}" min="0" name="quantity" value={{ orderline.quantity }} type="number" class="form-control form-control-sm" style="width: 60px" />
+                          <input id="{{ orderline.product_id }}" min="0" max="999" name="quantity" value={{ orderline.quantity }} type="number" class="form-control form-control-sm" style="width: 60px" />
                           <input type="hidden" id="product_id" name="product_id" value="{{ orderline.product_id }}">
                         </div>
                       </td>

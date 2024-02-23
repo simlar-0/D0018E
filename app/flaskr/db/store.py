@@ -2,6 +2,8 @@
 Store-related DB functions and queries.
 """
 from flaskr.db.db import transaction
+MAX_SUB_TOTAL = 10**16
+MAX_QUANTITY = 999
 
 def get_all_products():
     """
@@ -198,6 +200,13 @@ def update_cart(customer_id, products, quantities):
     queries = []
 
     for product, quantity in zip(products, quantities):
+        sub_total = int(quantity)*product['price']
+        if int(quantity) > MAX_QUANTITY:
+            print(f"Cannot add more than {MAX_QUANTITY} units!")
+            continue
+        if  sub_total > MAX_SUB_TOTAL:
+            print(f"Cannot add something that costs more than {MAX_SUB_TOTAL}")
+            continue
         for orderline in orderlines:
             if orderline['product_id'] == product['id']:
                 if int(quantity) == 0:
