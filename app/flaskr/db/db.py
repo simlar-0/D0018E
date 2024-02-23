@@ -20,7 +20,8 @@ def mysql_settings():
     'port':app.config['MYSQL_PORT'],
     'autocommit':app.config['MYSQL_AUTOCOMMIT'],
     'sql_mode':app.config['MYSQL_SQL_MODE'],
-    'connection_timeout':app.config['MYSQL_CONNECT_TIMEOUT']}
+    'connection_timeout':app.config['MYSQL_CONNECT_TIMEOUT'],
+    'time_zone':app.config['MYSQL_TIME_ZONE']}
 
 def init_mysql():
     """

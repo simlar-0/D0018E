@@ -234,10 +234,12 @@ def checkout(customer_id):
     query = (
         """
         UPDATE CustomerOrder
-        SET CustomerOrder.order_status_id =
-        (SELECT OrderStatus.id
-        FROM OrderStatus 
-        WHERE OrderStatus.name = 'Confirmed')
+        SET 
+            CustomerOrder.order_status_id =
+                (SELECT OrderStatus.id
+                FROM OrderStatus 
+                WHERE OrderStatus.name = 'Confirmed'),
+            CustomerOrder.order_date = NOW()
         WHERE CustomerOrder.id = %s;
         """,
         (cart_id,)
@@ -269,3 +271,31 @@ def get_order_orderlines(order_id):
         (order_id,)
     )
     return transaction([query], dict_cursor = True)[0]
+
+def get_customer_orders(customer_id):
+    """
+    Get all orders belonging to the specified customer, except the cart.
+
+    :param customer_id: Customer id
+    :returns: a list of dictionaries containing keys: id, order_date, order_status
+    """
+    query = (
+        """
+        SELECT 
+            CustomerOrder.id,
+            CustomerOrder.order_date,
+            OrderStatus.name AS order_status
+        FROM CustomerOrder
+        INNER JOIN OrderStatus ON CustomerOrder.order_status_id = OrderStatus.id
+        WHERE
+            CustomerOrder.customer_id = %s
+        AND
+            CustomerOrder.order_status_id != 
+                (SELECT OrderStatus.id
+                FROM OrderStatus 
+                WHERE OrderStatus.name = 'InCart');
+        """,
+        (customer_id,)
+    )
+    orders = transaction([query], dict_cursor = True)[0]
+    return orders

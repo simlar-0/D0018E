@@ -25,15 +25,15 @@
         <tbody>
           <tr>
             <td>Order status:</td>
-            <td>{{ order['order'][0]['order_status'] }}</td>
+            <td>{{ order['order_status'] }}</td>
           </tr>
           <tr>
             <td>Order date:</td>
-            <td>{{ order['order'][0]['order_date'] }}</td>
+            <td>{{ order['order_date'] }}</td>
           </tr>
           <tr>
             <td>Delivery address:</td>
-            <td>{{ user['address']}}</td>
+            <td>{{ user['address'] }}, {{ user['postcode'] }}, {{ user['city'] }}</td>
           </tr>
           <tr>
             <td>Order items:</td>
@@ -70,5 +70,10 @@
     </div>
     {% endfor %}
   </div>
+  {% else %}
+    <div class="col">
+      <div>
+          <h4 class="text-dark pt-4">You have no past orders!</h4>
+      </div>
   {% endif %}
 {% endblock %}
