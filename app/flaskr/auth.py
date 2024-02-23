@@ -1,8 +1,17 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, g
-from flaskr.db import get_user_by_email, get_user_password, create_user
+from functools import wraps
+from flaskr.db.user import get_user_by_email, get_user_password, create_user
 import bcrypt
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if g.user is None:
+            return redirect(url_for('auth.login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 @bp.route("/register")
 def register():
@@ -32,6 +41,10 @@ def register_user():
     }
 
     create_user('Customer',user)
+    
+    user = get_user_by_email('Customer', email) 
+    session['user_id'] = user
+    session.modified = True
     return redirect(url_for('customer.profile'))
 
 @bp.route("/customer_login")
@@ -44,7 +57,7 @@ def login_user():
     password    = request.form.get('password')
     user        = get_user_by_email('Customer', email)
 
-    if 'id' in user.keys():
+    if user and 'id' in user.keys():
         pass_from_db = get_user_password('Customer', user['id'])
         if bcrypt.checkpw(bytes(password, 'utf-8'),bytes(pass_from_db.decode(), 'utf-8')):
             session['user_id'] = user

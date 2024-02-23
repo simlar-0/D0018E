@@ -7,7 +7,7 @@ import tempfile
 import pytest
 
 from flaskr import create_app
-from flaskr.db import execute_script, clear_db
+from flaskr.db.db import execute_script, clear_db
 from definitions import APP_DIR
 
 @pytest.fixture

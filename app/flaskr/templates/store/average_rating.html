@@ -1,0 +1,25 @@
+{% if product.rating %}
+<ul class="list-inline" style="color: #ffc700;">
+  {% for n in range(product.rating|int) %}
+    <li class="list-inline-item list-inline-item m-0">
+      <i class="bi bi-star-fill"></i>
+    </li>
+  {% endfor %}
+  {% if product.rating - (product.rating|int) > 0 and product.rating < 5 %}
+    <li class="list-inline-item list-inline-item m-0">
+      <i class="bi bi-star-half"></i>
+    </li>
+    {% for n in range(4 - (product.rating|int)) %}
+      <li class="list-inline-item list-inline-item m-0">
+        <i class="bi bi-star"></i>
+      </li>
+    {% endfor %}
+  {% else %}
+    {% for n in range(5 - (product.rating|int)) %}
+      <li class="list-inline-item list-inline-item m-0">
+        <i class="bi bi-star"></i>
+      </li>
+    {% endfor %}
+  {% endif %}
+</ul>
+{% endif %}

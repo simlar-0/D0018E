@@ -13,24 +13,15 @@
         <div class="p-5">
           <div class="text-center">
             <h4 class="text-dark mb-4">Create an Account!</h4>
-            <p class="w-lg-50">
-                {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    <div class="notification is-danger">
-                        {{ messages[0] }}
-                    </div>
-                {% endif %}
-                {% endwith %}
-            </p>
           </div>
-          <form class="text-center" method="POST" action="{{ url_for('auth.register') }}">
+          <form class="text-center" method="POST" action="{{ url_for('auth.register_user') }}">
             <div class="row mb-3">
               <div class="col">
                 <input class="form-control form-control-user" type="text" name="name" placeholder="Name" required="" />
               </div>
             </div>
             <div class="mb-3">
-              <input class="form-control form-control-user" type="email" name="email" placeholder="Email Address" required="" />
+              <input class="form-control form-control-user" type="email" name="email" id="email" placeholder="Email Address" required="" />
             </div>
             <div class="mb-3">
               <input class="form-control form-control-user" type="adress" name="address" placeholder="Adress" required="" />
@@ -45,16 +36,26 @@
             </div>
             <div class="row mb-3">
               <div class="col-6 mb-3 mb-sm-0">
-                <input class="form-control form-control-user" type="password" name="password" placeholder="Password" required="" />
+                <input class="form-control form-control-user" type="password" name="password" id="password" placeholder="Password" required="" />
               </div>
               <div class="col-6">
-                <input class="form-control form-control-user" type="password" name="verifyPassword" placeholder="Repeat Password" required="" />
+                <input class="form-control form-control-user" type="password" name="verifyPassword" id="verifyPassword" placeholder="Repeat Password" required="" />
               </div>
             </div>
             <div class="row mb-3">
-              <p id="emailErrorMsg" class="text-danger" style="display:none;">Paragraph</p>
-              <p id="passwordErrorMsg" class="text-danger" style="display:none;">Paragraph</p>
-            </div><button class="btn btn-dark d-block btn-user w-100" id="submitBtn" type="submit">Register Account</button>
+              <div id="passwordErrorMsg" class="alert alert-danger" role="alert" style="display:none;">
+              </div>        
+              <div id="emailErrorMsg" class="alert alert-danger" role="alert" style="display:none;">
+              </div>
+              {% with messages = get_flashed_messages() %}
+              {% if messages %}
+              <div class="alert alert-danger" role="alert">
+                {{ messages[0] }}
+              </div>        
+              {% endif %}
+              {% endwith %}
+            </div>
+            <button class="btn btn-dark d-block btn-user w-100" id="submitBtn" type="submit">Register Account</button>
             <hr />
           </form>
           <div class="text-center">
@@ -66,68 +67,65 @@
         </div>
       </div>
     </div>
-    <script>
-      let email = document.getElementById('email')
-      let password = document.getElementById('password')
-      let verifyPassword = document.getElementById('verifyPassword')
-      let submitBtn = document.getElementById('submitBtn')
-      let emailErrorMsg = document.getElementById('emailErrorMsg')
-      let passwordErrorMsg = document.getElementById('passwordErrorMsg')
-      
-      function displayErrorMsg(type, msg) {
-        if (type == 'email') {
-          emailErrorMsg.style.display = 'block'
-          emailErrorMsg.innerHTML = msg
-          submitBtn.disabled = true
-        } else {
-          passwordErrorMsg.style.display = 'block'
-          passwordErrorMsg.innerHTML = msg
-          submitBtn.disabled = true
-        }
-      }
-      
-      function hideErrorMsg(type) {
-        if (type == 'email') {
-          emailErrorMsg.style.display = 'none'
-          emailErrorMsg.innerHTML = ''
-          submitBtn.disabled = true
-          if (passwordErrorMsg.innerHTML == '') submitBtn.disabled = false
-        } else {
-          passwordErrorMsg.style.display = 'none'
-          passwordErrorMsg.innerHTML = ''
-          if (emailErrorMsg.innerHTML == '') submitBtn.disabled = false
-        }
-      }
-      
-      // Validate password upon change
-      password.addEventListener('change', function () {
-        // If password has no value, then it won't be changed and no error will be displayed
-        if (password.value.length == 0 && verifyPassword.value.length == 0) hideErrorMsg('password')
-        // If password has a value, then it will be checked. In this case the passwords don't match
-        else if (password.value !== verifyPassword.value) displayErrorMsg('password', 'Passwords do not match')
-        // When the passwords match, we check the length
-        else {
-          // Check if the password has 8 characters or more
-          if (password.value.length >= 8) hideErrorMsg('password')
-          else displayErrorMsg('password', 'Password must be at least 8 characters long')
-        }
-      })
-      
-      verifyPassword.addEventListener('change', function () {
-        if (password.value !== verifyPassword.value) displayErrorMsg('password', 'Passwords do not match')
-        else {
-          // Check if the password has 8 characters or more
-          if (password.value.length >= 8) hideErrorMsg('password')
-          else displayErrorMsg('password', 'Password must be at least 8 characters long')
-        }
-      })
-      
-      // Validate email upon change
-      email.addEventListener('change', function () {
-        // Check if the email is valid using a regular expression (string@string.string)
-        if (email.value.match(/^[^@]+@[^@]+\.[^@]+$/)) hideErrorMsg('email')
-        else displayErrorMsg('email', 'Invalid email')
-      })
-    </script>
   </div>
+{% endblock %}
+
+
+{% block inline_scripts %}
+  <script>
+    let email = document.getElementById('email')
+    let password = document.getElementById('password')
+    let verifyPassword = document.getElementById('verifyPassword')
+    let submitBtn = document.getElementById('submitBtn')
+    let emailErrorMsg = document.getElementById('emailErrorMsg')
+    let passwordErrorMsg = document.getElementById('passwordErrorMsg')
+    
+    function displayErrorMsg(type, msg) {
+      if (type == 'email') {
+        emailErrorMsg.style.display = 'block'
+        emailErrorMsg.innerHTML = msg
+        submitBtn.disabled = true
+      } else {
+        passwordErrorMsg.style.display = 'block'
+        passwordErrorMsg.innerHTML = msg
+        submitBtn.disabled = true
+      }
+    }
+    
+    function hideErrorMsg(type) {
+      if (type == 'email') {
+        emailErrorMsg.style.display = 'none'
+        emailErrorMsg.innerHTML = ''
+        submitBtn.disabled = false
+        if (passwordErrorMsg.innerHTML == '') submitBtn.disabled = false
+      } else {
+        passwordErrorMsg.style.display = 'none'
+        passwordErrorMsg.innerHTML = ''
+        submitBtn.disabled = false
+        if (emailErrorMsg.innerHTML == '') submitBtn.disabled = false
+      }
+    }
+    
+    // Validate password upon change
+    password.addEventListener('change', function () {
+      // If password has no value, then it won't be changed and no error will be displayed
+      if (password.value.length == 0 && verifyPassword.value.length == 0) hideErrorMsg('password')
+      // If password has a value, then it will be checked. In this case the passwords don't match
+      else if (password.value !== verifyPassword.value) displayErrorMsg('password', 'Passwords do not match')
+      // When the passwords match, we check the length
+      else hideErrorMsg('password')
+    })
+    
+    verifyPassword.addEventListener('change', function () {
+      if (password.value !== verifyPassword.value) displayErrorMsg('password', 'Passwords do not match')
+      else hideErrorMsg('password')
+    })
+    
+    // Validate email upon change
+    email.addEventListener('change', function () {
+      // Check if the email is valid using a regular expression (string@string.string)
+      if (email.value.match(/^[^@]+@[^@]+\.[^@]+$/)) hideErrorMsg('email')
+      else displayErrorMsg('email', 'Invalid email')
+    })
+  </script>
 {% endblock %}
