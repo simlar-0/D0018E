@@ -3,22 +3,50 @@ User-related DB functions and queries.
 """
 from flaskr.db.db import transaction
 
-def create_user(user_type, user):
+def create_manager(manager):
     """
-    Create a new user in the DB.
+    Create a new manager in the DB.
 
-    :param user_type: a string matching the exact name of a table in the DB:
-        "Customer" / "Admin" / "StoreManager"
+    :param manager: a dictionary containing
+            {'name':string,
+            'email':string,
+            'hashed_password':bcrypt hash in binary format,
+            'is_admin':boolean}
+    """
+    query_reg_manager = (
+        """
+        INSERT INTO Manager (is_admin,name,email)
+        VALUES (%s,%s,%s);
+        """,
+        (
+            manager['is_admin'],
+            manager['name'],
+            manager['email']))
+
+    query_reg_pass = (
+        """
+        INSERT INTO ManagerPassword (id, hashed_password)
+        VALUES (LAST_INSERT_ID(), %s);
+        """,
+        (manager['hashed_password'], )
+    )
+    return transaction([query_reg_manager, query_reg_pass])
+
+def create_customer(user):
+    """
+    Create a new Customer in the DB.
+
     :param user: a dictionary containing
             {'name':string,
             'email':string,
             'address':string,
             'postcode':string,
-            'city':string}
+            'city':string,
+            'hashed_password':bcrypt hash in binary format}
     """
     query_reg_user = (
-        f"""
-        INSERT INTO {user_type} (name,email,address,postcode,city)
+        """
+        INSERT INTO Customer (name,email,address,postcode,city)
         VALUES (%s,%s,%s,%s,%s);
         """,
         (
@@ -29,8 +57,8 @@ def create_user(user_type, user):
             user['city']))
 
     query_reg_pass = (
-        f"""
-        INSERT INTO {user_type}Password (id, hashed_password)
+        """
+        INSERT INTO CustomerPassword (id, hashed_password)
         VALUES (LAST_INSERT_ID(), %s);
         """,
         (user['hashed_password'], )
