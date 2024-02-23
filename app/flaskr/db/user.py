@@ -118,6 +118,15 @@ def get_user_by_id(user_id, user_type):
 
 def edit_user_password(user_type, user):
     """
+    Change the password of a user in the database.
+    :param user_type: a string matching the exact name of a table in the DB:
+        "Customer" / "Admin" / "StoreManager"
+    :param user: a dictionary containing
+            {'name':string,
+            'email':string,
+            'address':string,
+            'postcode':string,
+            'city':string}
     """
     query_reg_user = (
         f"""
