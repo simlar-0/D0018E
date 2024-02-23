@@ -308,3 +308,26 @@ def get_customer_orders(customer_id):
     )
     orders = transaction([query], dict_cursor = True)[0]
     return orders
+
+def get_product_reviews(product_id):
+    """
+    Get all reviews for a product. Joined with Customer to get the customer's name.
+    
+    :param product_id: the id of the product.
+    :returns: a list of dictionaries containing keys review, rating, customer_id
+    """
+    query = (
+        """
+        SELECT 
+            Review.review,
+            Review.rating,
+            Review.customer_id,
+            Review.date,
+            Customer.name
+        FROM Review
+        INNER JOIN Customer ON Review.customer_id = Customer.id
+        WHERE Review.product_id = %s;
+        """,
+        (product_id,)
+    )
+    return transaction([query], dict_cursor = True)[0]

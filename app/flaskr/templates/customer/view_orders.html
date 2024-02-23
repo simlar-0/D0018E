@@ -29,7 +29,7 @@
           </tr>
           <tr>
             <td>Order date:</td>
-            <td>{{ order['order_date'] }}</td>
+            <td>{{ order['order_date'].strftime('%Y-%m-%d') }}</td>
           </tr>
           <tr>
             <td>Delivery address:</td>
@@ -51,15 +51,19 @@
                   <tr>
                     <td>{{ item['product_name']}}</td>
                     <td>{{ item['quantity']}}</td>
-                    <td>{{ item['sub_total_amount']}} kr</td>
+                    <td>{{ item['sub_total_amount']|int}} kr</td>
                   </tr>
                 {% endfor %}
                 </tbody>
                 <tfoot class="border-bottom">
                   <tr>
-                    <td>Total amount:</td>
+                    <td>Shipping:</td>
                     <td></td>
-                    <td>{{ order['total_amount']}} kr</td>
+                    <td>25 kr</td>
+                  <tr>
+                    <td><strong>Total amount:</strong></td>
+                    <td></td>
+                    <td><strong>{{ order['total_amount']|int +25}} kr</strong></td>
                   </tr>
                 </tfoot>
               </table>

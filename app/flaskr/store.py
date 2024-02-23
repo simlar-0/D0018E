@@ -22,7 +22,8 @@ from flaskr.db.store import(
     get_cart_id,
     create_cart,
     get_cart_orderlines,
-    checkout as checkout_db
+    checkout as checkout_db,
+    get_product_reviews
 )
 
 
@@ -47,6 +48,12 @@ def index():
 
         
     products = get_some_products(LIMIT, (page-1)*LIMIT)
+    
+    for product in products:
+        reviews = get_product_reviews(product['id'])
+        if reviews:
+            product['rating'] = get_average_rating(reviews)
+
     return render_template("store/index.html", products=products, page=page, limit=LIMIT, tot_prod=total_product_count)
 
 @bp.route("/cart")
@@ -82,11 +89,24 @@ def product_info():
 
     if g.user is None: # This updates the text below the greyed out "add to cart" button
         flash("You must be logged in to add to cart.")
+       
     try:
         product = get_one_product(product_id)
     except IndexError:
         return render_template("store/product.html", id=product_id, product=None)
-    return render_template("store/product.html", id=product_id, product=product)
+
+    reviews = get_product_reviews(product_id)
+
+    if reviews:
+        product['rating'] = get_average_rating(reviews)
+
+    if not g.user:
+        return render_template("store/product.html", id=product_id, product=product, reviews=reviews, do_not_show_add=True)
+
+    for review in reviews:
+        if g.user and review['customer_id'] == g.user['id']:
+            return render_template("store/product.html", id=product_id, product=product, reviews=reviews, do_not_show_add=True)     
+    return render_template("store/product.html", id=product_id, product=product, reviews=reviews)
 
 @bp.route("/product", methods=["POST"])
 @login_required
@@ -107,13 +127,19 @@ def add_to_cart():
     in_cart_amount = get_amount_in_cart(g.user['id'], product_id)
     update_cart_in_db(g.user['id'], [product], [quantity+in_cart_amount])
 
-    return render_template("store/product.html", id=product_id, product=product)
+    return redirect(url_for('store.product_info', id=product_id))
 
 def get_order_total_amount(order):
     total = 0
     for orderline in order:
         total += orderline['sub_total_amount']
     return total
+
+def get_average_rating(reviews):
+    total = 0
+    for review in reviews:
+        total += review['rating']
+    return total / len(reviews)
 
 @bp.route("/order-confirmation")
 @login_required

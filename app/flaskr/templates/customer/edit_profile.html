@@ -12,41 +12,106 @@
       <h4 class="text-dark py-4">Edit profile</h4>
       <p class="w-lg-50"></p>
     </div>
-    <form class="text-center" method="POST" action="{{ url_for('auth.register') }}">
+    <form class="text-center" method="POST" action="{{ url_for('customer.edit_profile') }}">
       <div class="row mb-3">
         <div class="col mb-3 mb-sm-0">
-          <input class="form-control form-control form-control-user" type="text" name="name" placeholder="Name" required="" />
+          <input class="form-control form-control form-control-user" id="" type="text" name="name" placeholder="Name" value="{{user.name}}" required="" />
         </div>
       </div>
       <div class="mb-3">
-        <input class="form-control form-control form-control-user" type="email" name="email" placeholder="Email Address" required="" />
+        <input class="form-control form-control form-control-user" id="email" type="email" name="email" value="{{user.email}}" required="" />
       </div>
       <div class="mb-3">
-        <input class="form-control form-control-user" type="adress" name="address" placeholder="Adress" required="" />
+        <input class="form-control form-control-user" type="adress" id="address" name="address" placeholder="Address" value="{{user.address}}" required="" />
       </div>
       <div class="row mb-3">
         <div class="col-6">
-          <input class="form-control form-control-user" type="address" name="city" placeholder="City" required />
+          <input class="form-control form-control-user" type="address" id="city" name="city" placeholder="City" value="{{user.city}}" required />
         </div>
         <div class="col-sm-6">
-          <input class="form-control form-control-user" type="address" name="postcode" placeholder="Postcode" required />
+          <input class="form-control form-control-user" type="address" id="postcode" name="postcode" placeholder="Postcode" value="{{user.name}}" required />
         </div>
       </div>
       <div class="mb-3">
-        <input class="form-control form-control-user" type="adress" name="postcode" placeholder="Old password" required />
+        <input class="form-control form-control-user" type="password" id="currentPassword" name="currentPassword" placeholder="Current password" required />
       </div>
       <div class="row mb-3">
         <div class="col-6">
-          <input class="form-control form-control form-control-user" type="password" name="password" placeholder="New password" />
+          <input class="form-control form-control form-control-user" type="password" id="newPassword" name="newPassword" placeholder="New password"/>
         </div>
         <div class="col-sm-6">
-          <input class="form-control form-control form-control-user" type="password" name="verifyPassword" placeholder="Repeat new password" />
+          <input class="form-control form-control form-control-user" type="password" id="verifyPassword" name="verifyPassword" placeholder="Repeat new password"/>
         </div>
       </div>
       <div class="row mb-3">
-        <p id="emailErrorMsg" class="text-danger" style="display:none;">Paragraph</p>
-        <p id="passwordErrorMsg" class="text-danger" style="display:none;">Paragraph</p>
+        <div id="passwordErrorMsg" class="alert alert-danger" role="alert" style="display:none;">
+        </div>        
+        <div id="emailErrorMsg" class="alert alert-danger" role="alert" style="display:none;">
+        </div>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="alert alert-danger" role="alert">
+          {{ messages[0] }}
+        </div>        
+        {% endif %}
+        {% endwith %}
       </div><button id="submitBtn" class="btn btn-dark d-block w-20" type="submit">Apply changes!</button>
+
 </form>
   </div>
+{% endblock %}
+
+{% block inline_scripts %}
+<script>
+  let email = document.getElementById('email')
+  let newPassword = document.getElementById('newPassword')
+  let verifyPassword = document.getElementById('verifyPassword')
+  let submitBtn = document.getElementById('submitBtn')
+  let emailErrorMsg = document.getElementById('emailErrorMsg')
+  let passwordErrorMsg = document.getElementById('passwordErrorMsg')
+  
+  function displayErrorMsg(type, msg) {
+    if (type == 'email') {
+      emailErrorMsg.style.display = 'block'
+      emailErrorMsg.innerHTML = msg
+      submitBtn.disabled = true
+    } else {
+      passwordErrorMsg.style.display = 'block'
+      passwordErrorMsg.innerHTML = msg
+      submitBtn.disabled = true
+    }
+  }
+  
+  function hideErrorMsg(type) {
+    if (type == 'email') {
+      emailErrorMsg.style.display = 'none'
+      emailErrorMsg.innerHTML = ''
+      submitBtn.disabled = false
+      if (passwordErrorMsg.innerHTML == '') submitBtn.disabled = false
+    } else {
+      passwordErrorMsg.style.display = 'none'
+      passwordErrorMsg.innerHTML = ''
+      submitBtn.disabled = false
+      if (emailErrorMsg.innerHTML == '') submitBtn.disabled = false
+    }
+  }
+  
+  // Validate password upon change
+  newPassword.addEventListener('change', function () {
+    // If password has no value, then it won't be changed and no error will be displayed
+    if (newPassword.value.length == 0 && verifyPassword.value.length == 0) hideErrorMsg('password')
+    // If password has a value, then it will be checked. In this case the passwords don't match
+    else if (newPassword.value !== verifyPassword.value) displayErrorMsg('password', 'Passwords do not match')
+    // When the passwords match, we check the length
+    else hideErrorMsg('password')
+  })
+  
+  verifyPassword.addEventListener('change', function () {
+    if (newPassword.value !== verifyPassword.value) displayErrorMsg('password', 'Passwords do not match')
+      else hideErrorMsg('password')
+ 
+  })
+  
+
+</script>
 {% endblock %}

@@ -78,9 +78,8 @@ CREATE TABLE IF NOT EXISTS `Review` (
     `customer_id` int  NOT NULL ,
     `product_id` int  NOT NULL ,
     `rating` int  NOT NULL ,
-    `review_text` nvarchar(255)  NULL ,
-    `review_date` datetime  NOT NULL ,
-    `review_header` nvarchar(255)  NULL ,
+    `review` nvarchar(255)  NULL ,
+    `date` DATETIME ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (
         `customer_id`,`product_id`
     )

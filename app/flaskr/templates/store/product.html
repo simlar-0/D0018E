@@ -16,24 +16,8 @@
               <div class="col-sm-4">
                 <div class="card border-0 col-md-auto">
                   <div class="card-body col-md-auto">
-                    <h4 class="card-title">{{ product.price }} kr</h4>
-                    <ul class="list-inline" style="color: #ffc700;">
-                      <li class="list-inline-item list-inline-item m-0">
-                        <i class="bi bi-star-fill"></i>
-                      </li>
-                      <li class="list-inline-item list-inline-item m-0">
-                        <i class="bi bi-star-fill"></i>
-                      </li>
-                      <li class="list-inline-item list-inline-item m-0">
-                        <i class="bi bi-star-fill"></i>
-                      </li>
-                      <li class="list-inline-item list-inline-item m-0">
-                        <i class="bi bi-star-fill"></i>
-                      </li>
-                      <li class="list-inline-item list-inline-item m-0">
-                        <i class="bi bi-star"></i>
-                      </li>
-                    </ul>
+                    <h4 class="card-title">{{ product.price|int }} kr</h4>
+                    {% include 'store/average_rating.html'%}
                     <p>In stock: {{ product.in_stock }}</p>
                     <div class="row">
                       <form class="text-center" method="POST" action="{{ url_for('store.add_to_cart') }}?id={{ id }}">

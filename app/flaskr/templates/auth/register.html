@@ -13,17 +13,8 @@
         <div class="p-5">
           <div class="text-center">
             <h4 class="text-dark mb-4">Create an Account!</h4>
-            <p class="w-lg-50">
-                {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    <div class="notification is-danger">
-                        {{ messages[0] }}
-                    </div>
-                {% endif %}
-                {% endwith %}
-            </p>
           </div>
-          <form class="text-center" method="POST" action="{{ url_for('auth.register') }}">
+          <form class="text-center" method="POST" action="{{ url_for('auth.register_user') }}">
             <div class="row mb-3">
               <div class="col">
                 <input class="form-control form-control-user" type="text" name="name" placeholder="Name" required="" />
@@ -52,8 +43,17 @@
               </div>
             </div>
             <div class="row mb-3">
-              <p id="emailErrorMsg" class="text-danger" style="display:none;">Paragraph</p>
-              <p id="passwordErrorMsg" class="text-danger" style="display:none;">Paragraph</p>
+              <div id="passwordErrorMsg" class="alert alert-danger" role="alert" style="display:none;">
+              </div>        
+              <div id="emailErrorMsg" class="alert alert-danger" role="alert" style="display:none;">
+              </div>
+              {% with messages = get_flashed_messages() %}
+              {% if messages %}
+              <div class="alert alert-danger" role="alert">
+                {{ messages[0] }}
+              </div>        
+              {% endif %}
+              {% endwith %}
             </div>
             <button class="btn btn-dark d-block btn-user w-100" id="submitBtn" type="submit">Register Account</button>
             <hr />
@@ -96,11 +96,12 @@
       if (type == 'email') {
         emailErrorMsg.style.display = 'none'
         emailErrorMsg.innerHTML = ''
-        submitBtn.disabled = true
+        submitBtn.disabled = false
         if (passwordErrorMsg.innerHTML == '') submitBtn.disabled = false
       } else {
         passwordErrorMsg.style.display = 'none'
         passwordErrorMsg.innerHTML = ''
+        submitBtn.disabled = false
         if (emailErrorMsg.innerHTML == '') submitBtn.disabled = false
       }
     }
@@ -112,20 +113,12 @@
       // If password has a value, then it will be checked. In this case the passwords don't match
       else if (password.value !== verifyPassword.value) displayErrorMsg('password', 'Passwords do not match')
       // When the passwords match, we check the length
-      else {
-        // Check if the password has 8 characters or more
-        if (password.value.length >= 8) hideErrorMsg('password')
-        else displayErrorMsg('password', 'Password must be at least 8 characters long')
-      }
+      else hideErrorMsg('password')
     })
     
     verifyPassword.addEventListener('change', function () {
       if (password.value !== verifyPassword.value) displayErrorMsg('password', 'Passwords do not match')
-      else {
-        // Check if the password has 8 characters or more
-        if (password.value.length >= 8) hideErrorMsg('password')
-        else displayErrorMsg('password', 'Password must be at least 8 characters long')
-      }
+      else hideErrorMsg('password')
     })
     
     // Validate email upon change

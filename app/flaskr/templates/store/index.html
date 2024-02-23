@@ -16,15 +16,9 @@
               <h5 class="text-truncate mt-0 font-weight-bold mb-2" data-type="product name">{{ product['name'] }}</h5>
               <p class="text-truncate text-muted font-italic mb-0 small" data-type="product description">{{ product['description'] }}</p>
               <div class="d-flex justify-content-between align-items-center mt-0">
-                <h6 class="float-end font-weight-bold my-2" data-type="product price">{{ product.price }} kr</h6>
+                <h6 class="float-end font-weight-bold my-2" data-type="product price">{{ product.price|int }} kr</h6>
                 <div class="d-flex float-end justify-content-center justify-content-xl-start align-items-xl-end mt-2" style="margin: 0px;margin-right: 40px;">
-                  <ul class="list-inline" style="color: #ffc700;">
-                      <li class="list-inline-item list-inline-item m-0"><i class="bi bi-star-fill"></i></li>
-                      <li class="list-inline-item list-inline-item m-0"><i class="bi bi-star-fill"></i></li>
-                      <li class="list-inline-item list-inline-item m-0"><i class="bi bi-star-fill"></i></li>
-                      <li class="list-inline-item list-inline-item m-0"><i class="bi bi-star-fill"></i></li>
-                      <li class="list-inline-item list-inline-item m-0"><i class="bi bi-star"></i></li>
-                  </ul>
+                  {% include 'store/average_rating.html'%}
                 </div>
               </div>
             </div>

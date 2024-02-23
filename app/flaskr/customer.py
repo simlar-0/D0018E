@@ -1,11 +1,12 @@
 """
 Flask blueprint for logged in Customer views.
 """
-from flask import Blueprint, render_template, g
+from flask import Blueprint, render_template, g, request, flash, redirect, url_for, session
 from flaskr.auth import login_required
 from flaskr.db.store import get_order_orderlines, get_customer_orders
+from flaskr.db.user import get_user_password, create_user, get_user_by_email, set_user_password, set_user_details
 from flaskr.store import get_order_total_amount
-
+import bcrypt
 
 
 bp = Blueprint("customer", __name__, url_prefix="/user")
@@ -18,8 +19,32 @@ def profile():
 
 @bp.route("/edit-profile")
 @login_required
+def view_edit_profile():
+    user = g.user
+    return render_template("customer/edit_profile.html", user=user)
+
+@bp.route("/edit-profile", methods=["POST"])
+@login_required
 def edit_profile():
-    return render_template("customer/edit_profile.html")
+    user = g.user
+
+    name                = request.form.get('name')
+    email               = request.form.get('email')
+    address             = request.form.get('address')
+    city                = request.form.get('city')
+    postcode            = request.form.get('postcode')
+    current_password    = request.form.get('currentPassword')
+    new_password        = request.form.get('newPassword')
+
+    
+    pass_from_db = get_user_password('Customer', user['id'])
+    if bcrypt.checkpw(bytes(current_password, 'utf-8'),bytes(pass_from_db.decode(), 'utf-8')):
+        hashed_pass = bcrypt.hashpw(bytes(new_password, 'utf-8'), bcrypt.gensalt())
+        set_user_password('Customer', user['id'], hashed_pass)
+        set_user_details(name, email, address, postcode, city, user['id'])
+        return redirect(url_for('customer.profile'))
+    flash("Wrong password")
+    return redirect(url_for('customer.view_edit_profile'))
 
 @bp.route("/orders")
 @login_required
