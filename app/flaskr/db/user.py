@@ -5,6 +5,16 @@ from flaskr.db.db import transaction
 
 def create_user(user_type, user):
     """
+    Create a new user in the DB.
+
+    :param user_type: a string matching the exact name of a table in the DB:
+        "Customer" / "Admin" / "StoreManager"
+    :param user: a dictionary containing
+            {'name':string,
+            'email':string,
+            'address':string,
+            'postcode':string,
+            'city':string}
     """
     query_reg_user = (
         f"""
