@@ -17,7 +17,7 @@
                 <div class="card border-0 col-md-auto">
                   <div class="card-body col-md-auto">
                     <h4 class="card-title">{{ product.price }} kr</h4>
-                    <ul class="list-inline d-xl-flex justify-content-xl-start align-items-xl-start small">
+                    <ul class="list-inline" style="color: #ffc700;">
                       <li class="list-inline-item list-inline-item m-0">
                         <i class="bi bi-star-fill"></i>
                       </li>
@@ -72,17 +72,9 @@
           </div>
         </div>
       </div>
-      <div class="col-sm-7">
-        <div class="card rounded border mt-3">
-          <div class="card-body p-4">
-            <div class="row">
-              <div class="col">
-                <h5 class="font-weight-bold">Reviews...</h5>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {% block reviews %}
+        {% include 'store/reviews.html' %}
+      {% endblock %}
     </div>
   </div>
   {% else %}
