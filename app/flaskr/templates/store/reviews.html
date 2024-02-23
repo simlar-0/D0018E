@@ -50,22 +50,28 @@
           {% for review in reviews %}
           <div class="col m-2 mb-4">
               <p class="mb-0"><strong>John Doe: </strong></p>
-            <ul class="list-inline small m-0" style="color: #ffc700;">
-              <li class="list-inline-item list-inline-item m-0">
+              <ul class="list-inline mb-0" style="color: #ffc700;">
+              {% for n in range(review.rating|int) %}
+              <li class="list-inline-item list-inline-item m-0 ">
                 <i class="bi bi-star-fill"></i>
               </li>
+            {% endfor %}
+            {% if review.rating - (review.rating|int) > 0 and review.rating < 5 %}
               <li class="list-inline-item list-inline-item m-0">
-                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-half"></i>
               </li>
-              <li class="list-inline-item list-inline-item m-0">
-                <i class="bi bi-star-fill"></i>
-              </li>
-              <li class="list-inline-item list-inline-item m-0">
-                <i class="bi bi-star-fill"></i>
-              </li>
-              <li class="list-inline-item list-inline-item m-0">
-                <i class="bi bi-star"></i>
-              </li>
+              {% for n in range(4 - (review.rating|int)) %}
+                <li class="list-inline-item list-inline-item m-0">
+                  <i class="bi bi-star"></i>
+                </li>
+              {% endfor %}
+            {% else %}
+              {% for n in range(5 - (review.rating|int)) %}
+                <li class="list-inline-item list-inline-item m-0">
+                  <i class="bi bi-star"></i>
+                </li>
+              {% endfor %}
+            {% endif %}
             </ul>
             <p class="mb-0 small">{{ review.date.strftime('%Y-%m-%d') }}</p>
               <p class="m-0 small">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
