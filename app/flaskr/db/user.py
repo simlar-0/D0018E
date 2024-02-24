@@ -114,7 +114,14 @@ def get_user_by_id(user_id, user_type):
     :param user_type: Customer, StoreManager, Admin
     :returns TBD:
     """
-    pass
+    query = (
+        f"""
+        SELECT id, name, email, address, postcode, city
+        FROM {user_type}
+        WHERE id = %s;
+        """,
+        (user_id,))
+    return transaction([query], dict_cursor=True)[0][0]
 
 def edit_user_password(user_type, user):
     """
