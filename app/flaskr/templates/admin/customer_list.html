@@ -21,13 +21,14 @@
                     <th scope="col">Address</th>
                     <th scope="col">postcode</th>
                     <th scope="col">City</th>
+                    
                   </tr>
                 </thead>
                 <tbody>
                   {% for customer in customers %}
                   <tr>
                     <td>{{ customer.id }}</td>
-                    <td>{{ customer.name }}</td>
+                    <td><a href="{{ url_for('admin.customer_orders', id=customer.id) }}">{{ customer.name }}</a></td>
                     <td>{{ customer.email }}</td>
                     <td>{{ customer.address }}</td>
                     <td>{{ customer.postcode }}</td>
