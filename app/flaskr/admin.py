@@ -12,12 +12,24 @@ bp = Blueprint("admin", __name__, url_prefix="/admin")
 
 @bp.route("/customer-list")
 def customer_list():
+    """
+    Retrieve a list of customers and render it in the customer_list.html template.
+
+    :returns The rendered template with the list of customers:
+    """
     customers = get_all_users('Customer')
     return render_template("admin/customer_list.html", customers=customers)
 
 @bp.route("/customer/<int:id>/orders")
 def customer_orders(id):
-    customer_orders    = get_customer_orders(id)
+    """
+    Retrieve the orders of a customer with the given ID.
+
+    :param id: The ID of the customer.
+
+    :returns The rendered template containing the customer's orders:
+    """
+    customer_orders = get_customer_orders(id)
     user = get_user_by_id(id, 'Customer')
     if customer_orders:
         order_items = [get_order_orderlines(order['id']) for order in customer_orders]
