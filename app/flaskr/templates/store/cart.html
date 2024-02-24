@@ -20,6 +20,7 @@
                   <tr>
                     <th scope="col" class=""></th>
                     <th scope="col">Quantity</th>
+                    <th scope="col">Left in stock</th>
                     <th scope="col">Price</th>
                   </tr>
                 </thead>
@@ -38,8 +39,13 @@
                       </th>
                       <td scope="col" class="align-middle">
                         <div class="d-flex flex-row">
-                          <input id="{{ orderline.product_id }}" min="0" max="999" name="quantity" value={{ orderline.quantity }} type="number" class="form-control form-control-sm" style="width: 60px" />
+                          <input id="{{ orderline.product_id }}" min="0" max={{orderline.quantity + orderline.product_stock }} name="quantity" value={{ orderline.quantity }} type="number" class="form-control form-control-sm" style="width: 60px" />
                           <input type="hidden" id="product_id" name="product_id" value="{{ orderline.product_id }}">
+                        </div>
+                      </td>
+                      <td scope="col" class="align-middle">
+                        <div class="d-flex flex-row">
+                            {{ orderline.product_stock }}
                         </div>
                       </td>
                       <td class="align-middle">
