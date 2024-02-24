@@ -1,12 +1,10 @@
 """
 Flask blueprint for logged in Customer views.
 """
-from flask import Blueprint, render_template, g, request, flash, redirect, url_for, session
-from flaskr.auth import login_required
+from flask import Blueprint, render_template
 from flaskr.db.store import get_order_orderlines, get_customer_orders
 from flaskr.db.user import get_all_users, get_user_by_id
 from flaskr.store import get_order_total_amount
-import bcrypt
 
 
 bp = Blueprint("admin", __name__, url_prefix="/admin")
