@@ -213,7 +213,7 @@ def update_cart(customer_id, products, quantities):
         for orderline in orderlines:
             if orderline['product_id'] == product['id']:
                 if int(product['in_stock']) - (int(target_quantity) - int(orderline['quantity'])) < 0:
-                    continue
+                    break
                 queries.append(_get_stock_change_query(
                         product['id'],
                         int(product['in_stock']) - (int(target_quantity) - int(orderline['quantity']))
