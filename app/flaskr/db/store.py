@@ -86,7 +86,8 @@ def get_cart_orderlines(customer_id):
             OrderLine.unit_price,
             Product.name AS product_name,
             Product.description AS product_description,
-            Product.image_path AS product_image_path
+            Product.image_path AS product_image_path,
+            Product.in_stock AS product_stock
         FROM OrderLine
         INNER JOIN Product ON OrderLine.product_id = Product.id
         WHERE OrderLine.order_id = 
@@ -136,20 +137,6 @@ def create_cart(customer_id):
     cart_id = transaction([create_cart_query, fetch_cart_id])[1][0][0]
     return cart_id
 
-def remove_from_cart(orderline_id):
-    """
-    Removes the specified orderline from the DB
-
-    :param orderline_id:
-    """
-    query = (
-        """
-        DELETE FROM OrderLine
-        WHERE OrderLine.id = %s;
-        """,
-    (orderline_id,))
-    transaction([query])
-
 def update_cart(customer_id, products, quantities):
     """
     Adds or changes an orderline to / in current order (cart). 
@@ -159,49 +146,65 @@ def update_cart(customer_id, products, quantities):
     :param products: a list of dictionaries representing products
     :param total_quantities: a list of integers
     """
+    def _get_update_cart_query (orderline_id, quantity, product) : 
+        return (
+            """
+            UPDATE OrderLine
+            SET OrderLine.quantity = %s, OrderLine.sub_total_amount = %s
+            WHERE OrderLine.id = %s;
+            """
+            ,
+            (
+                quantity,
+                quantity*product['price'],
+                orderline_id
+            )
+        )
+
+    def _get_insert_to_cart_query (cart_id, product, quantity):
+        return (
+            """
+            INSERT INTO OrderLine (order_id, product_id, quantity, sub_total_amount, unit_price)
+            VALUES (%s, %s, %s, %s, %s);
+            """
+            ,
+            (
+                cart_id,
+                product['id'],
+                quantity,
+                quantity*product['price'],
+                product['price']
+            )
+        )
+
+    def _get_remove_from_cart_query (order_id):
+        return (
+            """
+            DELETE FROM OrderLine
+            WHERE OrderLine.id = %s;
+            """
+            ,
+            (order_id,)
+        )
+
+    def _get_stock_change_query(product_id, new_stock):
+        return (
+            """
+            UPDATE Product
+            SET Product.in_stock = %s
+            WHERE Product.id = %s;
+            """,
+            (new_stock, product_id)
+        )
+
     cart_id = get_cart_id(customer_id)
     orderlines = get_cart_orderlines(customer_id)
 
-    update_query = lambda orderline_id, quant, prod : (
-    """
-    UPDATE OrderLine
-    SET OrderLine.quantity = %s, OrderLine.sub_total_amount = %s
-    WHERE OrderLine.id = %s;
-    """
-    ,
-    (
-        quant,
-        quant*prod['price'],
-        orderline_id
-    ))
-
-    insert_query = lambda prod, quant :(
-    """
-    INSERT INTO OrderLine (order_id, product_id, quantity, sub_total_amount, unit_price)
-    VALUES (%s, %s, %s, %s, %s);
-    """
-    ,
-    (
-        cart_id,
-        prod['id'],
-        quant,
-        quant*prod['price'],
-        prod['price']
-    ))
-
-    remove_from_cart_query = lambda oid :(
-    """
-    DELETE FROM OrderLine
-    WHERE OrderLine.id = %s;
-    """
-    ,
-    (oid,))
-
     queries = []
 
-    for product, quantity in zip(products, quantities):
-        sub_total = int(quantity)*product['price']
-        if int(quantity) > MAX_QUANTITY:
+    for product, target_quantity in zip(products, quantities):
+        sub_total = int(target_quantity)*product['price']
+        if int(target_quantity) > MAX_QUANTITY:
             print(f"Cannot add more than {MAX_QUANTITY} units!")
             continue
         if  sub_total > MAX_SUB_TOTAL:
@@ -209,13 +212,24 @@ def update_cart(customer_id, products, quantities):
             continue
         for orderline in orderlines:
             if orderline['product_id'] == product['id']:
-                if int(quantity) == 0:
-                    queries.append(remove_from_cart_query(orderline['id']))
+                if int(product['in_stock']) - (int(target_quantity) - int(orderline['quantity'])) < 0:
+                    break
+                queries.append(_get_stock_change_query(
+                        product['id'],
+                        int(product['in_stock']) - (int(target_quantity) - int(orderline['quantity']))
+                        ))
+                if int(target_quantity) == 0:
+                    queries.append(_get_remove_from_cart_query(orderline['id']))
                 else:
-                    queries.append(update_query(orderline['id'],int(quantity),product))
+                    queries.append(_get_update_cart_query(orderline['id'],int(target_quantity),product))
                 break
         else:
-                queries.append(insert_query(product,int(quantity)))
+            if int(product['in_stock']) - int(target_quantity) < 0:
+                continue
+            queries.append(_get_insert_to_cart_query(cart_id, product,int(target_quantity)))
+            queries.append(_get_stock_change_query(
+                    product['id'],
+                    int(product['in_stock']) - int(target_quantity)))
 
     transaction(queries)
 
@@ -254,7 +268,7 @@ def checkout(customer_id):
         (cart_id,)
     )
     transaction([query])
-    
+
 def get_order_orderlines(order_id):
     """
     Get the contents of an order.
