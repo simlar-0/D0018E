@@ -20,17 +20,21 @@
                     {% include 'store/average_rating.html'%}
                     <p>In stock: {{ product.in_stock }}</p>
                     <div class="row">
-                      <form class="text-center" method="POST" action="{{ url_for('store.add_to_cart') }}?id={{ id }}">
+                      <form class="text-center" method="POST" action="{{ url_for('store.add_to_cart') }}?id={{ product.id }}">
                         {% if g.user %}
                           <div class="hstack gap-1">
                             <input min="1" max="999" id="quantity" name="quantity" value="1" type="number" class="form-control form-control-sm" style="width: 60px" />
                             <button id="submitBtn" class="btn btn-dark btn-lsm" style="min-width: 110px; max-height: 40px" type="submit">Add to cart</button>
                           </div>
-                          <p id="errorMsg" class="text-danger" style="display:none;">Paragraph</p>
+                          <div id="errorMsg" class="alert alert-danger mt-2" role="alert" style="display:none;">
+                          </div>
                         {% else %}
                           <div class="hstack gap-1">
                             <input min="1" name="quantity" value="1" type="number" class="form-control form-control-sm" style="width: 60px" disabled />
                             <button id="submitBtn" class="btn btn-dark btn-lsm" style="min-width: 110px; max-height: 40px" type="button" disabled>Add to cart</button>
+                          </div>
+                          <div class="alert alert-danger mt-2" role="alert">
+                            You must be logged in to add items to your cart.
                           </div>
                         {% endif %}
                       </form>
@@ -38,13 +42,6 @@
                   </div>
                 </div>
                 <div class="row">
-                  {% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                      <div class="notification is-danger">
-                        <p class="small">{{ messages[0] }}</p>
-                      </div>
-                    {% endif %}
-                  {% endwith %}
                 </div>
               </div>
             </div>

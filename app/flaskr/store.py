@@ -23,7 +23,10 @@ from flaskr.db.store import(
     create_cart,
     get_cart_orderlines,
     checkout as checkout_db,
-    get_product_reviews
+    get_product_reviews,
+    add_product_review,
+    get_customer_orders,
+    get_order_orderlines,
 )
 
 
@@ -78,7 +81,7 @@ def update_cart():
     
     return redirect(url_for('store.cart'))
 
-@bp.route("/product", methods=["GET"])
+@bp.route("/product")
 def product_info():
     try:
         product_id = int(request.args.get('id', 1))
@@ -86,27 +89,20 @@ def product_info():
         product_id = 1
     except ValueError:
         product_id = 1
-
-    if g.user is None: # This updates the text below the greyed out "add to cart" button
-        flash("You must be logged in to add to cart.")
-       
+        
     try:
         product = get_one_product(product_id)
     except IndexError:
         return render_template("store/product.html", id=product_id, product=None)
-
+        
     reviews = get_product_reviews(product_id)
-
-    if reviews:
+    if reviews: 
         product['rating'] = get_average_rating(reviews)
 
-    if not g.user:
-        return render_template("store/product.html", id=product_id, product=product, reviews=reviews, do_not_show_add=True)
-
-    for review in reviews:
-        if g.user and review['customer_id'] == g.user['id']:
-            return render_template("store/product.html", id=product_id, product=product, reviews=reviews, do_not_show_add=True)     
-    return render_template("store/product.html", id=product_id, product=product, reviews=reviews)
+    # If user is logged in and has ordered the product, and has not placed a review, show the add review form
+    if g.user and (customer_has_ordered_product(g.user['id'], product_id) and not customer_has_placed_review(g.user['id'], product_id)):
+                return render_template("store/product.html", id=product_id, product=product, reviews=reviews)     
+    return render_template("store/product.html", id=product_id, product=product, reviews=reviews, do_not_show_add=True)
 
 @bp.route("/product", methods=["POST"])
 @login_required
@@ -141,8 +137,37 @@ def get_average_rating(reviews):
         total += review['rating']
     return total / len(reviews)
 
+def customer_has_ordered_product(customer_id, product_id):
+    customer_orders = get_customer_orders(customer_id)
+    for order in customer_orders:
+        order_items = get_order_orderlines(order['id'])
+        for item in order_items:
+            if item['product_id'] == product_id:
+                return True
+    return False
+
+def customer_has_placed_review(customer_id, product_id):
+    reviews = get_product_reviews(product_id)
+    for review in reviews:
+        if review['customer_id'] == customer_id:
+            return True
+    return False
+
 @bp.route("/order-confirmation")
 @login_required
 def checkout():
     checkout_db(g.user['id'])
     return render_template("store/checkout.html")
+
+@bp.route("/product/add-review", methods=["POST"])
+@login_required
+def add_review():
+    product_id = int(request.args.get('id'))
+    forms = request.form.to_dict()
+    user = g.user
+    
+    if 'rating' not in forms:
+        flash("You must give a rating.")
+        return redirect(url_for('store.product_info', id=product_id))
+    add_product_review(product_id, user['id'], forms['review'], forms['rating'])
+    return redirect(url_for('store.product_info', id=product_id))
