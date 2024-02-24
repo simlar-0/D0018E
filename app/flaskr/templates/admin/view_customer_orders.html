@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+  View orders
+{% endblock %}
+
+
+{% block content %}
+{% if orders %}
+  <div class="col">
+    <div>
+        <h4 class="text-dark pt-4">Orders</h4>
+        <p class="w-lg-50"></p>
+    </div>
+    {% for order in orders %}
+    <div class="table-responsive rounded-1">
+      <table id="order" class="table border">
+        <thead class="table-light">
+          <tr>
+            <th class="col-3 ">Order id</th>
+            <th>{{ order['order'][0]['order_id'] }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Order status:</td>
+            <td>{{ order['order_status'] }}</td>
+          </tr>
+          <tr>
+            <td>Order date:</td>
+            <td>{{ order['order_date'].strftime('%Y-%m-%d') }}</td>
+          </tr>
+          <tr>
+            <td>Delivery address:</td>
+            <td>{{ user['address'] }}, {{ user['postcode'] }}, {{ user['city'] }}</td>
+          </tr>
+          <tr>
+            <td>Order items:</td>
+            <td>
+              <table id="order_items" class="table">
+                <thead class="table-light">
+                  <tr>
+                    <th class="col-8" scope="col">Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                  </tr>
+                </thead>
+                {% for item in order['order'] %}
+                <tbody>
+                  <tr>
+                    <td>{{ item['product_name']}}</td>
+                    <td>{{ item['quantity']}}</td>
+                    <td>{{ item['sub_total_amount']|int}} kr</td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+                <tfoot class="border-bottom">
+                  <tr>
+                    <td>Shipping:</td>
+                    <td></td>
+                    <td>25 kr</td>
+                  <tr>
+                    <td><strong>Total amount:</strong></td>
+                    <td></td>
+                    <td><strong>{{ order['total_amount']|int +25}} kr</strong></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+    <div class="col">
+      <div>
+          <h4 class="text-dark pt-4">You have no past orders!</h4>
+      </div>
+  {% endif %}
+{% endblock %}
