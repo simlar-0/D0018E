@@ -65,7 +65,7 @@ def create_customer(user):
     )
     return transaction([query_reg_user, query_reg_pass])
 
-def get_user_by_email(user_type, email):
+def get_customer_by_email(email):
     """
     Gets customer by email address.
     :param user_type: the name of the table that contains the user.
@@ -73,9 +73,26 @@ def get_user_by_email(user_type, email):
     :returns a dictionary of the results:
     """
     query = (
-        f"""
+        """
         SELECT id, name, address, postcode, city, email
-        FROM {user_type}
+        FROM Customer
+        WHERE email = %s;
+        """,
+        (email,))
+    results = transaction([query], dict_cursor=True)[0]
+    return results[0] if len(results) > 0 else None
+
+def get_manager_by_email(email):
+    """
+    Gets customer by email address.
+    :param user_type: the name of the table that contains the user.
+    :param email: the email address.
+    :returns a dictionary of the results:
+    """
+    query = (
+        """
+        SELECT id, name, email, is_admin
+        FROM Manager
         WHERE email = %s;
         """,
         (email,))

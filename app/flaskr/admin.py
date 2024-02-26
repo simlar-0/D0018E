@@ -1,16 +1,22 @@
 """
 Flask blueprint for logged in Customer views.
 """
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, g
 from flaskr.db.store import get_order_orderlines, get_customer_orders
 from flaskr.db.user import get_all_users, get_user_by_id
 from flaskr.store import get_order_total_amount
+from flaskr.auth import manager
 
 
 bp = Blueprint("admin", __name__, url_prefix="/admin")
 
+@bp.route("/")
+@manager
+def index():
+    return render_template("admin/index.html", manager=g.manager)
 
 @bp.route("/customer-list")
+@manager
 def customer_list():
     """
     Retrieve a list of customers and render it in the customer_list.html template.
@@ -21,6 +27,7 @@ def customer_list():
     return render_template("admin/customer_list.html", customers=customers)
 
 @bp.route("/customer/<int:id>/orders")
+@manager
 def customer_orders(id):
     """
     Retrieve the orders of a customer with the given ID.

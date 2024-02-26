@@ -11,6 +11,15 @@
     </button>
     <div class="collapse navbar-collapse" id="navcol-1">
       <ul class="navbar-nav ms-auto">
+        {% if not g.manager %}
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('auth.login_manager') }}">Manager (log in)</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('admin.index') }}">Manager (panel)</a>
+        </li>
+        {% endif %}
         {% if not g.user %}
         <li class="nav-item">
           <a class="nav-link" href="{{ url_for('auth.register_user') }}"
