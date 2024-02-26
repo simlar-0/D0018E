@@ -231,6 +231,14 @@ def update_cart(customer_id, products, quantities):
                     product['id'],
                     int(product['in_stock']) - int(target_quantity)))
 
+    queries.append((
+        """
+        UPDATE CustomerOrder
+        SET CustomerOrder.order_date = NOW()
+        WHERE CustomerOrder.id = %s;
+        """,
+        (cart_id,)
+    ))
     transaction(queries)
 
 def get_amount_in_cart(customer_id, product_id):
@@ -312,11 +320,7 @@ def get_customer_orders(customer_id):
         INNER JOIN OrderStatus ON CustomerOrder.order_status_id = OrderStatus.id
         WHERE
             CustomerOrder.customer_id = %s
-        AND
-            CustomerOrder.order_status_id != 
-                (SELECT OrderStatus.id
-                FROM OrderStatus 
-                WHERE OrderStatus.name = 'InCart');
+        ORDER BY CustomerOrder.id DESC;
         """,
         (customer_id,)
     )
