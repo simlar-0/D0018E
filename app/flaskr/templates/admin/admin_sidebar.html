@@ -1,0 +1,27 @@
+<div class="col col-2">
+    <div id="sidebar-main" class="sidebar sidebar-default sidebar-separate"
+        style="padding-top: 20px;">
+        <div class="sidebar-category sidebar-default">
+            <div class="category-title">
+                <span>
+                {% if g.manager.is_admin %}
+                    Admin
+                {% else %}
+                    Manager
+                {% endif %}
+                </span>
+            </div>
+            <div class="category-content">
+                <ul id="fruits-nav" class="nav flex-column">
+                    {% if g.manager.is_admin %}
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.customer_list') }}"><i class="bi bi-person-badge-fill"></i></i> Customer list </a></li>
+                    {% endif %}
+                    <li class="nav-item"><a class="nav-link" href=""><i class="bi bi-cart"></i> Manage orders </a></li>
+                    <li class="nav-item"><a class="nav-link" href=""><i class="bi bi-box"></i> Manage products </a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.manager_logout') }}"><i class="bi bi-door-closed"></i> Log out </a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
