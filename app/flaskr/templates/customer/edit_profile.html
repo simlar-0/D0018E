@@ -33,14 +33,14 @@
         </div>
       </div>
       <div class="mb-3">
-        <input class="form-control form-control-user" type="password" id="currentPassword" name="currentPassword" placeholder="Current password" required />
+        <input class="form-control form-control-user" type="password" id="current_password" name="current_password" placeholder="Current password" required />
       </div>
       <div class="row mb-3">
         <div class="col-6">
-          <input class="form-control form-control form-control-user" type="password" id="newPassword" name="newPassword" placeholder="New password"/>
+          <input class="form-control form-control form-control-user" type="password" id="new_password" name="new_password" placeholder="New password"/>
         </div>
         <div class="col-sm-6">
-          <input class="form-control form-control form-control-user" type="password" id="verifyPassword" name="verifyPassword" placeholder="Repeat new password"/>
+          <input class="form-control form-control form-control-user" type="password" id="verify_password" name="verify_password" placeholder="Repeat new password"/>
         </div>
       </div>
       <div class="row mb-3">
@@ -64,8 +64,8 @@
 {% block inline_scripts %}
 <script>
   let email = document.getElementById('email')
-  let newPassword = document.getElementById('newPassword')
-  let verifyPassword = document.getElementById('verifyPassword')
+  let new_password = document.getElementById('new_password')
+  let verify_password = document.getElementById('verify_password')
   let submitBtn = document.getElementById('submitBtn')
   let emailErrorMsg = document.getElementById('emailErrorMsg')
   let passwordErrorMsg = document.getElementById('passwordErrorMsg')
@@ -97,17 +97,17 @@
   }
   
   // Validate password upon change
-  newPassword.addEventListener('change', function () {
+  new_password.addEventListener('change', function () {
     // If password has no value, then it won't be changed and no error will be displayed
-    if (newPassword.value.length == 0 && verifyPassword.value.length == 0) hideErrorMsg('password')
+    if (new_password.value.length == 0 && verify_password.value.length == 0) hideErrorMsg('password')
     // If password has a value, then it will be checked. In this case the passwords don't match
-    else if (newPassword.value !== verifyPassword.value) displayErrorMsg('password', 'Passwords do not match')
+    else if (new_password.value !== verify_password.value) displayErrorMsg('password', 'Passwords do not match')
     // When the passwords match, we check the length
     else hideErrorMsg('password')
   })
   
-  verifyPassword.addEventListener('change', function () {
-    if (newPassword.value !== verifyPassword.value) displayErrorMsg('password', 'Passwords do not match')
+  verify_password.addEventListener('change', function () {
+    if (new_password.value !== verify_password.value) displayErrorMsg('password', 'Passwords do not match')
       else hideErrorMsg('password')
  
   })
