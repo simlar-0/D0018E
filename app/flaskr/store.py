@@ -25,8 +25,8 @@ from flaskr.db.store import(
     checkout as checkout_db,
     get_product_reviews,
     add_product_review,
-    get_customer_orders,
-    get_order_orderlines,
+    get_customer_has_ordered_product,
+    get_customer_has_reviewed_product,
 )
 
 
@@ -100,7 +100,7 @@ def product_info():
         product['rating'] = get_average_rating(reviews)
 
     # If user is logged in and has ordered the product, and has not placed a review, show the add review form
-    if g.user and (customer_has_ordered_product(g.user['id'], product_id) and not customer_has_placed_review(g.user['id'], product_id)):
+    if g.user and (get_customer_has_ordered_product(g.user['id'], product_id) and not get_customer_has_reviewed_product(g.user['id'], product_id)):
                 return render_template("store/product.html", id=product_id, product=product, reviews=reviews)     
     return render_template("store/product.html", id=product_id, product=product, reviews=reviews, do_not_show_add=True)
 
@@ -136,22 +136,6 @@ def get_average_rating(reviews):
     for review in reviews:
         total += review['rating']
     return total / len(reviews)
-
-def customer_has_ordered_product(customer_id, product_id):
-    customer_orders = get_customer_orders(customer_id)
-    for order in customer_orders:
-        order_items = get_order_orderlines(order['id'])
-        for item in order_items:
-            if item['product_id'] == product_id:
-                return True
-    return False
-
-def customer_has_placed_review(customer_id, product_id):
-    reviews = get_product_reviews(product_id)
-    for review in reviews:
-        if review['customer_id'] == customer_id:
-            return True
-    return False
 
 @bp.route("/order-confirmation")
 @login_required
