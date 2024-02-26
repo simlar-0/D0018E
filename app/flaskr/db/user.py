@@ -163,5 +163,5 @@ def get_all_users(user_type):
         SELECT id, name, email, address, postcode, city
         FROM {user_type};
         """,
-        (,))
+        ())
     return transaction([query], dict_cursor=True)[0]
