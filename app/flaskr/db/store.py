@@ -365,3 +365,39 @@ def add_product_review(produt_id, customer_id, review, rating):
         (produt_id, customer_id, review, rating)
     )
     transaction([query])
+    
+def update_product(details):
+    """
+    Update the details of a product.
+    
+    :param details: a dictionary containing the new details of the product.
+    """
+    query = (
+        """
+        UPDATE Product
+        SET 
+            name = %s,
+            description = %s,
+            price = %s,
+            in_stock = %s,
+            image_path = %s
+        WHERE Product.id = %s;
+        """,
+        (details['name'], details['description'], details['price'], details['stock'], details['image_path'], details['id'])
+    )
+    transaction([query])
+    
+def remove_product(product_id):
+    """
+    Remove a product from the database.
+    
+    :param product_id: the id of the product.
+    """
+    query = (
+        """
+        DELETE FROM Product
+        WHERE Product.id = %s;
+        """,
+        (product_id,)
+    )
+    transaction([query])
