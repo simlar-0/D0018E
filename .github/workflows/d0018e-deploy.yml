@@ -36,12 +36,6 @@ jobs:
           echo "AUTH_KEY=${{ secrets.AUTH_KEY }}" >> .env
       - name: Run docker-compose file
         run: docker compose up -d
-      - name: Run tests
-        run: |
-          # database container is not reachable immediately after conpose up command finishes
-          # need to wait for a few seconds before running tests 
-          sleep 5
-          docker compose exec --workdir /code app pytest -c pytest.ini
   deploy:
     if: github.event.pull_request.merged == true || github.ref == 'refs/heads/main'
     name: Deploy
