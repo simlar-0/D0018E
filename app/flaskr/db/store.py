@@ -303,11 +303,12 @@ def get_order_orderlines(order_id):
     )
     return transaction([query], dict_cursor = True)[0]
 
-def get_customer_orders(customer_id):
+def get_customer_orders(customer_id, with_cart):
     """
-    Get all orders belonging to the specified customer, except the cart.
+    Get all orders belonging to the specified customer.
 
     :param customer_id: Customer id
+    :param with_cart: will include the content of the customer's cart if True
     :returns: a list of dictionaries containing keys: id, order_date, order_status
     """
     query = (
@@ -323,7 +324,25 @@ def get_customer_orders(customer_id):
         ORDER BY CustomerOrder.id DESC;
         """,
         (customer_id,)
+    ) if with_cart else (
+        """
+        SELECT 
+            CustomerOrder.id,
+            CustomerOrder.order_date,
+            OrderStatus.name AS order_status
+        FROM CustomerOrder
+        INNER JOIN OrderStatus ON CustomerOrder.order_status_id = OrderStatus.id
+        WHERE
+            CustomerOrder.customer_id = %s
+        AND
+            CustomerOrder.order_status_id != 
+                (SELECT OrderStatus.id
+                FROM OrderStatus 
+                WHERE OrderStatus.name = 'InCart');
+        """,
+        (customer_id,)
     )
+
     orders = transaction([query], dict_cursor = True)[0]
     return orders
 
