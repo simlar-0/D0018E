@@ -3,7 +3,15 @@ Flask blueprint for logged in Customer views.
 """
 from flask import Blueprint, render_template, g, request, current_app, flash, redirect, url_for
 from werkzeug.utils import secure_filename
-from flaskr.db.store import get_order_orderlines, get_customer_orders, get_all_products, get_one_product, update_product, remove_product as db_remove_product
+from flaskr.db.store import (
+    get_order_orderlines, 
+    get_customer_orders, 
+    get_all_products, 
+    get_one_product, 
+    update_product, 
+    remove_product as db_remove_product,
+    add_product as db_add_product
+    )
 from flaskr.db.user import get_all_users, get_user_by_id
 from flaskr.store import get_order_total_amount
 from flaskr.auth import manager
@@ -67,9 +75,9 @@ def product_details(id):
 
 @bp.route("/manage-products/edit_product", methods=['GET', 'POST'])
 def edit_product():
-    forms = request.form.to_dict()
     upload_image(request)
     
+    forms = request.form.to_dict()
     image_path = Path('/images') / request.files['file'].filename
     forms['image_path'] = str(image_path.as_posix())
     update_product(forms)
@@ -97,3 +105,16 @@ def upload_image(request):
 def remove_product(id):
     db_remove_product(id)
     redirect(url_for('admin.product_list'))
+    
+@bp.route("/manage-products/add_product", methods=['GET', 'POST'])
+def add_product():
+    if request.method == 'POST':
+        upload_image(request)
+        
+        forms = request.form.to_dict()
+        image_path = Path('/images') / request.files['file'].filename
+        forms['image_path'] = str(image_path.as_posix())
+        db_add_product(forms)
+        return redirect(url_for('admin.product_list'))
+    
+    return render_template("admin/add_product.html")

@@ -420,3 +420,16 @@ def remove_product(product_id):
         (product_id,)
     )
     transaction([query])
+    
+def add_product(details):
+    """
+    Add a product to the database.
+    """
+    query = (
+        """
+        INSERT INTO Product (name, description, price, in_stock, image_path)
+        VALUES (%s, %s, %s, %s, %s);
+        """,
+        (details['name'], details['description'], details['price'], details['stock'], details['image_path'])
+    )
+    transaction([query])

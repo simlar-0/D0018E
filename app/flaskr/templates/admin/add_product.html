@@ -1,0 +1,54 @@
+{% extends 'admin/index.html' %}
+
+{% block title %}
+  Product details
+{% endblock %}
+
+{% block admin_content %}
+      <div class="col-9 pt-5">
+        <div class="card rounded border">
+          <div class="card-body p-4">
+            <form method="POST" enctype="multipart/form-data" action="{{ url_for('admin.add_product')}}">
+              <div class="form-group row py-1">
+                <label for="product_name" class="col-sm-3 col-form-label">Product name:</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" name="name" id="product_name">
+                </div>
+              </div>
+              <div class="form-group row py-1">
+                <label for="product_descr" class=" col-sm-3 col-form-label">Product description:</label>
+                <div class="col-sm-9">
+                  <textarea class="form-control" id="product_descr" name="description" rows="3"></textarea>
+                </div>
+              </div>
+              <div class="form-group row py-1">
+                <label for="product_price" class="col-sm-3 col-form-label">Unit price:</label>
+                <div class="col-sm-2">
+                  <input type="number" min="0" class="no-arrows form-control" name="price" id="product_price">
+                </div>
+              </div>
+              <div class="form-group row py-1">
+                <label for="product_stock" class="col-sm-3 col-form-label">Stock:</label>
+                <div class="col-sm-2">
+                  <input type="number" min="0" class="no-arrows form-control" name="stock" id="product_stock" >
+                </div>
+              </div>
+              <div class="form-group row py-1">
+                <label for="file" class="col-sm-3 col-form-label">Product image:</label>
+                <div class="col-sm-9">
+                  <input type="file" id="file" name="file">
+                </div>
+              </div>
+              <div class="form-group row py-1">
+                <div class="col h-stack">
+                  <button type="submit" class="btn btn-dark">Add product</button>
+                  <a href="{{ url_for('admin.product_list') }}" class="btn btn-secondary">Cancel</a>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+{% endblock %}
+
+
