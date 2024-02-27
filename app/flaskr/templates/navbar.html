@@ -11,31 +11,34 @@
     </button>
     <div class="collapse navbar-collapse" id="navcol-1">
       <ul class="navbar-nav ms-auto">
-        {% if not g.manager %}
-        <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('auth.login_manager') }}">Manager (log in)</a>
-        </li>
-        {% else %}
-        <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('admin.index') }}">Manager (panel)</a>
-        </li>
+        {% if g.manager %}
+          {% if g.manager['is_admin'] %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('admin.index') }}">Admin panel</a>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('admin.index') }}">Manager panel</a>
+            </li>
+          {% endif %}
         {% endif %}
-        {% if not g.user %}
-        <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('auth.register_user') }}"
-            >Register</a
-          >
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('auth.login_user') }}">Log in</a>
-        </li>
-        {% else %}
-        <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('customer.profile') }}">Profile</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('store.cart') }}">Cart</a>
-        </li>
+        {% if not g.manager and not g.user %}
+          <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('auth.login_manager') }}">Manager (log in)</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('auth.register_user') }}">Register</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('auth.login_user') }}">Log in</a>
+          </li>
+          {% elif not g.manager %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('customer.profile') }}">Profile</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('store.cart') }}">Cart</a>
+            </li>
         {% endif %}
       </ul>
     </div>

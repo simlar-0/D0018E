@@ -4,16 +4,14 @@
   Manager Panel
 {% endblock %}
 
-{% block content %}
-{% if manager.is_admin %}
-You are an admin!
-<br>
-<a href={{url_for('admin.customer_list')}}>Customer List</a>
-{% else %}
-You are a manager, but not an admin!
-{% endif %}
-<br>
-<a href="">Manage Products</a>
-<br>
-<a href={{url_for('auth.manager_logout')}}>Logout</a>
+{% block content -%}
+  <div class="container">
+    <div class="row">
+      {% block admin_sidebar %}
+        {% include 'admin/admin_sidebar.html' %}
+      {% endblock %}
+      {% block admin_content %}
+      {% endblock %}
+    </div>
+  </div>
 {% endblock %}
