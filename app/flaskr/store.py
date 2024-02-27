@@ -138,7 +138,7 @@ def get_average_rating(reviews):
     return total / len(reviews)
 
 def customer_has_ordered_product(customer_id, product_id):
-    customer_orders = get_customer_orders(customer_id)
+    customer_orders = get_customer_orders(customer_id, with_cart=False)
     for order in customer_orders:
         order_items = get_order_orderlines(order['id'])
         for item in order_items:

@@ -1,6 +1,10 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, g
 from functools import wraps
-from flaskr.db.user import get_user_by_email, get_user_password, create_customer
+from flaskr.db.user import (
+    get_customer_by_email, 
+    get_user_password, 
+    create_customer,
+    get_manager_by_email)
 import bcrypt
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
@@ -10,6 +14,14 @@ def login_required(f):
     def decorated_function(*args, **kwargs):
         if g.user is None:
             return redirect(url_for('auth.login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def manager(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if g.manager is None:
+            return redirect(url_for('auth.login_manager'))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -26,7 +38,7 @@ def register_user():
     postcode        = request.form.get('postcode')
     password        = request.form.get('password')
 
-    user = get_user_by_email('Customer', email)
+    user = get_customer_by_email(email)
     if user is not None:
         flash("There is already a user with that email address!")
         return redirect(url_for('auth.register'))
@@ -42,7 +54,7 @@ def register_user():
 
     create_customer(user)
     
-    user = get_user_by_email('Customer', email) 
+    user = get_customer_by_email(email)
     session['user_id'] = user
     session.modified = True
     return redirect(url_for('customer.profile'))
@@ -55,7 +67,7 @@ def login():
 def login_user():
     email       = request.form.get('email')
     password    = request.form.get('password')
-    user        = get_user_by_email('Customer', email)
+    user        = get_customer_by_email(email)
 
     if user and 'id' in user.keys():
         pass_from_db = get_user_password('Customer', user['id'])
@@ -67,6 +79,25 @@ def login_user():
     flash('Please check your login details and try again.')
     return redirect(url_for('auth.login_user'))
 
+@bp.route("/manager_login")
+def login_manager():
+    return render_template("auth/manager_login.html")
+
+@bp.route('/manager_login', methods=['POST'])
+def login_manager_post():
+    email       = request.form.get('email')
+    password    = request.form.get('password')
+    manager     = get_manager_by_email(email)
+
+    if manager and 'id' in manager.keys():
+        pass_from_db = get_user_password('Manager', manager['id'])
+        if bcrypt.checkpw(bytes(password, 'utf-8'),bytes(pass_from_db.decode(), 'utf-8')):
+            session['manager_id'] = manager
+            session.modified     = True
+            return redirect(url_for('admin.index'))
+
+    flash('Please check your login details and try again.')
+    return redirect(url_for('auth.login_manager_post'))
 
 @bp.route("/forgot-password")
 def forgot_password():
@@ -78,13 +109,25 @@ def logout():
     g.pop('user_id', None)
     return redirect(url_for('store.index'))
 
+@bp.route("/manager_logout")
+def manager_logout():
+    session.pop('manager_id', None)
+    g.pop('manager_id', None)
+    return redirect(url_for('store.index'))
+
 @bp.before_app_request
 def load_logged_in_user():
     """If a user id is stored in the session, load the user object from
     the database into ``g.user``."""
     user_id = session.get("user_id")
+    manager_id = session.get("manager_id")
 
     if user_id is None:
         g.user = None
     else:
         g.user = session['user_id']
+
+    if manager_id is None:
+        g.manager = None
+    else:
+        g.manager = session['manager_id']

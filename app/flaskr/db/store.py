@@ -231,6 +231,14 @@ def update_cart(customer_id, products, quantities):
                     product['id'],
                     int(product['in_stock']) - int(target_quantity)))
 
+    queries.append((
+        """
+        UPDATE CustomerOrder
+        SET CustomerOrder.order_date = NOW()
+        WHERE CustomerOrder.id = %s;
+        """,
+        (cart_id,)
+    ))
     transaction(queries)
 
 def get_amount_in_cart(customer_id, product_id):
@@ -295,14 +303,28 @@ def get_order_orderlines(order_id):
     )
     return transaction([query], dict_cursor = True)[0]
 
-def get_customer_orders(customer_id):
+def get_customer_orders(customer_id, with_cart):
     """
-    Get all orders belonging to the specified customer, except the cart.
+    Get all orders belonging to the specified customer.
 
     :param customer_id: Customer id
+    :param with_cart: will include the content of the customer's cart if True
     :returns: a list of dictionaries containing keys: id, order_date, order_status
     """
     query = (
+        """
+        SELECT 
+            CustomerOrder.id,
+            CustomerOrder.order_date,
+            OrderStatus.name AS order_status
+        FROM CustomerOrder
+        INNER JOIN OrderStatus ON CustomerOrder.order_status_id = OrderStatus.id
+        WHERE
+            CustomerOrder.customer_id = %s
+        ORDER BY CustomerOrder.id DESC;
+        """,
+        (customer_id,)
+    ) if with_cart else (
         """
         SELECT 
             CustomerOrder.id,
@@ -320,6 +342,7 @@ def get_customer_orders(customer_id):
         """,
         (customer_id,)
     )
+
     orders = transaction([query], dict_cursor = True)[0]
     return orders
 

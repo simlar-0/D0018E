@@ -55,8 +55,8 @@ def edit_profile():
 @login_required
 def view_orders():
     user = g.user
-    customer_orders    = get_customer_orders(g.user['id'])
-    
+    customer_orders    = get_customer_orders(g.user['id'], with_cart=False)
+
     if customer_orders:
         order_items = [get_order_orderlines(order['id']) for order in customer_orders]
         total_amounts = [get_order_total_amount(order_item) for order_item in order_items]
