@@ -1,15 +1,11 @@
-{% extends "base.html" %}
+{% extends 'admin/index.html' %}
 
 {% block title %}
   Customer list
 {% endblock %}
 
-{% block content %}
-  <div class="container py-5">
-    <div class="row d-flex
-    justify-content-center align-items-center">
-      <div class="col-9">
-        <a href={{url_for('admin.index')}}>Back to manager panel</a>
+{% block admin_content %}
+      <div class="col-9 mt-5">
         <div class="card rounded border">
           <div class="card-body p-4">
             <div class="table-responsive">
@@ -20,9 +16,8 @@
                     <th scope="col">Name</th>
                     <th scope="col">Email</th>
                     <th scope="col">Address</th>
-                    <th scope="col">postcode</th>
+                    <th scope="col">Postcode</th>
                     <th scope="col">City</th>
-                    
                   </tr>
                 </thead>
                 <tbody>
@@ -42,6 +37,4 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
 {% endblock %}

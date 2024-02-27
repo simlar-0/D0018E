@@ -1,15 +1,11 @@
-{% extends "base.html" %}
+{% extends 'admin/index.html' %}
 
 {% block title %}
   View orders
 {% endblock %}
 
-{% block content %}
-  <div class="container py-5">
-    <div class="row d-flex
-    justify-content-center align-items-center">
-      <div class="col-9">
-        <a href={{url_for('admin.customer_list')}}>Back to customers list</a>
+{% block admin_content %}
+      <div class="col-9 pt-5">
         <div class="card rounded border">
           <div class="card-body p-4">
             <div class="table-responsive">
@@ -18,7 +14,7 @@
                     {% if orders %}
                       <div class="col">
                         <div>
-                            <h4 class="text-dark pt-4">Orders for <b>{{user['email']}}</b></h4>
+                            <h4 class="text-dark">Orders for <b>{{user['email']}}</b></h4>
                             <p class="w-lg-50"></p>
                         </div>
                         {% for order in orders %}
@@ -94,8 +90,6 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
 {% endblock %}
 
 

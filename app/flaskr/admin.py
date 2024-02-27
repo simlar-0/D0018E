@@ -44,7 +44,7 @@ def customer_orders(id):
 
     :returns The rendered template containing the customer's orders:
     """
-    customer_orders = get_customer_orders(id)
+    customer_orders = get_customer_orders(id, with_cart= True)
     user = get_user_by_id(id, 'Customer')
     if customer_orders:
         order_items = [get_order_orderlines(order['id']) for order in customer_orders]
