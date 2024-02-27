@@ -17,6 +17,7 @@
                     <th scope="col">Name</th>
                     <th scope="col">Price</th>
                     <th scope="col">Stock</th>
+                    <th scope="col">Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -26,6 +27,13 @@
                     <td><a href="{{ url_for('admin.product_details', id=product.id) }}">{{ product.name }}</a></td>
                     <td>{{ product.price }}</td>
                     <td>{{ product.in_stock }}</td>
+                    <td>
+                      {% if product.product_status == 'Active' %}
+                        <span class="badge bg-success">{{ product.product_status }}</span>
+                      {% else %}
+                        <span class="badge bg-danger">{{ product.product_status }}</span>
+                      {% endif %}
+                      </td>
                   </tr>
                   {% endfor %}
                 </tbody>

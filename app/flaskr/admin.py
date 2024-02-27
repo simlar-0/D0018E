@@ -9,7 +9,6 @@ from flaskr.db.store import (
     get_all_products, 
     get_one_product, 
     update_product, 
-    remove_product as db_remove_product,
     add_product as db_add_product
     )
 from flaskr.db.user import get_all_users, get_user_by_id
@@ -64,47 +63,41 @@ def customer_orders(id):
 @bp.route("/manage-products")
 @manager
 def product_list():
-    products = get_all_products()
+    products = get_all_products(include_inactive=True)
     return render_template("admin/product_list.html", products=products)
 
 @bp.route("/manage-products/product-id=<int:id>")
 @manager
 def product_details(id):
     product = get_one_product(id)
-    return render_template("admin/product_details.html", product=product)
+    return render_template("admin/edit_product.html", product=product)
 
 @bp.route("/manage-products/edit_product", methods=['GET', 'POST'])
 def edit_product():
     upload_image(request)
-    
     forms = request.form.to_dict()
-    image_path = Path('/images') / request.files['file'].filename
-    forms['image_path'] = str(image_path.as_posix())
-    update_product(forms)
-    return redirect(url_for('admin.product_list'))
     
+    file = request.files['file']
+    if file.filename == '':
+        forms['image_path'] = request.form['old_image_path']
+    else:
+        image_path = Path('/images') / request.files['file'].filename
+        forms['image_path'] = str(image_path.as_posix())
+    
+    update_product(forms)
+    flash('Product details edited successfully')
+    return redirect(url_for('admin.product_list'))   
     
 def upload_image(request):
     if 'file' not in request.files:
         flash('No file part')
         return redirect(request.url)
     file = request.files['file']
-    # If the user does not select a file, the browser submits an
-    # empty file without a filename.
-    if file.filename == '':
-        flash('No selected file')
-        return redirect(request.url)
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(Path(current_app.config['UPLOAD_FOLDER'], filename))
-        flash('Product details edited successfully')
-        return redirect(request.url)
-    return None
-
-@bp.route("/manage-products/remove_product/product-id=<int:id>")
-def remove_product(id):
-    db_remove_product(id)
-    redirect(url_for('admin.product_list'))
+        return True
+    return False
     
 @bp.route("/manage-products/add_product", methods=['GET', 'POST'])
 def add_product():
@@ -116,5 +109,4 @@ def add_product():
         forms['image_path'] = str(image_path.as_posix())
         db_add_product(forms)
         return redirect(url_for('admin.product_list'))
-    
     return render_template("admin/add_product.html")

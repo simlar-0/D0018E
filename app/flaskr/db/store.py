@@ -5,21 +5,67 @@ from flaskr.db.db import transaction
 MAX_SUB_TOTAL = 10**16
 MAX_QUANTITY = 999
 
-def get_all_products():
+def get_all_products(include_inactive=False):
     """
-    Returns ALL products registered in the DB.
+    Returns ALL products registered in the DB, with the option to include inactive.
     :returns: a list of tuples (name, description, price, image_path, in_stock). 
     """
-    query = ("""SELECT id, name, description, price, image_path, in_stock FROM Product""", tuple())
+    if include_inactive:
+        query = ("""
+                 SELECT 
+                    Product.id,
+                    Product.name, 
+                    Product.description, 
+                    Product.price, 
+                    Product.image_path, 
+                    Product.in_stock,
+                    ProductStatus.name AS product_status 
+                FROM 
+                    Product
+                INNER JOIN ProductStatus ON Product.product_status_id = ProductStatus.id;
+                """, tuple())
+    else:
+        query = ("""
+                SELECT 
+                    id, name, description, price, image_path, in_stock 
+                FROM 
+                    Product
+                WHERE Product.product_status_id =
+                    (
+                        SELECT ProductStatus.id
+                        FROM ProductStatus 
+                        WHERE ProductStatus.name = 'Active'
+                    );
+                """, tuple())
     return transaction([query], dict_cursor=True)[0]
 
-def get_some_products(limit, offset):
+def get_some_products(limit, offset, include_inactive=False):
     """
-    Returns <limit> products from the DB, offset by <offset>.
+    Returns <limit> products from the DB, offset by <offset>, with the option to include inactive.
     :returns: a list of tuples (name, description, price, image_path, in_stock). 
     """
-    query = ("""SELECT id, name, description, price, image_path, in_stock FROM Product LIMIT %s OFFSET %s""",
-              (limit, offset))
+    if include_inactive:
+        query = ("""
+                 SELECT 
+                    id, name, description, price, image_path, in_stock 
+                 FROM 
+                    Product 
+                LIMIT %s OFFSET %s;
+                """,(limit, offset))
+    else:
+        query = ("""SELECT 
+                        id, name, description, price, image_path, in_stock 
+                    FROM 
+                        Product 
+                    WHERE 
+                        Product.product_status_id =
+                            (
+                                SELECT ProductStatus.id
+                                FROM ProductStatus 
+                                WHERE ProductStatus.name = 'Active'
+                            ) 
+                    LIMIT %s OFFSET %s;
+                    """,(limit, offset))
     return transaction([query], dict_cursor=True)[0]
 
 def get_one_product(product_id):
@@ -30,12 +76,32 @@ def get_one_product(product_id):
     query = ("""SELECT id, name, description, price, image_path, in_stock FROM Product WHERE id=%s""",(product_id,))
     return transaction([query], dict_cursor=True)[0][0]
 
-def count_products():
+def count_products(include_inactive=False):
     """
     Returns the number of products in db.
     :returns: an integer count of products.
     """
-    query = ("""SELECT COUNT(*) FROM Product""", tuple())
+    if include_inactive:
+        query = ("""
+                 SELECT 
+                    COUNT(*)    
+                FROM 
+                    Product;
+                """, tuple())
+    else:
+        query = ("""
+                SELECT 
+                    COUNT(*)    
+                FROM 
+                    Product 
+                WHERE 
+                    Product.product_status_id =
+                        (
+                            SELECT ProductStatus.id
+                            FROM ProductStatus 
+                            WHERE ProductStatus.name = 'Active'
+                        )
+                        """, tuple())
     return transaction([query])[0][0][0]
 
 def get_cart_id(customer_id):
@@ -399,25 +465,15 @@ def update_product(details):
             description = %s,
             price = %s,
             in_stock = %s,
-            image_path = %s
+            image_path = %s,
+            product_status_id = (
+                SELECT ProductStatus.id
+                FROM ProductStatus 
+                WHERE ProductStatus.name = %s
+            ) 
         WHERE Product.id = %s;
         """,
-        (details['name'], details['description'], details['price'], details['stock'], details['image_path'], details['id'])
-    )
-    transaction([query])
-    
-def remove_product(product_id):
-    """
-    Remove a product from the database.
-    
-    :param product_id: the id of the product.
-    """
-    query = (
-        """
-        DELETE FROM Product
-        WHERE Product.id = %s;
-        """,
-        (product_id,)
+        (details['name'], details['description'], details['price'], details['stock'], details['image_path'], details['status'], details['id'])
     )
     transaction([query])
     
@@ -427,9 +483,22 @@ def add_product(details):
     """
     query = (
         """
-        INSERT INTO Product (name, description, price, in_stock, image_path)
-        VALUES (%s, %s, %s, %s, %s);
+        INSERT INTO 
+            Product (
+                name, 
+                description, 
+                price, 
+                in_stock, 
+                image_path, 
+                product_status_id)
+        VALUES (%s, %s, %s, %s, %s,
+            (
+                SELECT ProductStatus.id
+                FROM ProductStatus 
+                WHERE ProductStatus.name = %s
+            ) 
+        );
         """,
-        (details['name'], details['description'], details['price'], details['stock'], details['image_path'])
+        (details['name'], details['description'], details['price'], details['stock'], details['image_path'], details['status'])
     )
     transaction([query])
