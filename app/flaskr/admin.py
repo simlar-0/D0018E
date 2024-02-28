@@ -11,10 +11,18 @@ from flaskr.db.store import (
     update_product, 
     add_product as db_add_product
     )
-from flaskr.db.user import get_all_users, get_user_by_id
+from flaskr.db.user import (
+    get_all_users,
+    get_user_by_id,
+    delete_user,
+    set_user_details,
+    get_user_by_email,
+    set_user_password,
+    )
 from flaskr.store import get_order_total_amount
 from flaskr.auth import manager
 from pathlib import Path
+import bcrypt
 
 
 bp = Blueprint("admin", __name__, url_prefix="/admin")
@@ -109,3 +117,40 @@ def add_product():
         db_add_product(forms)
         return redirect(url_for('admin.product_list'))
     return render_template("admin/add_product.html")
+
+@bp.route("/customer/<int:id>/edit-profile")
+@manager
+def view_edit_profile(id):
+    user = get_user_by_id(id, 'Customer')
+    return render_template("admin/edit_customer_profile.html", user=user)
+
+@bp.route("/customer/<int:id>/edit-profile", methods=["POST"])
+@manager
+def edit_profile(id):
+    user = get_user_by_id(id, 'Customer')
+    forms = request.form.to_dict()
+        
+    if forms['email'] != user['email']:
+        compare_user = get_user_by_email('Customer', forms['email'])
+        if compare_user is not None:
+            flash("There is already a user with that email address!")
+            return redirect(url_for('admin.view_edit_profile', id=id))
+
+    if forms['new_password']:
+        hashed_pass = bcrypt.hashpw(bytes(forms['new_password'], 'utf-8'), bcrypt.gensalt())
+        set_user_password('Customer', user['id'], hashed_pass)
+            
+    set_user_details(forms, user['id'])
+    flash("Edit profile successful!")
+    return redirect(url_for('admin.view_edit_profile', id=id))
+
+@bp.route("/customer/<int:id>/delete")
+@manager
+def delete_customer(id):
+    """
+    Delete a customer from the database.
+
+    :returns A redirect to the customer list.
+    """
+    delete_user(id, 'Customer')
+    return redirect(url_for('admin.customer_list'))
