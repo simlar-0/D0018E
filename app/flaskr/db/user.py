@@ -131,14 +131,11 @@ def set_user_password(user_type, user_id, hashed_password):
     )
     transaction([query])
     
-def set_user_details(name, email, address, postcode, city, user_id):
+def set_user_details(details, user_id):
     """
     Sets user details.
-    :param name: the name of the user.
-    :param email: the email address.
-    :param address: the address of the user.
-    :param postcode: the postcode of the user.
-    :param city: the city of the user.
+    :param details: a dictionary containing the details to update. 
+        Contains the following keys: name, email, address, postcode, city.
     :param user_id: the user id.
     """
     query = (
@@ -147,7 +144,7 @@ def set_user_details(name, email, address, postcode, city, user_id):
         SET name = %s, email = %s, address = %s, postcode = %s, city = %s
         WHERE id = %s;
         """,
-        (name, email, address, postcode, city, user_id)
+        (details['name'], details['email'], details['address'], details['postcode'], details['city'], user_id)
     )
     transaction([query])
 

@@ -5,12 +5,14 @@ from flaskr.db.db import transaction
 MAX_SUB_TOTAL = 10**16
 MAX_QUANTITY = 999
 
-def get_all_products(include_inactive=False):
+def get_all_products(include_unlisted=False):
     """
-    Returns ALL products registered in the DB, with the option to include inactive.
+    Returns ALL products registered in the DB, with the option to include unlisted.
+    
+    :param include_unlisted: if True, includes unlisted products.
     :returns: a list of tuples (name, description, price, image_path, in_stock). 
     """
-    if include_inactive:
+    if include_unlisted:
         query = ("""
                  SELECT 
                     Product.id,
@@ -34,17 +36,20 @@ def get_all_products(include_inactive=False):
                     (
                         SELECT ProductStatus.id
                         FROM ProductStatus 
-                        WHERE ProductStatus.name = 'Active'
+                        WHERE ProductStatus.name = 'Listed'
                     );
                 """, tuple())
     return transaction([query], dict_cursor=True)[0]
 
-def get_some_products(limit, offset, include_inactive=False):
+def get_some_products(limit, offset, include_unlisted=False):
     """
-    Returns <limit> products from the DB, offset by <offset>, with the option to include inactive.
+    Returns <limit> products from the DB, offset by <offset>, with the option to include unlisted.
+    :param limit: the number of products to return.
+    :param offset: the number of products to skip.
+    :param include_unlisted: if True, includes unlisted products.
     :returns: a list of tuples (name, description, price, image_path, in_stock). 
     """
-    if include_inactive:
+    if include_unlisted:
         query = ("""
                  SELECT 
                     id, name, description, price, image_path, in_stock 
@@ -62,7 +67,7 @@ def get_some_products(limit, offset, include_inactive=False):
                             (
                                 SELECT ProductStatus.id
                                 FROM ProductStatus 
-                                WHERE ProductStatus.name = 'Active'
+                                WHERE ProductStatus.name = 'Listed'
                             ) 
                     LIMIT %s OFFSET %s;
                     """,(limit, offset))
@@ -76,12 +81,13 @@ def get_one_product(product_id):
     query = ("""SELECT id, name, description, price, image_path, in_stock FROM Product WHERE id=%s""",(product_id,))
     return transaction([query], dict_cursor=True)[0][0]
 
-def count_products(include_inactive=False):
+def count_products(include_unlisted=False):
     """
     Returns the number of products in db.
+    :param include_unlisted: if True, includes unlisted products.
     :returns: an integer count of products.
     """
-    if include_inactive:
+    if include_unlisted:
         query = ("""
                  SELECT 
                     COUNT(*)    
@@ -99,7 +105,7 @@ def count_products(include_inactive=False):
                         (
                             SELECT ProductStatus.id
                             FROM ProductStatus 
-                            WHERE ProductStatus.name = 'Active'
+                            WHERE ProductStatus.name = 'Listed'
                         )
                         """, tuple())
     return transaction([query])[0][0][0]

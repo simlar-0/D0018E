@@ -63,7 +63,7 @@ def customer_orders(id):
 @bp.route("/manage-products")
 @manager
 def product_list():
-    products = get_all_products(include_inactive=True)
+    products = get_all_products(include_unlisted=True)
     return render_template("admin/product_list.html", products=products)
 
 @bp.route("/manage-products/product-id=<int:id>")

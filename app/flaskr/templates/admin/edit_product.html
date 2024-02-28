@@ -41,19 +41,21 @@
                 </div>
               </div>
               <div class="form-group row py-1">
+                <label for="category" class="col-sm-3 col-form-label">Product status:</label>
+                <div class="col-sm-3">
+                  <select class="form-control" id="status" name="status" required>
+                    <option value="Listed">Listed</option>
+                    <option value="Unlisted">Unlisted</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group row py-1">
                 <label for="file" class="col-sm-3 col-form-label">Product image:</label>
                 <div class="col-sm-9">
                   <input type="file" id="file" name="file">
                   <input type="hidden" name="old_image_path" value="{{ product.image_path }}">
-                </div>
-              </div>
-              <div class="form-group row py-1">
-                <label for="category" class="col-sm-3 col-form-label">Product status:</label>
-                <div class="col-sm-3">
-                  <select class="form-control" id="status" name="status" required>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                  </select>
+                    <label for="product_id" class="col-sm-3 col-form-label">Current image:</label>
+                    <img src={{ url_for('static', filename=product.image_path) }} alt="" width="200" class="img-fluid rounded" />
                 </div>
               </div>
               <div class="form-group row py-1">

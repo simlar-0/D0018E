@@ -31,30 +31,25 @@ def register():
 
 @bp.route("/register", methods=["POST"])
 def register_user():
-    name            = request.form.get('name')
-    email           = request.form.get('email')
-    address         = request.form.get('address')
-    city            = request.form.get('city')
-    postcode        = request.form.get('postcode')
-    password        = request.form.get('password')
+    forms = request.form.to_dict()
 
-    user = get_customer_by_email(email)
+    user = get_customer_by_email(forms['email'])
     if user is not None:
         flash("There is already a user with that email address!")
         return redirect(url_for('auth.register'))
-    hashed_pass = bcrypt.hashpw(bytes(password, 'utf-8'), bcrypt.gensalt())
+    hashed_pass = bcrypt.hashpw(bytes(forms['password'], 'utf-8'), bcrypt.gensalt())
     user = {
-        'name':name,
-        'email':email,
-        'address':address,
-        'city':city,
-        'postcode':postcode,
+        'name':forms['name'],
+        'email':forms['email'],
+        'address':forms['address'],
+        'city':forms['city'],
+        'postcode':forms['postcode'],
         'hashed_password':hashed_pass
     }
 
     create_customer(user)
     
-    user = get_customer_by_email(email)
+    user = get_customer_by_email(forms['email'])
     session['user_id'] = user
     session.modified = True
     return redirect(url_for('customer.profile'))
