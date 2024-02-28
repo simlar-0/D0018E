@@ -384,3 +384,48 @@ def add_product_review(produt_id, customer_id, review, rating):
         (produt_id, customer_id, review, rating)
     )
     transaction([query])
+
+def get_customer_has_reviewed_product(customer_id, product_id):
+    """
+    Check if a customer has reviewed a product.
+    
+    :param product_id: the id of the product.
+    :param customer_id: the id of the customer.
+    :returns: an integer count of reviews.
+    """
+    query = (
+        """
+        SELECT 
+            COUNT(*)
+        FROM Review
+        WHERE 
+            Review.product_id = %s
+        AND
+            Review.customer_id = %s;
+        """,
+        (product_id, customer_id)
+    )
+    return transaction([query])[0][0][0]
+
+def get_customer_has_ordered_product(customer_id, product_id):
+    """
+    Check if a customer has ordered a product.
+    
+    :param customer_id: the id of the customer.
+    :param product_id: the id of the product.
+    :returns: an integer count of orders.
+    """
+    query = (
+        """
+        SELECT 
+            COUNT(*) 
+        FROM OrderLine
+        INNER JOIN CustomerOrder ON OrderLine.order_id = CustomerOrder.id
+        WHERE 
+            CustomerOrder.customer_id = %s
+        AND
+            OrderLine.product_id = %s;
+        """,
+        (customer_id, product_id)
+    )
+    return transaction([query])[0][0][0]
