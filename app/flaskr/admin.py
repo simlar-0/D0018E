@@ -109,3 +109,32 @@ def add_product():
         db_add_product(forms)
         return redirect(url_for('admin.product_list'))
     return render_template("admin/add_product.html")
+@bp.route("/customer/<int:id>/edit-profile")
+@manager
+def view_edit_profile(id):
+    user = get_user_by_id(id, 'Customer')
+    return render_template("admin/edit_customer_profile.html", user=user)
+
+@bp.route("/customer/<int:id>/edit-profile", methods=["POST"])
+@manager
+def edit_profile(id):
+    user = get_user_by_id(id, 'Customer')
+    forms = request.form.to_dict()
+        
+    if forms['email'] != user['email']:
+        compare_user = get_user_by_email('Customer', forms['email'])
+        if compare_user is not None:
+            flash("There is already a user with that email address!")
+            return redirect(url_for('admin.view_edit_profile', id=id))
+
+    if forms['new_password']:
+        hashed_pass = bcrypt.hashpw(bytes(forms['new_password'], 'utf-8'), bcrypt.gensalt())
+        set_user_password('Customer', user['id'], hashed_pass)
+            
+    set_user_details(forms, user['id'])
+    # Update session user
+    user = get_user_by_email('Customer', forms['email']) 
+    session['user_id'] = user
+    session.modified = True
+    flash("Edit profile successful!")
+    return redirect(url_for('admin.view_edit_profile', id=id))
