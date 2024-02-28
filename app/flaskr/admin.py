@@ -11,10 +11,18 @@ from flaskr.db.store import (
     update_product, 
     add_product as db_add_product
     )
-from flaskr.db.user import get_all_users, get_user_by_id
+from flaskr.db.user import (
+    get_all_users,
+    get_user_by_id,
+    delete_user,
+    set_user_details,
+    get_user_by_email,
+    set_user_password,
+    )
 from flaskr.store import get_order_total_amount
 from flaskr.auth import manager
 from pathlib import Path
+import bcrypt
 
 
 bp = Blueprint("admin", __name__, url_prefix="/admin")
@@ -109,6 +117,7 @@ def add_product():
         db_add_product(forms)
         return redirect(url_for('admin.product_list'))
     return render_template("admin/add_product.html")
+
 @bp.route("/customer/<int:id>/edit-profile")
 @manager
 def view_edit_profile(id):
