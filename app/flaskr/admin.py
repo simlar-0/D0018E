@@ -90,8 +90,7 @@ def edit_product():
     
 def upload_image(request):
     if 'file' not in request.files:
-        flash('No file part')
-        return redirect(request.url)
+        return False
     file = request.files['file']
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
