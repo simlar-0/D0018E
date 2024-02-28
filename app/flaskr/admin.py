@@ -138,3 +138,14 @@ def edit_profile(id):
     session.modified = True
     flash("Edit profile successful!")
     return redirect(url_for('admin.view_edit_profile', id=id))
+
+@bp.route("/customer/<int:id>/delete")
+@manager
+def delete_customer(id):
+    """
+    Delete a customer from the database.
+
+    :returns A redirect to the customer list.
+    """
+    delete_user(id, 'Customer')
+    return redirect(url_for('admin.customer_list'))
