@@ -99,6 +99,20 @@ def get_manager_by_email(email):
     results = transaction([query], dict_cursor=True)[0]
     return results[0] if len(results) > 0 else None
 
+def get_user_by_email(user_type, email):
+    """
+    Gets user by email address.
+    :param user_type: the name of the table that contains the user.
+    :param email: the email address.
+    :returns a dictionary of the results:
+    """
+    if user_type == 'Customer':
+        return get_customer_by_email(email)
+    elif user_type == 'Manager':
+        return get_manager_by_email(email)
+    else:
+        return None
+
 def get_user_password(user_type, user_id):
     """
     Gets user password.
