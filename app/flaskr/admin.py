@@ -132,10 +132,6 @@ def edit_profile(id):
         set_user_password('Customer', user['id'], hashed_pass)
             
     set_user_details(forms, user['id'])
-    # Update session user
-    user = get_user_by_email('Customer', forms['email']) 
-    session['user_id'] = user
-    session.modified = True
     flash("Edit profile successful!")
     return redirect(url_for('admin.view_edit_profile', id=id))
 
