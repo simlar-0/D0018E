@@ -30,7 +30,8 @@ def create_app(test_config=None):
     app.config['MYSQL_TIME_ZONE']           = _conf('MYSQL_TIME_ZONE', test_config, '+01:00')
 
     app.config['TESTING']                   = True if test_config is not None else False
-    app.config['DEBUG']                     = _conf('DEBUG',test_config, False)
+    app.config['DEBUG']                     = _conf('DEBUG',test_config, False),
+    app.config['UPLOAD_FOLDER']             = _conf('UPLOAD_FOLDER',test_config, 'flaskr/static/images/')
 
     app.secret_key                          = bytes(_conf('AUTH_KEY',test_config, ''), 'utf-8')
 

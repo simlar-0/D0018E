@@ -31,7 +31,7 @@ from flaskr.db.store import(
 
 
 bp = Blueprint("store", __name__)
-LIMIT = 12 #TODO: move magic constants somewhere else
+LIMIT = 21 #TODO: move magic constants somewhere else
 
 @bp.route("/")
 def index():

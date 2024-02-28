@@ -134,11 +134,8 @@ def set_user_password(user_type, user_id, hashed_password):
 def set_user_details(details, user_id):
     """
     Sets user details.
-    :param name: the name of the user.
-    :param email: the email address.
-    :param address: the address of the user.
-    :param postcode: the postcode of the user.
-    :param city: the city of the user.
+    :param details: a dictionary containing the details to update. 
+        Contains the following keys: name, email, address, postcode, city.
     :param user_id: the user id.
     """
     query = (

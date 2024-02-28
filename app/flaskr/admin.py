@@ -1,14 +1,29 @@
 """
 Flask blueprint for logged in Customer views.
 """
-from flask import Blueprint, render_template, g
-from flaskr.db.store import get_order_orderlines, get_customer_orders
+from flask import Blueprint, render_template, g, request, current_app, flash, redirect, url_for
+from werkzeug.utils import secure_filename
+from flaskr.db.store import (
+    get_order_orderlines, 
+    get_customer_orders, 
+    get_all_products, 
+    get_one_product, 
+    update_product, 
+    add_product as db_add_product
+    )
 from flaskr.db.user import get_all_users, get_user_by_id
 from flaskr.store import get_order_total_amount
 from flaskr.auth import manager
+from pathlib import Path
 
 
 bp = Blueprint("admin", __name__, url_prefix="/admin")
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @bp.route("/")
 @manager
@@ -44,3 +59,53 @@ def customer_orders(id):
         orders = [{'order': order_item, 'total_amount': total_amount, 'order_date': customer_order['order_date'], 'order_status': customer_order['order_status']} for order_item, total_amount, customer_order in zip(order_items, total_amounts, customer_orders)]
         return render_template("admin/view_customer_orders.html", orders=orders, user=user)
     return render_template("admin/view_customer_orders.html", user=user)
+
+@bp.route("/manage-products")
+@manager
+def product_list():
+    products = get_all_products(include_unlisted=True)
+    return render_template("admin/product_list.html", products=products)
+
+@bp.route("/manage-products/product-id=<int:id>")
+@manager
+def product_details(id):
+    product = get_one_product(id)
+    return render_template("admin/edit_product.html", product=product)
+
+@bp.route("/manage-products/edit_product", methods=['GET', 'POST'])
+def edit_product():
+    upload_image(request)
+    forms = request.form.to_dict()
+    
+    file = request.files['file']
+    if file.filename == '':
+        forms['image_path'] = request.form['old_image_path']
+    else:
+        image_path = Path('/images') / request.files['file'].filename
+        forms['image_path'] = str(image_path.as_posix())
+    
+    update_product(forms)
+    flash('Product details edited successfully')
+    return redirect(url_for('admin.product_list'))   
+    
+def upload_image(request):
+    if 'file' not in request.files:
+        return False
+    file = request.files['file']
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(Path(current_app.config['UPLOAD_FOLDER'], filename))
+        return True
+    return False
+    
+@bp.route("/manage-products/add_product", methods=['GET', 'POST'])
+def add_product():
+    if request.method == 'POST':
+        upload_image(request)
+        
+        forms = request.form.to_dict()
+        image_path = Path('/images') / request.files['file'].filename
+        forms['image_path'] = str(image_path.as_posix())
+        db_add_product(forms)
+        return redirect(url_for('admin.product_list'))
+    return render_template("admin/add_product.html")
