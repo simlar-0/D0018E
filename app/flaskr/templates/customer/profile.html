@@ -13,7 +13,17 @@
         {% include 'customer/profile_sidebar.html' %}
       {% endblock %}
       {% block profile_content %}
-
+      <div class="col mt-5">
+        <div>
+          {% with messages = get_flashed_messages() %}
+          {% if messages %}
+          <div class="alert alert-success mt-3" role="alert">
+            {{ messages[0] }}
+          </div>        
+          {% endif %}
+          {% endwith %}
+        </div>
+      </div>
       {% endblock %}
     </div>
   </div>

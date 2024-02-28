@@ -4,7 +4,7 @@ Flask blueprint for logged in Customer views.
 from flask import Blueprint, render_template, g, request, flash, redirect, url_for, session
 from flaskr.auth import login_required
 from flaskr.db.store import get_order_orderlines, get_customer_orders
-from flaskr.db.user import get_user_password, set_user_password, set_user_details
+from flaskr.db.user import get_user_password, set_user_password, set_user_details, get_user_by_email
 from flaskr.store import get_order_total_amount
 import bcrypt
 
@@ -27,30 +27,36 @@ def view_edit_profile():
 @login_required
 def edit_profile():
     user = g.user
-
-    name                = request.form.get('name')
-    email               = request.form.get('email')
-    address             = request.form.get('address')
-    city                = request.form.get('city')
-    postcode            = request.form.get('postcode')
-    current_password    = request.form.get('currentPassword')
-    new_password        = request.form.get('newPassword')
-
-    
+    forms = request.form.to_dict()
     pass_from_db = get_user_password('Customer', user['id'])
-    if bcrypt.checkpw(bytes(current_password, 'utf-8'),bytes(pass_from_db.decode(), 'utf-8')):
-        hashed_pass = bcrypt.hashpw(bytes(new_password, 'utf-8'), bcrypt.gensalt())
-        set_user_password('Customer', user['id'], hashed_pass)
-        set_user_details(name, email, address, postcode, city, user['id'])
+        
+    if forms['email'] != user['email']:
+        compare_user = get_user_by_email('Customer', forms['email'])
+        if compare_user is not None:
+            flash("There is already a user with that email address!")
+            return redirect(url_for('customer.view_edit_profile'))
+
+    if bcrypt.checkpw(bytes(forms['current_password'], 'utf-8'),bytes(pass_from_db.decode(), 'utf-8')):
+        if forms['new_password']:
+            hashed_pass = bcrypt.hashpw(bytes(forms['new_password'], 'utf-8'), bcrypt.gensalt())
+            set_user_password('Customer', user['id'], hashed_pass)
+            
+        set_user_details(forms, user['id'])
+        # Update session user
+        user = get_user_by_email('Customer', forms['email']) 
+        session['user_id'] = user
+        session.modified = True
+        flash("Edit profile successful!")
         return redirect(url_for('customer.profile'))
-    flash("Wrong password")
+    flash("Wrong password!")
     return redirect(url_for('customer.view_edit_profile'))
 
 @bp.route("/orders")
 @login_required
 def view_orders():
     user = g.user
-    customer_orders    = get_customer_orders(g.user['id'], with_cart=True)
+    customer_orders    = get_customer_orders(g.user['id'], with_cart=False)
+
     if customer_orders:
         order_items = [get_order_orderlines(order['id']) for order in customer_orders]
         total_amounts = [get_order_total_amount(order_item) for order_item in order_items]

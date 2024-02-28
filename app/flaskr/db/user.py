@@ -131,7 +131,7 @@ def set_user_password(user_type, user_id, hashed_password):
     )
     transaction([query])
     
-def set_user_details(name, email, address, postcode, city, user_id):
+def set_user_details(details, user_id):
     """
     Sets user details.
     :param name: the name of the user.
@@ -147,7 +147,7 @@ def set_user_details(name, email, address, postcode, city, user_id):
         SET name = %s, email = %s, address = %s, postcode = %s, city = %s
         WHERE id = %s;
         """,
-        (name, email, address, postcode, city, user_id)
+        (details['name'], details['email'], details['address'], details['postcode'], details['city'], user_id)
     )
     transaction([query])
 
