@@ -193,3 +193,17 @@ def get_all_users(user_type):
         """,
         ())
     return transaction([query], dict_cursor=True)[0]
+
+def delete_user(user_id, user_type):
+    """
+    Delete a user from the database.
+    :param user_id: the id of the user to delete.
+    :param user_type: the type of user to delete.
+    """
+    query_delete_user = (
+        f"""
+        DELETE FROM {user_type}
+        WHERE id = %s;
+        """,
+        (user_id,))
+    transaction([query_delete_user])
