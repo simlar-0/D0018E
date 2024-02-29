@@ -45,7 +45,7 @@
                 <div class="col-sm-3">
                   <select class="form-control" id="status" name="status" required>
                     <option value="Listed">Listed</option>
-                    <option value="Unlisted">Unlisted</option>
+                    <option value="Unlisted" {% if product.product_status == "Unlisted" %} selected="selected"{% endif %}>Unlisted</option>
                   </select>
                 </div>
               </div>

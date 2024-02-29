@@ -78,7 +78,22 @@ def get_one_product(product_id):
     Returns <limit> products from the DB, offset by <offset>.
     :returns: a list of tuples (name, description, price, image_path, in_stock). 
     """
-    query = ("""SELECT id, name, description, price, image_path, in_stock FROM Product WHERE id=%s""",(product_id,))
+    query = (
+        """
+        SELECT 
+            Product.id, 
+            Product.name, 
+            Product.description, 
+            Product.price, 
+            Product.image_path, 
+            Product.in_stock,
+            Product.product_status_id,
+            ProductStatus.name AS product_status
+        FROM Product
+        INNER JOIN ProductStatus ON Product.product_status_id = ProductStatus.id
+        WHERE Product.id=%s;
+        """,
+        (product_id,))
     return transaction([query], dict_cursor=True)[0][0]
 
 def count_products(include_unlisted=False):
