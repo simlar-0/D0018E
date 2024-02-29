@@ -555,3 +555,72 @@ def get_customer_has_ordered_product(customer_id, product_id):
     )
     return transaction([query])[0][0][0]
 
+def get_non_cart_orderlines():
+    """
+    Fetches all orderlines belonging to 
+        pending (not 'InCart') orders in the DB.
+
+    :returns: a list of dictionaries, where each dictionary contains an orderline.
+    """
+    query = (
+        """
+        SELECT 
+            CustomerOrder.id as order_id,
+            customer_id, 
+            order_date, 
+            order_status_id,
+            Customer.name AS customer_name,
+            OrderLine.sub_total_amount,
+            OrderLine.id as orderline_id,
+            OrderLine.product_id,
+            OrderLine.quantity,
+            OrderLine.unit_price,
+            OrderStatus.name as status
+        FROM CustomerOrder
+        INNER JOIN Customer ON Customer.id = customer_id
+        INNER JOIN OrderLine ON OrderLine.order_id = CustomerOrder.id
+        INNER JOIN OrderStatus ON OrderStatus.id = CustomerOrder.order_status_id
+        WHERE CustomerOrder.order_status_id IN 
+        (
+            SELECT OrderStatus.id
+            FROM OrderStatus
+            WHERE OrderStatus.name NOT IN ('InCart')
+        )
+        ORDER BY CustomerOrder.order_status_id;
+        """,
+        (tuple()))
+
+    return transaction([query], dict_cursor = True)[0]
+
+def change_order_status(order_id, new_status_id):
+    """
+    Changes the status of an order in the DB.
+
+    :param order_id:
+    :param new_status_id:
+    """
+    query = (
+        """
+        UPDATE CustomerOrder 
+        SET CustomerOrder.order_status_id = %s
+        WHERE CustomerOrder.id = %s;
+        """,
+        (new_status_id, order_id)
+    )
+    transaction([query])
+
+def get_non_cart_statuses():
+    """
+    Get all order statuses and their corresponding ids, except InCart.
+
+    :returns: a list of dictionaries, where each dictionary contains an OrderStatus.
+    """
+    query = (
+        """
+        SELECT id, name
+        FROM OrderStatus
+        WHERE OrderStatus.name != "InCart";
+        """,
+        (tuple())
+    )
+    return transaction([query], dict_cursor = True)[0]
