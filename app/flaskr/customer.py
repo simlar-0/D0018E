@@ -4,7 +4,7 @@ Flask blueprint for logged in Customer views.
 from flask import Blueprint, render_template, g, request, flash, redirect, url_for, session
 from flaskr.auth import login_required
 from flaskr.db.store import get_order_orderlines, get_customer_orders
-from flaskr.db.user import get_user_password, set_user_password, set_user_details, get_user_by_email
+from flaskr.db.user import get_user_password, set_user_password, set_user_details
 from flaskr.store import get_order_total_amount
 import bcrypt
 

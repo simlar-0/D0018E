@@ -1,0 +1,50 @@
+{% extends 'admin/index.html' %}
+
+{% block title %}
+  Customer list
+{% endblock %}
+
+{% block admin_content %}
+      <div class="col-9 mt-5">
+        <div class="card rounded border">
+          <div class="card-body p-4">
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Order ID</th>
+                    <th scope="col">Customer ID</th>
+                    <th scope="col">Customer Name</th>
+                    <th scope="col">Total</th>
+                    <th scope="col">Order Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for order in orders %}
+                  <tr>
+                    <td>{{ order[0] }}</td>
+                    <td><a href="{{ url_for('admin.customer_orders', id=order[1].customer_id) }}">{{ order[1].customer_id }}</a></td>
+                    <td><a href="{{ url_for('admin.customer_orders', id=order[1].customer_id) }}">{{ order[1].customer_name }}</a></td>
+                    <td>{{ order[1].total }} kr</td>
+                    <td>
+                    <form action={{ url_for('admin.change_status') }} method="post">
+                    <select name="change_status" id="change_status" title="Change Status" onchange="this.form.submit()">
+                    {% for status in statuses %}
+                        {% if status.name == order[1].status %}
+                            <option value={{status.name}} selected="selected">{{status.name}}</option>
+                        {% else %}
+                            <option value={{status.name}}>{{status.name}}</option>
+                        {% endif %}
+                    {% endfor %}
+                    </select> 
+                    </form>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+{% endblock %}
