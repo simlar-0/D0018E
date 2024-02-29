@@ -29,11 +29,11 @@ Feature: Management
 
         Then a message confirming that account information was changed
 
- Scenario: delete a  customer account
-        Given I am logged in as a manager
+    Scenario: Delete a  customer account
+            Given I am logged in as a manager
 
-        Given I have the customer list open
+            Given I have the customer list open
 
-        When I click remove link in a list entry
+            When I click remove link in a list entry
 
-        Then the customer accUnt is deleted from the database and the list
+            Then the customer account is deleted from the database and the list

@@ -8,15 +8,15 @@ Feature: Product Browsing
         When I enter the catalog
 
         Then I should see the available products
-    
-    Scenario: Visiting the product information page
+
+    Scenario: View product details
         Given I have a catalog
 
         When I enter the catalog
 
         When I press a product link
 
-        Then I should see the product information page
+        Then I should see the product details
 
     Scenario: Load More products
         Given I have a catalog

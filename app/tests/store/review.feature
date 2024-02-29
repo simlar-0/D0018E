@@ -1,6 +1,5 @@
 # Tests for product reviews feature. 
 Feature: Review
-    Review
 
     Scenario: Leave a review
         Given I am logged in as a customer
@@ -16,4 +15,3 @@ Feature: Review
         Then My ranking should be added to the product
 
         Then If I have given a comment, then the comment should be added to the product
-
