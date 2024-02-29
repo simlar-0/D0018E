@@ -99,6 +99,20 @@ def get_manager_by_email(email):
     results = transaction([query], dict_cursor=True)[0]
     return results[0] if len(results) > 0 else None
 
+def get_user_by_email(user_type, email):
+    """
+    Gets user by email address.
+    :param user_type: the name of the table that contains the user.
+    :param email: the email address.
+    :returns a dictionary of the results:
+    """
+    if user_type == 'Customer':
+        return get_customer_by_email(email)
+    elif user_type == 'Manager':
+        return get_manager_by_email(email)
+    else:
+        return None
+
 def get_user_password(user_type, user_id):
     """
     Gets user password.
@@ -134,11 +148,8 @@ def set_user_password(user_type, user_id, hashed_password):
 def set_user_details(details, user_id):
     """
     Sets user details.
-    :param name: the name of the user.
-    :param email: the email address.
-    :param address: the address of the user.
-    :param postcode: the postcode of the user.
-    :param city: the city of the user.
+    :param details: a dictionary containing the details to update. 
+        Contains the following keys: name, email, address, postcode, city.
     :param user_id: the user id.
     """
     query = (
@@ -182,3 +193,17 @@ def get_all_users(user_type):
         """,
         ())
     return transaction([query], dict_cursor=True)[0]
+
+def delete_user(user_id, user_type):
+    """
+    Delete a user from the database.
+    :param user_id: the id of the user to delete.
+    :param user_type: the type of user to delete.
+    """
+    query_delete_user = (
+        f"""
+        DELETE FROM {user_type}
+        WHERE id = %s;
+        """,
+        (user_id,))
+    transaction([query_delete_user])

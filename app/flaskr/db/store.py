@@ -5,21 +5,72 @@ from flaskr.db.db import transaction
 MAX_SUB_TOTAL = 10**16
 MAX_QUANTITY = 999
 
-def get_all_products():
+def get_all_products(include_unlisted=False):
     """
-    Returns ALL products registered in the DB.
+    Returns ALL products registered in the DB, with the option to include unlisted.
+    
+    :param include_unlisted: if True, includes unlisted products.
     :returns: a list of tuples (name, description, price, image_path, in_stock). 
     """
-    query = ("""SELECT id, name, description, price, image_path, in_stock FROM Product""", tuple())
+    if include_unlisted:
+        query = ("""
+                 SELECT 
+                    Product.id,
+                    Product.name, 
+                    Product.description, 
+                    Product.price, 
+                    Product.image_path, 
+                    Product.in_stock,
+                    ProductStatus.name AS product_status 
+                FROM 
+                    Product
+                INNER JOIN ProductStatus ON Product.product_status_id = ProductStatus.id;
+                """, tuple())
+    else:
+        query = ("""
+                SELECT 
+                    id, name, description, price, image_path, in_stock 
+                FROM 
+                    Product
+                WHERE Product.product_status_id =
+                    (
+                        SELECT ProductStatus.id
+                        FROM ProductStatus 
+                        WHERE ProductStatus.name = 'Listed'
+                    );
+                """, tuple())
     return transaction([query], dict_cursor=True)[0]
 
-def get_some_products(limit, offset):
+def get_some_products(limit, offset, include_unlisted=False):
     """
-    Returns <limit> products from the DB, offset by <offset>.
+    Returns <limit> products from the DB, offset by <offset>, with the option to include unlisted.
+    :param limit: the number of products to return.
+    :param offset: the number of products to skip.
+    :param include_unlisted: if True, includes unlisted products.
     :returns: a list of tuples (name, description, price, image_path, in_stock). 
     """
-    query = ("""SELECT id, name, description, price, image_path, in_stock FROM Product LIMIT %s OFFSET %s""",
-              (limit, offset))
+    if include_unlisted:
+        query = ("""
+                 SELECT 
+                    id, name, description, price, image_path, in_stock 
+                 FROM 
+                    Product 
+                LIMIT %s OFFSET %s;
+                """,(limit, offset))
+    else:
+        query = ("""SELECT 
+                        id, name, description, price, image_path, in_stock 
+                    FROM 
+                        Product 
+                    WHERE 
+                        Product.product_status_id =
+                            (
+                                SELECT ProductStatus.id
+                                FROM ProductStatus 
+                                WHERE ProductStatus.name = 'Listed'
+                            ) 
+                    LIMIT %s OFFSET %s;
+                    """,(limit, offset))
     return transaction([query], dict_cursor=True)[0]
 
 def get_one_product(product_id):
@@ -30,12 +81,33 @@ def get_one_product(product_id):
     query = ("""SELECT id, name, description, price, image_path, in_stock FROM Product WHERE id=%s""",(product_id,))
     return transaction([query], dict_cursor=True)[0][0]
 
-def count_products():
+def count_products(include_unlisted=False):
     """
     Returns the number of products in db.
+    :param include_unlisted: if True, includes unlisted products.
     :returns: an integer count of products.
     """
-    query = ("""SELECT COUNT(*) FROM Product""", tuple())
+    if include_unlisted:
+        query = ("""
+                 SELECT 
+                    COUNT(*)    
+                FROM 
+                    Product;
+                """, tuple())
+    else:
+        query = ("""
+                SELECT 
+                    COUNT(*)    
+                FROM 
+                    Product 
+                WHERE 
+                    Product.product_status_id =
+                        (
+                            SELECT ProductStatus.id
+                            FROM ProductStatus 
+                            WHERE ProductStatus.name = 'Listed'
+                        )
+                        """, tuple())
     return transaction([query])[0][0][0]
 
 def get_cart_id(customer_id):
@@ -382,6 +454,59 @@ def add_product_review(produt_id, customer_id, review, rating):
         VALUES (%s, %s, %s, %s, NOW());
         """,
         (produt_id, customer_id, review, rating)
+    )
+    transaction([query])
+
+    
+def update_product(details):
+    """
+    Update the details of a product.
+    
+    :param details: a dictionary containing the new details of the product.
+    """
+    query = (
+        """
+        UPDATE Product
+        SET 
+            name = %s,
+            description = %s,
+            price = %s,
+            in_stock = %s,
+            image_path = %s,
+            product_status_id = (
+                SELECT ProductStatus.id
+                FROM ProductStatus 
+                WHERE ProductStatus.name = %s
+            ) 
+        WHERE Product.id = %s;
+        """,
+        (details['name'], details['description'], details['price'], details['stock'], details['image_path'], details['status'], details['id'])
+    )
+    transaction([query])
+    
+def add_product(details):
+    """
+    Add a product to the database.
+    """
+    query = (
+        """
+        INSERT INTO 
+            Product (
+                name, 
+                description, 
+                price, 
+                in_stock, 
+                image_path, 
+                product_status_id)
+        VALUES (%s, %s, %s, %s, %s,
+            (
+                SELECT ProductStatus.id
+                FROM ProductStatus 
+                WHERE ProductStatus.name = %s
+            ) 
+        );
+        """,
+        (details['name'], details['description'], details['price'], details['stock'], details['image_path'], details['status'])
     )
     transaction([query])
 

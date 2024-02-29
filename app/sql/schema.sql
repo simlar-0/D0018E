@@ -55,10 +55,22 @@ CREATE TABLE IF NOT EXISTS `Product` (
     `price` decimal(8,2)  NOT NULL ,
     `image_path` varchar(255)  NOT NULL ,
     `in_stock` int  NOT NULL ,
+    `product_status_id` int  NOT NULL DEFAULT 1,
     PRIMARY KEY (
         `id`
     ),
     CONSTRAINT `uc_Product_name` UNIQUE (
+        `name`
+    )
+);
+
+CREATE TABLE IF NOT EXISTS `ProductStatus` (
+    `id` int  NOT NULL,
+    `name` nvarchar(255)  NOT NULL ,
+    PRIMARY KEY (
+        `id`
+    ),
+    CONSTRAINT `uc_ProductStatus_name` UNIQUE (
         `name`
     )
 );
@@ -102,25 +114,32 @@ CREATE TABLE IF NOT EXISTS `ManagerPassword` (
 );
 
 ALTER TABLE `CustomerOrder` ADD CONSTRAINT `fk_CustomerOrder_customer_id` FOREIGN KEY(`customer_id`)
-REFERENCES `Customer` (`id`);
+REFERENCES `Customer` (`id`)
+ON DELETE CASCADE;
 
 ALTER TABLE `CustomerOrder` ADD CONSTRAINT `fk_CustomerOrder_order_status_id` FOREIGN KEY(`order_status_id`)
 REFERENCES `OrderStatus` (`id`);
 
+ALTER TABLE `Product` ADD CONSTRAINT `fk_Product_product_status_id` FOREIGN KEY(`product_status_id`)
+REFERENCES `ProductStatus` (`id`);
+
 ALTER TABLE `OrderLine` ADD CONSTRAINT `fk_OrderLine_order_id` FOREIGN KEY(`order_id`)
-REFERENCES `CustomerOrder` (`id`);
+REFERENCES `CustomerOrder` (`id`)
+ON DELETE CASCADE;
 
 ALTER TABLE `OrderLine` ADD CONSTRAINT `fk_OrderLine_product_id` FOREIGN KEY(`product_id`)
 REFERENCES `Product` (`id`);
 
 ALTER TABLE `Review` ADD CONSTRAINT `fk_Review_customer_id` FOREIGN KEY(`customer_id`)
-REFERENCES `Customer` (`id`);
+REFERENCES `Customer` (`id`)
+ON DELETE CASCADE;
 
 ALTER TABLE `Review` ADD CONSTRAINT `fk_Review_product_id` FOREIGN KEY(`product_id`)
 REFERENCES `Product` (`id`);
 
 ALTER TABLE `CustomerPassword` ADD CONSTRAINT `fk_CustomerPassword_customer_id` FOREIGN KEY(`id`)
-REFERENCES `Customer` (`id`);
+REFERENCES `Customer` (`id`)
+ON DELETE CASCADE;
 
 ALTER TABLE `ManagerPassword` ADD CONSTRAINT `fk_ManagerPassword_manager_id` FOREIGN KEY(`id`)
 REFERENCES `Manager` (`id`);

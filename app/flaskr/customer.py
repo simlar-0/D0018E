@@ -28,6 +28,7 @@ def view_edit_profile():
 def edit_profile():
     user = g.user
     forms = request.form.to_dict()
+
     pass_from_db = get_user_password('Customer', user['id'])
         
     if forms['email'] != user['email']:

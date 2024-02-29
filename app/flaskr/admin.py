@@ -1,19 +1,40 @@
 """
 Flask blueprint for logged in Customer views.
 """
-from flask import Blueprint, render_template, g, request, redirect, url_for
+from flask import Blueprint, render_template, g, request, current_app, flash, redirect, url_for
+from werkzeug.utils import secure_filename
 from flaskr.db.store import (
     get_order_orderlines, 
     get_customer_orders, 
+    get_all_products, 
+    get_one_product, 
+    update_product, 
+    add_product as db_add_product, 
     get_non_cart_orderlines,
     get_non_cart_statuses,
-    change_order_status)
-from flaskr.db.user import get_all_users, get_user_by_id
+    change_order_status
+    )
+from flaskr.db.user import (
+    get_all_users,
+    get_user_by_id,
+    delete_user,
+    set_user_details,
+    get_user_by_email,
+    set_user_password,
+    )
 from flaskr.store import get_order_total_amount
 from flaskr.auth import manager
+from pathlib import Path
+import bcrypt
 
 
 bp = Blueprint("admin", __name__, url_prefix="/admin")
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @bp.route("/")
 @manager
@@ -84,3 +105,91 @@ def change_status(order_id):
             change_order_status(order_id, status['id'])
             break
     return redirect(url_for('admin.manage_orders'))
+
+@bp.route("/manage-products")
+@manager
+def product_list():
+    products = get_all_products(include_unlisted=True)
+    return render_template("admin/product_list.html", products=products)
+
+@bp.route("/manage-products/product-id=<int:id>")
+@manager
+def product_details(id):
+    product = get_one_product(id)
+    return render_template("admin/edit_product.html", product=product)
+
+@bp.route("/manage-products/edit_product", methods=['GET', 'POST'])
+def edit_product():
+    upload_image(request)
+    forms = request.form.to_dict()
+    
+    file = request.files['file']
+    if file.filename == '':
+        forms['image_path'] = request.form['old_image_path']
+    else:
+        image_path = Path('/images') / request.files['file'].filename
+        forms['image_path'] = str(image_path.as_posix())
+    
+    update_product(forms)
+    flash('Product details edited successfully')
+    return redirect(url_for('admin.product_list'))   
+    
+def upload_image(request):
+    if 'file' not in request.files:
+        return False
+    file = request.files['file']
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(Path(current_app.config['UPLOAD_FOLDER'], filename))
+        return True
+    return False
+    
+@bp.route("/manage-products/add_product", methods=['GET', 'POST'])
+def add_product():
+    if request.method == 'POST':
+        upload_image(request)
+        
+        forms = request.form.to_dict()
+        image_path = Path('/images') / request.files['file'].filename
+        forms['image_path'] = str(image_path.as_posix())
+        db_add_product(forms)
+        return redirect(url_for('admin.product_list'))
+    return render_template("admin/add_product.html")
+
+@bp.route("/customer/<int:id>/edit-profile")
+@manager
+def view_edit_profile(id):
+    user = get_user_by_id(id, 'Customer')
+    return render_template("admin/edit_customer_profile.html", user=user)
+
+@bp.route("/customer/<int:id>/edit-profile", methods=["POST"])
+@manager
+def edit_profile(id):
+    user = get_user_by_id(id, 'Customer')
+    forms = request.form.to_dict()
+        
+    if forms['email'] != user['email']:
+        compare_user = get_user_by_email('Customer', forms['email'])
+        if compare_user is not None:
+            flash("There is already a user with that email address!")
+            return redirect(url_for('admin.view_edit_profile', id=id))
+
+    if forms['new_password']:
+        hashed_pass = bcrypt.hashpw(bytes(forms['new_password'], 'utf-8'), bcrypt.gensalt())
+        set_user_password('Customer', user['id'], hashed_pass)
+            
+    set_user_details(forms, user['id'])
+    flash("Edit profile successful!")
+    return redirect(url_for('admin.view_edit_profile', id=id))
+
+@bp.route("/customer/<int:id>/delete")
+@manager
+def delete_customer(id):
+    """
+    Delete a customer from the database.
+
+    :returns A redirect to the customer list.
+    """
+    delete_user(id, 'Customer')
+    return redirect(url_for('admin.customer_list'))
+

@@ -24,11 +24,14 @@
                   {% for customer in customers %}
                   <tr>
                     <td>{{ customer.id }}</td>
-                    <td><a href="{{ url_for('admin.customer_orders', id=customer.id) }}">{{ customer.name }}</a></td>
+                    <td>{{ customer.name }}</td>
                     <td>{{ customer.email }}</td>
                     <td>{{ customer.address }}</td>
                     <td>{{ customer.postcode }}</td>
                     <td>{{ customer.city }}</td>
+                    <td><a href="{{ url_for('admin.customer_orders', id=customer.id) }}">orders</a></td>
+                    <td><a href="{{ url_for('admin.view_edit_profile', id=customer.id) }}">edit</a></td>
+                    <td><a href="{{ url_for('admin.delete_customer', id=customer.id) }}">remove</a></td>
                   </tr>
                   {% endfor %}
                 </tbody>

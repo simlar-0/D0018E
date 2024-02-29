@@ -1,4 +1,4 @@
-{% extends 'customer/profile.html' %}
+{% extends 'admin/index.html' %}
 
 
 {% block title %}
@@ -6,13 +6,13 @@
 {% endblock %}
 
 
-{% block profile_content %}
+{% block admin_content %}
   <div class="col-sm-6">
     <div>
       <h4 class="text-dark py-4">Edit profile</h4>
       <p class="w-lg-50"></p>
     </div>
-    <form class="text-center" method="POST" action="{{ url_for('customer.edit_profile') }}">
+    <form class="text-center" method="POST" action="{{ url_for('admin.edit_profile', id = user['id']) }}">
       <div class="row mb-3">
         <div class="col mb-3 mb-sm-0">
           <input class="form-control form-control form-control-user" id="" type="text" name="name" placeholder="Name" value="{{user.name}}" required="" />
@@ -32,9 +32,6 @@
           <input class="form-control form-control-user" type="address" id="postcode" name="postcode" placeholder="Postcode" value="{{user.name}}" required />
         </div>
       </div>
-      <div class="mb-3">
-        <input class="form-control form-control-user" type="password" id="current_password" name="current_password" placeholder="Current password" required />
-      </div>
       <div class="row mb-3">
         <div class="col-6">
           <input class="form-control form-control form-control-user" type="password" id="new_password" name="new_password" placeholder="New password"/>
@@ -44,9 +41,9 @@
         </div>
       </div>
       <div class="row mb-3">
-        <div id="password_error" class="alert alert-danger" role="alert" style="display:none;">
+        <div id="passwordErrorMsg" class="alert alert-danger" role="alert" style="display:none;">
         </div>        
-        <div id="email_error" class="alert alert-danger" role="alert" style="display:none;">
+        <div id="emailErrorMsg" class="alert alert-danger" role="alert" style="display:none;">
         </div>
         {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -55,7 +52,7 @@
         </div>        
         {% endif %}
         {% endwith %}
-      </div><button id="submit_btn" class="btn btn-dark d-block w-20" type="submit">Apply changes!</button>
+      </div><button id="submitBtn" class="btn btn-dark d-block w-20" type="submit">Apply changes!</button>
 
 </form>
   </div>
@@ -66,33 +63,33 @@
   let email = document.getElementById('email')
   let new_password = document.getElementById('new_password')
   let verify_password = document.getElementById('verify_password')
-  let submit_btn = document.getElementById('submit_btn')
-  let email_error = document.getElementById('email_error')
-  let password_error = document.getElementById('password_error')
-
+  let submitBtn = document.getElementById('submitBtn')
+  let emailErrorMsg = document.getElementById('emailErrorMsg')
+  let passwordErrorMsg = document.getElementById('passwordErrorMsg')
+  
   function displayErrorMsg(type, msg) {
     if (type == 'email') {
-      email_error.style.display = 'block'
-      email_error.innerHTML = msg
-      submit_btn.disabled = true
+      emailErrorMsg.style.display = 'block'
+      emailErrorMsg.innerHTML = msg
+      submitBtn.disabled = true
     } else {
-      password_error.style.display = 'block'
-      password_error.innerHTML = msg
-      submit_btn.disabled = true
+      passwordErrorMsg.style.display = 'block'
+      passwordErrorMsg.innerHTML = msg
+      submitBtn.disabled = true
     }
   }
   
   function hideErrorMsg(type) {
     if (type == 'email') {
-      email_error.style.display = 'none'
-      email_error.innerHTML = ''
-      submit_btn.disabled = false
-      if (password_error.innerHTML == '') submit_btn.disabled = false
+      emailErrorMsg.style.display = 'none'
+      emailErrorMsg.innerHTML = ''
+      submitBtn.disabled = false
+      if (passwordErrorMsg.innerHTML == '') submitBtn.disabled = false
     } else {
-      password_error.style.display = 'none'
-      password_error.innerHTML = ''
-      submit_btn.disabled = false
-      if (email_error.innerHTML == '') submit_btn.disabled = false
+      passwordErrorMsg.style.display = 'none'
+      passwordErrorMsg.innerHTML = ''
+      submitBtn.disabled = false
+      if (emailErrorMsg.innerHTML == '') submitBtn.disabled = false
     }
   }
   
