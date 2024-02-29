@@ -23,7 +23,7 @@ from flaskr.db.user import (
     set_user_password,
     )
 from flaskr.store import get_order_total_amount
-from flaskr.auth import manager
+from flaskr.auth import manager, admin
 from pathlib import Path
 import bcrypt
 
@@ -119,6 +119,7 @@ def product_details(id):
     return render_template("admin/edit_product.html", product=product)
 
 @bp.route("/manage-products/edit_product", methods=['GET', 'POST'])
+@manager
 def edit_product():
     upload_image(request)
     forms = request.form.to_dict()
@@ -133,8 +134,9 @@ def edit_product():
     update_product(forms)
     flash('Product details edited successfully')
     return redirect(url_for('admin.product_list'))   
-    
+
 def upload_image(request):
+    
     if 'file' not in request.files:
         return False
     file = request.files['file']
@@ -145,6 +147,7 @@ def upload_image(request):
     return False
     
 @bp.route("/manage-products/add_product", methods=['GET', 'POST'])
+@manager
 def add_product():
     if request.method == 'POST':
         upload_image(request)
@@ -157,13 +160,13 @@ def add_product():
     return render_template("admin/add_product.html")
 
 @bp.route("/customer/<int:id>/edit-profile")
-@manager
+@admin
 def view_edit_profile(id):
     user = get_user_by_id(id, 'Customer')
     return render_template("admin/edit_customer_profile.html", user=user)
 
 @bp.route("/customer/<int:id>/edit-profile", methods=["POST"])
-@manager
+@admin
 def edit_profile(id):
     user = get_user_by_id(id, 'Customer')
     forms = request.form.to_dict()
@@ -183,7 +186,7 @@ def edit_profile(id):
     return redirect(url_for('admin.view_edit_profile', id=id))
 
 @bp.route("/customer/<int:id>/delete")
-@manager
+@admin
 def delete_customer(id):
     """
     Delete a customer from the database.
