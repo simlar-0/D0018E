@@ -1,6 +1,5 @@
 # Tests for cart feature. 
 Feature: Cart
-    Cart
 
     Scenario: Add to cart
         Given I am logged in as a customer
@@ -21,6 +20,17 @@ Feature: Cart
         When I press the view cart button
 
         Then I should see all items in my cart
+
+    Scenario: Update cart
+        Given I am logged in as a customer
+
+        Given I have 0 to X items in my cart
+
+        When I change the amount of items in my cart
+        
+        And I press the update cart button
+
+        Then The amount of items in my cart should be updated
     
     Scenario: Checkout
         Given I am logged in as a customer

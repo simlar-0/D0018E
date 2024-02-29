@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `Manager` (
 CREATE TABLE IF NOT EXISTS `CustomerOrder` (
     `id` int  NOT NULL AUTO_INCREMENT,
     `customer_id` int  NOT NULL ,
-    `order_date` DATETIME ON UPDATE CURRENT_TIMESTAMP,
+    `order_date` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
     `order_status_id` int  NOT NULL ,
     PRIMARY KEY (
         `id`
