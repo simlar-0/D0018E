@@ -549,7 +549,12 @@ def get_customer_has_ordered_product(customer_id, product_id):
         WHERE 
             CustomerOrder.customer_id = %s
         AND
-            OrderLine.product_id = %s;
+            OrderLine.product_id = %s
+        AND 
+            CustomerOrder.order_status_id !=
+                (SELECT OrderStatus.id
+                FROM OrderStatus 
+                WHERE OrderStatus.name = 'InCart');
         """,
         (customer_id, product_id)
     )

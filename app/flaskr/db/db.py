@@ -78,7 +78,7 @@ def transaction(queries, dict_cursor = False):
     :param dict_cursor: if True then query results will be a dictionary instead of a list.
     :returns: a list of lists (one per query) of strings.
     """
-    logging.getLogger().setLevel(logging.DEBUG)
+    #logging.getLogger().setLevel(logging.DEBUG)
     results = []
 
     mysql = init_mysql()
