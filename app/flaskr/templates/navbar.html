@@ -24,9 +24,6 @@
         {% endif %}
         {% if not g.manager and not g.user %}
           <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('auth.login_manager') }}">Manager (log in)</a>
-          </li>
-          <li class="nav-item">
             <a class="nav-link" href="{{ url_for('auth.register_user') }}">Register</a>
           </li>
           <li class="nav-item">

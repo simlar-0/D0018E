@@ -94,10 +94,6 @@ def login_manager_post():
     flash('Please check your login details and try again.')
     return redirect(url_for('auth.login_manager_post'))
 
-@bp.route("/forgot-password")
-def forgot_password():
-    return render_template("auth/forgot_pass.html")
-
 @bp.route("/logout")
 def logout():
     session.pop('user_id', None)
