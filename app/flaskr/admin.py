@@ -5,7 +5,7 @@ from flask import Blueprint, render_template, g, request, redirect, url_for
 from flaskr.db.store import (
     get_order_orderlines, 
     get_customer_orders, 
-    get_pending_orderlines,
+    get_non_cart_orderlines,
     get_non_cart_statuses,
     change_order_status)
 from flaskr.db.user import get_all_users, get_user_by_id
@@ -53,7 +53,7 @@ def customer_orders(id):
 @bp.route("/manage_orders")
 @manager
 def manage_orders():
-    orderlines = get_pending_orderlines()
+    orderlines = get_non_cart_orderlines()
     orders = {}
     for orderline in orderlines:
         if orderline['order_id'] not in orders.keys():
@@ -71,14 +71,16 @@ def manage_orders():
     order_statuses = get_non_cart_statuses()
     return render_template("admin/manage_orders.html", orders=orders.items(), statuses = order_statuses)
 
-@bp.route("/manage_orders", methods=["POST"])
+@bp.route("/manage_orders?<int:order_id>", methods=["POST"])
 @manager
-def change_status():
+def change_status(order_id):
     forms = request.form.to_dict()
     if 'change_status' not in forms.keys():
         return redirect(url_for('admin.manage_orders'))
     new_status = forms['change_status']
-    # TODO: 
-    # - need to bring order id from previous page
-    # - need to bring all status ids from previous page, or fetch here again 
+    statuses = get_non_cart_statuses()
+    for status in statuses:
+        if status['name']==new_status:
+            change_order_status(order_id, status['id'])
+            break
     return redirect(url_for('admin.manage_orders'))

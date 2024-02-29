@@ -430,10 +430,10 @@ def get_customer_has_ordered_product(customer_id, product_id):
     )
     return transaction([query])[0][0][0]
 
-def get_pending_orderlines():
+def get_non_cart_orderlines():
     """
     Fetches all orderlines belonging to 
-        pending (not 'Delivered', 'Cancelled' or 'InCart') orders in the DB.
+        pending (not 'InCart') orders in the DB.
 
     :returns: a list of dictionaries, where each dictionary contains an orderline.
     """
@@ -459,7 +459,7 @@ def get_pending_orderlines():
         (
             SELECT OrderStatus.id
             FROM OrderStatus
-            WHERE OrderStatus.name NOT IN ('Cancelled', 'Delivered', 'InCart')
+            WHERE OrderStatus.name NOT IN ('InCart')
         )
         ORDER BY CustomerOrder.order_status_id;
         """,
@@ -480,7 +480,7 @@ def change_order_status(order_id, new_status_id):
         SET CustomerOrder.order_status_id = %s
         WHERE CustomerOrder.id = %s;
         """,
-        (order_id, new_status_id)
+        (new_status_id, order_id)
     )
     transaction([query])
 
