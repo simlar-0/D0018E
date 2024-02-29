@@ -25,6 +25,23 @@ def manager(f):
         return f(*args, **kwargs)
     return decorated_function
 
+def admin(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if g.manager is None:
+            return redirect(url_for('auth.login_manager'))
+        if not g.manager['is_admin']:
+            return redirect(url_for('auth.not_allowed', reason='manager_not_admin'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+@bp.route("/not_allowed/<string:reason>")
+def not_allowed(reason):
+    reasons = {
+        'manager_not_admin':"You are logged in as a manager, but must be an admin to access this resource."
+    }
+    return render_template("auth/not_allowed.html", desc=reasons[reason])
+
 @bp.route("/register")
 def register():
     return render_template("auth/register.html")

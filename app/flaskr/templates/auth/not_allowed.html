@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Not Allowed
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-6">
+            <div class="p-5">
+                <div class="text-center">
+                    <p>
+                        {{ desc }}
+                    </p>
+                    <a href="javascript:history.back()">Go Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
