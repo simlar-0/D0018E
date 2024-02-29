@@ -15,9 +15,9 @@
             <div class="order-2 order-lg-1 media-body">
               <h6 class="text-truncate mt-0 font-weight-bold mb-2" data-type="product name"><strong>{{ product['name'] }}</strong></h6>
               <p class="text-truncate text-muted font-italic mb-0 small" data-type="product description">{{ product['description'] }}</p>
-              <div class="d-flex justify-content-between align-items-center mt-0">
-                <h6 class="float-end font-weight-bold my-2" data-type="product price">{{ product.price|int }} kr</h6>
-                <div class="d-flex float-end justify-content-center justify-content-xl-start align-items-xl-end mt-2" style="margin: 0px;margin-right: 40px;">
+              <div class="d-flex justify-content-between align-items-center mt-2">
+                <h6 class="float-end font-weight-bold" data-type="product price">{{ product.price|int }} kr</h6>
+                <div class="d-flex float-end">
                   {% include 'store/average_rating.html'%}
                 </div>
               </div>
